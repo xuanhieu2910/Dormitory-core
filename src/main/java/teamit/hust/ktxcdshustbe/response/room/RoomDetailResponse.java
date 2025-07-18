@@ -1,0 +1,36 @@
+package teamit.hust.ktxcdshustbe.response.room;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class RoomDetailResponse {
+
+    @JsonProperty("code_room")
+    private String codeRoom;
+    @JsonProperty("title")
+    private String title;
+    @JsonProperty("price")
+    private String price;
+    @JsonProperty("limit_amount_people_hired")
+    private Integer limitAmountPeopleHired;
+    @JsonProperty("quantity_hired")
+    private Integer quantityHired;
+    @JsonProperty("sex")
+    private String sex;
+    @JsonProperty("remain_amount")
+    private Integer remainAmount;
+    @JsonProperty("is_Active")
+    private Integer isActive;
+    @JsonProperty("code_department")
+    private String codeDepartment;
+    @JsonProperty("title_department")
+    private String titleDepartment;
+    @JsonProperty("services_room")
+    private List<ServiceRoomResponse> serviceRoomResponses;
+}

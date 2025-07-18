@@ -1,0 +1,81 @@
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
+stages:
+  - build
+  - package
+  - docker
+  - deploy
+  - connect_host
+ 
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end"
+  DOCKER_IMAGE: "ktx-cds-hust-be:latest"
+ 
+before_script:
+  - apt-get update -qq && apt-get install -qqy openjdk-17-jdk maven
+  - chmod +x ./mvnw
+ 
+cache:
+  paths:
+    - .m2/repository
+ 
+# Build project
+build:
+  stage: build
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS clean compile
+ 
+# Package project
+package:
+  stage: package
+  script:
+    - ./mvnw $MAVEN_CLI_OPTS package
+  artifacts:
+    paths:
+      - target/*.war
+ 
+# Docker build
+docker_build:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - mkdir -p dungnguyen8221
+    - docker build -t dungnguyen8221/$DOCKER_IMAGE .
+    - docker save dungnguyen8221/$DOCKER_IMAGE | gzip > dungnguyen8221/$DOCKER_IMAGE.tar.gz
+  artifacts:
+    paths:
+      - dungnguyen8221/$DOCKER_IMAGE.tar.gz
+ 
+# Deploy Docker image
+deploy:
+  stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker load < dungnguyen8221/$DOCKER_IMAGE.tar.gz
+    - docker login -u dungnguyen8221 -p tamthaplucke123
+    - docker push dungnguyen8221/$DOCKER_IMAGE
+    - ls -la
+
+connect_host:
+  stage: connect_host
+  image: alpine
+  script:
+    - apk add --no-cache openssh
+    - mkdir -p ~/.ssh
+    # Lấy SSH Private Key từ GitLab CI/CD Variables
+    - chmod 600 dungnt.pem
+    # Thêm SSH host vào known_hosts để tránh xác thực thủ công
+    - ssh-keyscan -H 52.65.85.243 >> ~/.ssh/known_hosts
+    # Kết nối SSH tới máy chủ và kéo Docker image
+    - ssh -i dungnt.pem ubuntu@52.65.85.243 "sudo docker ps -a -q --filter ancestor=dungnguyen8221/ktx-cds-hust-be:latest --format={{.ID}} | xargs -r sudo docker stop"
+    - ssh -i dungnt.pem ubuntu@52.65.85.243 "sudo docker ps -a -q --filter ancestor=dungnguyen8221/ktx-cds-hust-be:latest --format={{.ID}} | xargs -r sudo docker rm"
+    - ssh -i dungnt.pem ubuntu@52.65.85.243 "sudo docker images -q dungnguyen8221/$DOCKER_IMAGE | xargs -r sudo docker rmi"
+    - ssh -i dungnt.pem ubuntu@52.65.85.243 "sudo docker login -u dungnguyen8221 -p tamthaplucke123"
+    - ssh -i dungnt.pem ubuntu@52.65.85.243 "sudo docker pull dungnguyen8221/$DOCKER_IMAGE"
+    - ssh -i dungnt.pem ubuntu@52.65.85.243 "sudo docker run -d -p 8080:8080 dungnguyen8221/$DOCKER_IMAGE"
