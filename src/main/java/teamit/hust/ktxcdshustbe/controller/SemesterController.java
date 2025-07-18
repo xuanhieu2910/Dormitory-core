@@ -51,15 +51,7 @@ public class SemesterController {
         try {
             semesterService.create(request);
             return ApiResponseDto.createdWithMessage("Create semester success", HttpStatus.OK);
-        }
-        catch (ExitsObjectException e){
-            return ApiResponseDto.createdWithMessage(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        }
-        catch (NotFoundException e) {
-            return ApiResponseDto.createdWithMessage(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        }
-        catch (ValidParametersException e) {
-            return ApiResponseDto.createdWithMessage(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+
         } catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
