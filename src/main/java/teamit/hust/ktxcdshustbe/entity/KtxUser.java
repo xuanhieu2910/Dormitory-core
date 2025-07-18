@@ -27,78 +27,28 @@ public class KtxUser implements UserDetails {
     private String userName;
     @Column(name = "password")
     private String password;
-    @Column(name = "number_student")
-    private String numberStudent;
-    @Column(name = "phone_number")
-    private String phoneNumber;
-    @Column(name = "cccd")
-    private String cccd;
-    @Column(name = "date_of_birth")
-    private String dateOfBirth;
     @Column(name = "sex")
     private Integer sex;
-    @Column(name = "nation")
-    private String nation;
-    @Column(name = "religion")
-    private String religion;
-    @Column(name = "area")
-    private String area;
-    @Column(name = "path_avatar")
-    private String pathAvatar;
-    @Column(name = "district")
-    private String district;
-    @Column(name = "province")
-    private String province;
-    @Column(name = "wards")
-    private String wards;
-    @Column(name = "address_contact")
-    private String addressContact;
-    @Column(name = "school")
-    private String school;
-    @Column(name = "faculty")
-    private String faculty;
-    @Column(name = "year_grade")
-    private Integer yearGrade;
-    @Column(name = "class_user")
-    private String classUser;
-    @Column(name = "email_contact")
-    private String emailContact;
-    @Column(name = "address")
-    private String address;
-    @Column(name = "full_name")
-    private String fullName;
     @Column(name = "time_created")
     private Long timeCreated;
     @Column(name = "time_modified")
     private Long timeModified;
     @Column(name = "is_actived")
     private Integer isActived;
-    @Column(name = "status_register_room")
-    private Integer statusRegisterRoom;
-    @Column(name = "code_major")
-    private String codeMajor;
-    @Column(name = "title_major")
-    private String titleMajor;
     @Column(name = "type_login")
     private String typeLogin;
-    @Column(name = "name_father")
-    private String nameFather;
-    @Column(name = "year_father")
-    private Integer yearFather;
-    @Column(name = "phone_number_father")
-    private String phoneNumberFather;
-    @Column(name = "address_father")
-    private String addressFather;
-    @Column(name = "name_mother")
-    private String nameMother;
-    @Column(name = "year_mother")
-    private Integer yearMother;
-    @Column(name = "phone_number_mother")
-    private String phoneNumberMother;
-    @Column(name = "address_mother")
-    private String addressMother;
     @Column(name = "code_user")
     private String codeUser;
+    @Column(name = "id_user_created")
+    private Integer idUserCreated;
+    @Column(name = "id_user_modified")
+    private Integer idUserModified;
+    @Column(name = "id_year_group")
+    private Integer idYearGroup;
+    @Column(name = "id_priority_group")
+    private Integer idPriorityGroup;
+    @Column(name = "value")
+    private String value;
 
     @ManyToMany
     @JoinTable(name = "user_role",

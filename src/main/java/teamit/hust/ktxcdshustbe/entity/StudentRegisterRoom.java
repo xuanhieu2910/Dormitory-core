@@ -33,7 +33,9 @@ public class StudentRegisterRoom {
     private Integer idUserModified;
     @Column(name = "id_user_created")
     private Integer idUserCreated;
-    @Column(name = "is_payment")
-    private Integer isPayment;
+    @Column(name = "id_order")
+    private Integer idOrder;
+    @Column(name = "id_batches_registration")
+    private Integer idBatchesRegistration;
 
 }
