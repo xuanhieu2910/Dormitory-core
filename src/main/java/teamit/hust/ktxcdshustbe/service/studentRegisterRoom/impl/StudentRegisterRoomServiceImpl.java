@@ -177,17 +177,6 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     private void setDeclareInformationStudent(KtxUser customUserDetails,DeclareInformationRequest request) {
-        customUserDetails.setNameFather(request.getNameFather());
-        customUserDetails.setYearFather(request.getYearFather());
-        customUserDetails.setPhoneNumberFather(request.getPhoneNumberFather());
-        customUserDetails.setAddressFather(request.getAddressFather());
-        customUserDetails.setNameMother(request.getNameMother());
-        customUserDetails.setYearMother(request.getYearMother());
-        customUserDetails.setPhoneNumberMother(request.getPhoneNumberMother());
-        customUserDetails.setAddressMother(request.getAddressMother());
-        customUserDetails.setAddressContact(request.getAddressContact());
-        customUserDetails.setAddress(request.getAddress());
-        customUserDetails.setNation(request.getNation());
     }
 
     @Override
@@ -245,18 +234,6 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     private void setDeclareInformationStudentV2(KtxUser customUserDetails,DeclareInformationRequest request) {
-        customUserDetails.setNameFather(request.getNameFather());
-        customUserDetails.setYearFather(request.getYearFather());
-        customUserDetails.setPhoneNumberFather(request.getPhoneNumberFather());
-        customUserDetails.setAddressFather(request.getAddressFather());
-        customUserDetails.setNameMother(request.getNameMother());
-        customUserDetails.setYearMother(request.getYearMother());
-        customUserDetails.setPhoneNumberMother(request.getPhoneNumberMother());
-        customUserDetails.setAddressMother(request.getAddressMother());
-        customUserDetails.setAddressContact(request.getAddressContact());
-        customUserDetails.setAddress(request.getAddress());
-        customUserDetails.setNation(request.getNation());
-        customUserDetails.setStatusRegisterRoom(Constants.STATUS_USER_REGISTER_ROOM);
     }
 
     private void updateStatusRegisterRoomUser(Integer userId, Integer statusUserRegisterRoom){

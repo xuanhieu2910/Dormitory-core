@@ -20,6 +20,4 @@ public class AuthenticationDto {
     private String refreshToken;
     private String tokenType;
     private Integer isActive;
-    private String fullName;
-    private Integer statusRegisterRoom;
 }

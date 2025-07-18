@@ -459,7 +459,6 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 srr.setStatus(ValueUtil.getIntegerByObject(obj[6]));
                 srr.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 srr.setIdUserCreated(ValueUtil.getIntegerByObject(obj[8]));
-                srr.setIsPayment(ValueUtil.getIntegerByObject(obj[9]));
                 return Optional.of(srr);
             }
         }
@@ -491,7 +490,6 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 srr.setStatus(ValueUtil.getIntegerByObject(obj[6]));
                 srr.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 srr.setIdUserCreated(ValueUtil.getIntegerByObject(obj[8]));
-                srr.setIsPayment(ValueUtil.getIntegerByObject(obj[9]));
                 return Optional.of(srr);
             }
         }
@@ -526,7 +524,6 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 srr.setStatus(ValueUtil.getIntegerByObject(obj[6]));
                 srr.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 srr.setIdUserCreated(ValueUtil.getIntegerByObject(obj[8]));
-                srr.setIsPayment(ValueUtil.getIntegerByObject(obj[9]));
                 return Optional.of(srr);
             }
         }
