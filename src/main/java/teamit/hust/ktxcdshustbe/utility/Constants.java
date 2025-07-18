@@ -88,8 +88,23 @@ public class Constants {
      * */
     public static final String PATTERN_ROLE_CAPABILITIES = "ktx/";
     public static final String PATTERN_ROLE_SEPARATE = ":";
+    public static final Integer ROLE_CAPABILITIES_ACTIVE = 1;
+    public static final Integer ROLE_CAPABILITIES_IN_ACTIVE = -1;
+    public static final Integer ROLE_CAPABILITIES_PERMISSION = 1;
+    public static final Integer ROLE_CAPABILITIES_NOT_PERMISSION = 1;
+    public static final Integer STATUS_NOT_PERMISSION = -1;
 
     /*-----------------------------------------------------*/
+
+    /**
+     * Constants STATUS ROLE
+     * */
+    public static final Integer STATUS_ROLE_ACTIVE = 1;
+    public static final Integer STATUS_ROLE_IN_ACTIVE = -1;
+
+    /*-----------------------------------------------------*/
+
+
 
     /**
      * Constants ROLE_USER

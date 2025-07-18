@@ -75,10 +75,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationDto.setRoles(RoleUtils.convertToRoleResponse(List.of(role)));
         authenticationDto.setUserName(ktxUser.getUsername());
         authenticationDto.setTokenType(JwtAuthenticationFilter.TOKEN_PREFIX);
-        authenticationDto.setFullName(ktxUser.getFullName());
         authenticationDto.setCodeUser(ktxUser.getCodeUser());
         authenticationDto.setIsActive(ktxUser.getIsActived());
-        authenticationDto.setStatusRegisterRoom(ktxUser.getStatusRegisterRoom());
         return authenticationDto;
     }
 
@@ -98,9 +96,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationDto.setUserName(user.getUsername());
         authenticationDto.setRefreshToken(refreshToken);
         authenticationDto.setTokenType(JwtAuthenticationFilter.TOKEN_PREFIX);
-        authenticationDto.setStatusRegisterRoom(user.getStatusRegisterRoom());
         authenticationDto.setIsActive(user.getIsActived());
-        authenticationDto.setFullName(user.getFullName());
         return authenticationDto;
     }
 
@@ -109,8 +105,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .codeUser(authenticationDto.getCodeUser())
                 .userName(authenticationDto.getUserName())
                 .roles(authenticationDto.getRoles())
-                .statusRegisterRoom(authenticationDto.getStatusRegisterRoom())
-                .fullName(authenticationDto.getFullName())
                 .build();
     }
 
@@ -123,9 +117,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationDto.setRoles(RoleUtils.convertToRoleResponse(role));
         authenticationDto.setUserName(ktxUser.getUsername());
         authenticationDto.setCodeUser(ktxUser.getCodeUser());
-        authenticationDto.setStatusRegisterRoom(ktxUser.getStatusRegisterRoom());
         authenticationDto.setIsActive(ktxUser.getIsActived());
-        authenticationDto.setFullName(ktxUser.getFullName());
         return authenticationDto;
     }
 
@@ -137,7 +129,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ktxUser.setTimeCreated(timeCurrently);
         ktxUser.setTimeModified(timeCurrently);
         ktxUser.setIsActived(Constants.ACCOUNT_IS_UN_ACTIVED);
-        ktxUser.setStatusRegisterRoom(Constants.STATUS_USER_NOT_REGISTER_ROOM);
         return ktxUser;
     }
 

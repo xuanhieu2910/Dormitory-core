@@ -132,36 +132,7 @@ public class KtxUserServiceImpl implements KtxUserService {
     private DetailInformationUserResponse convertToDetailInformationUserResponse(KtxUser userDetails) {
         DetailInformationUserResponse response = new DetailInformationUserResponse();
         response.setCodeUser(userDetails.getCodeUser());
-        response.setFullName(userDetails.getFullName());
-        response.setNumberStudent(userDetails.getNumberStudent());
-        response.setDateOfBirth(DateUtil.formatTimeLongToDateString(userDetails.getDateOfBirth(), DateUtil.DDMMYYYY));
         response.setSex(userDetails.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
-        response.setReligion(userDetails.getReligion());
-        response.setCccd(userDetails.getCccd());
-        response.setNation(userDetails.getNation());
-        response.setArea(userDetails.getArea());
-        response.setPhoneNumber(userDetails.getPhoneNumber());
-        response.setEmail(userDetails.getEmailContact());
-        response.setClassUser(userDetails.getClassUser());
-        response.setFaculty(userDetails.getFaculty());
-        response.setYearGrade(Constants.TITLE_YEAR_GRADE + " " + userDetails.getYearGrade());
-        response.setProvince(userDetails.getProvince());
-        response.setDistrict(userDetails.getDistrict());
-        response.setWards(userDetails.getWards());
-        response.setSchool(userDetails.getSchool());
-        response.setAddress(userDetails.getAddress());
-        response.setCodeMajor(userDetails.getCodeMajor());
-        response.setTitleMajor(userDetails.getTitleMajor());
-        response.setNameFather(userDetails.getNameFather());
-        response.setYearFather(userDetails.getYearFather());
-        response.setPhoneNumberFather(userDetails.getPhoneNumberFather());
-        response.setAddressFather(userDetails.getAddressFather());
-        response.setNameMother(userDetails.getNameMother());
-        response.setYearMother(userDetails.getYearMother());
-        response.setPhoneNumberMother(userDetails.getPhoneNumberMother());
-        response.setAddressMother(userDetails.getAddressMother());
-        response.setPathAvatar(userDetails.getPathAvatar());
-        response.setAddressContact(userDetails.getAddressContact());
         return response;
     }
 
@@ -257,30 +228,11 @@ public class KtxUserServiceImpl implements KtxUserService {
         String email = (String) ExcelUtil.convertValue(row.getCell(19), CellType.STRING);
         Integer yearGrade = Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(20), CellType.STRING)));
         customUserDetails.setUserName(userName);
-        customUserDetails.setFullName(fullName);
-        customUserDetails.setNumberStudent(numberStudent);
-        customUserDetails.setDateOfBirth(String.valueOf(dateOfBirth));
-        customUserDetails.setCccd(cccd);
         if (Objects.nonNull(sex)) {
             customUserDetails.setSex(sex.equals(Constants.TITLE_SEX[0]) ? Constants.FEMALE : Constants.MALE);
         } else {
             customUserDetails.setSex(Constants.FEMALE);
         }
-        customUserDetails.setNation(nation);
-        customUserDetails.setReligion(religion);
-        customUserDetails.setArea(area);
-        customUserDetails.setProvince(province);
-        customUserDetails.setDistrict(district);
-        customUserDetails.setWards(wards);
-        customUserDetails.setAddress(address);
-        customUserDetails.setSchool(school);
-        customUserDetails.setFaculty(faculty);
-        customUserDetails.setCodeMajor(codeMajor);
-        customUserDetails.setTitleMajor(titleMajor);
-        customUserDetails.setPhoneNumber(phoneNumber);
-        customUserDetails.setEmailContact(email);
-        customUserDetails.setYearGrade(yearGrade);
-        customUserDetails.setStatusRegisterRoom(Constants.STATUS_USER_NOT_REGISTER_ROOM);
         customUserDetails.setIsActived(Constants.ACCOUNT_IS_ACTIVED);
         Long timeCurrent = new Date().getTime();
         customUserDetails.setTimeCreated(timeCurrent);

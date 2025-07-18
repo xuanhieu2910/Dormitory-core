@@ -14,12 +14,8 @@ import java.util.Optional;
 public interface DepartmentRepositoryCustom {
 
     Page<FindAllDepartmentDto> findAllDepartment(Pageable pageable, FindAllDepartmentRequest request);
-
-
     Optional<Department> findDepartmentById(Integer departmentId);
-
     Optional<Department> findDepartmentByTitle(String titleDepartment);
-
     FindDepartmentStatisticDetailDto findDepartmentStatisticDetailsByCodeDepartment(String codeDepartment);
     Optional<Department> findDepartmentByCode(String codeDepartment);
 }

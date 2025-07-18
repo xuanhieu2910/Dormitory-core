@@ -140,7 +140,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     }
 
     private void updateStatusStudentAddToRoom(KtxUser student){
-        student.setStatusRegisterRoom(Constants.STATUS_USER_REGISTER_ROOM);
         ktxUserService.save(student);
     }
 
