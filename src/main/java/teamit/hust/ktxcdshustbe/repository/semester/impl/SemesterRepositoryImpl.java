@@ -14,11 +14,13 @@ import teamit.hust.ktxcdshustbe.dto.semester.FindAllSemesterDto;
 import teamit.hust.ktxcdshustbe.entity.Semester;
 import teamit.hust.ktxcdshustbe.repository.semester.SemesterRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.semester.FindAllSemesterRequest;
+import teamit.hust.ktxcdshustbe.response.semester.FindAllSemesterResponse;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
 
@@ -108,4 +110,5 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         return semester;
     }
 
+    public Optional<FindAllSemesterResponse> fi
 }

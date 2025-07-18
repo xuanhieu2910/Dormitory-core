@@ -8,7 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import teamit.hust.ktxcdshustbe.dto.semester.FindAllSemesterDto;
+import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Semester;
+import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.repository.semester.SemesterRepository;
 import teamit.hust.ktxcdshustbe.repository.studentRegisterRoom.StudentRegisterRoomRepository;
 import teamit.hust.ktxcdshustbe.repository.timeHired.TimeHiredRepository;
@@ -20,7 +22,9 @@ import teamit.hust.ktxcdshustbe.service.semester.SemesterService;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -43,7 +47,16 @@ public class SemesterServiceImpl implements SemesterService {
 
     @Override
     public Semester create(CreateSemesterRequest request) {
-        return null;
+        if(semesterRepository.existsByTitle(request.getTitleSemester()) {
+            throw new ExitsObjectException();
+        }
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Semester semester = new Semester();
+        semester.setTitle(request.getTitleSemester());
+        semester.setStatus(request.getStatus());
+        semester.setTimeCreated(new Date().getTime());
+        semester.setIdUserCreated(ktxUser.getIdKtxUser());
+        return semesterRepository.save(semester);
     }
 
     @Override

@@ -6,4 +6,5 @@ import teamit.hust.ktxcdshustbe.entity.Semester;
 
 @Repository
 public interface SemesterRepository extends JpaRepository<Semester, Integer>, SemesterRepositoryCustom {
+    boolean existsByTitle(String title);
 }
