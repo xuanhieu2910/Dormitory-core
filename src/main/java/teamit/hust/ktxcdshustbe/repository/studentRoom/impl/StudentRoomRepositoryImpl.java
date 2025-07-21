@@ -88,18 +88,20 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
     @Override
     public Page<ListHiredRoomStudentResponse> getListHiredRoomStudentResponse(StudentListRoomHiredRequest request, Pageable pageable) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select studentRoom.id_student_room studentRoomId, " +
-                "       ktxUser.code_user , " +
-                "       de.code_department , de.title titleDepartment, " +
-                "       ro.code_room roomId, ro.title titleRoom, " +
-                "       se.title, timeHired.time_started, timeHired.time_ended, " +
-                "       studentRoom.status " +
-                "from student_room studentRoom " +
-                "    inner join room ro on studentRoom.id_room = ro.id_room " +
-                "    inner join department de on ro.id_department = de.id_department " +
-                "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user " +
-                "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired " +
-                "    inner join semester se on timeHired.id_semester = se.id_semester " +
+        sb.append("select studentRoom.id_student_room studentRoomId,   " +
+                "       ktxUser.code_user ,   " +
+                "       de.code_department , de.title titleDepartment,   " +
+                "       ro.code_room roomId, ro.title titleRoom,   " +
+                "       se.title, timeHired.time_started, timeHired.time_ended,   " +
+                "       studentRoom.status   " +
+                "from student_room studentRoom   " +
+                "    inner join room ro on studentRoom.id_room = ro.id_room   " +
+                "    inner join department de on ro.id_department = de.id_department   " +
+                "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
+                "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
+                "    inner join batches_registration_room brr on brr.id_room = ro.id_room  " +
+                "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration   " +
+                "    inner join semester se on se.id_semester = br.id_semester  " +
                 "where studentRoom.id_user = :userId  ");
         setConditionListHiredRoomStudentResponse(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -418,13 +420,15 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
     private long countListHiredRoomStudentResponse(StudentListRoomHiredRequest request){
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) ct " +
-                "from student_room studentRoom " +
-                "    inner join room ro on studentRoom.id_room = ro.id_room " +
-                "    inner join department de on ro.id_department = de.id_department " +
-                "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user " +
-                "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired " +
-                "    inner join semester se on timeHired.id_semester = se.id_semester " +
-                "where studentRoom.id_user = :userId ");
+                "from student_room studentRoom   " +
+                "    inner join room ro on studentRoom.id_room = ro.id_room   " +
+                "    inner join department de on ro.id_department = de.id_department   " +
+                "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
+                "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
+                "    inner join batches_registration_room brr on brr.id_room = ro.id_room  " +
+                "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration   " +
+                "    inner join semester se on se.id_semester = br.id_semester  " +
+                "where studentRoom.id_user = :userId  ");
         setConditionListHiredRoomStudentResponse(sb,request);
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("userId", request.getUserId());

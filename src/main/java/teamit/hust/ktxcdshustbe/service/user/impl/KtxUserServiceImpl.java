@@ -2,6 +2,8 @@ package teamit.hust.ktxcdshustbe.service.user.impl;
 
 import jakarta.servlet.ServletException;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -23,16 +25,19 @@ import teamit.hust.ktxcdshustbe.enums.RolePattern;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.repository.user.KtxUserRepository;
 import teamit.hust.ktxcdshustbe.request.user.FindAllStudentsRequest;
+import teamit.hust.ktxcdshustbe.request.user.UpdateProfileUserRequest;
 import teamit.hust.ktxcdshustbe.response.user.DetailInformationUserResponse;
 import teamit.hust.ktxcdshustbe.response.user.FindAllStudentsResponse;
 import teamit.hust.ktxcdshustbe.response.user.InformationStudentHiredResponse;
 import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
+import teamit.hust.ktxcdshustbe.service.priorityGroup.PriorityGroupService;
 import teamit.hust.ktxcdshustbe.service.role.RoleService;
 import teamit.hust.ktxcdshustbe.service.room.RoomService;
 import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
 import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 import teamit.hust.ktxcdshustbe.service.userRole.UserRoleService;
+import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
 import teamit.hust.ktxcdshustbe.utility.*;
 
 import java.io.IOException;
@@ -56,7 +61,10 @@ public class KtxUserServiceImpl implements KtxUserService {
     UserRoleService userRoleService;
     @Autowired
     DepartmentService departmentService;
-
+    @Autowired
+    YearGroupService yearGroupService;
+    @Autowired
+    PriorityGroupService priorityGroupService;
 
     @Override
     public UserDetails loadUserByUsername(String username){
@@ -118,6 +126,56 @@ public class KtxUserServiceImpl implements KtxUserService {
         return ktxUserRepository.updateStatusRegisterRoom(userId, statusUserRegisterRoom);
     }
 
+    @Lazy
+    @Override
+    public void updateUserProfile(UpdateProfileUserRequest request) {
+        Optional<KtxUser> ktxUserOptional = ktxUserRepository.findByKtxUserCode(request.getCodeUser());
+        if (ktxUserOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        updateInfoUser(ktxUserOptional.get(),request);
+    }
+
+    @Override
+    public KtxUser findKtxUserByUserName(String lowerCase) {
+        Optional<KtxUser> ktxUserOptional = ktxUserRepository.findByKtxUserByUserName(lowerCase);
+        if (ktxUserOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return ktxUserOptional.get();
+    }
+
+    private void updateInfoUser(KtxUser ktxUser, UpdateProfileUserRequest request) {
+
+        YearGroup yearGroup = yearGroupService.findYearGroupByTitle(request.getTitleYearGroup());
+        PriorityGroup priorityGroup =  priorityGroupService.findPriorGroupByTitle(request.getTitlePriorityGroup());
+        Long currentTime = new Date().getTime();
+        KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (StringUtils.isNotBlank(request.getUsername())){
+            ktxUser.setUserName(request.getUsername());
+        }
+        if (StringUtils.isNotBlank(request.getPassword())){
+            ktxUser.setPassword(request.getPassword());
+        }
+        if (ObjectUtils.isNotEmpty(request.getSex())){
+            ktxUser.setSex(request.getSex());
+        }
+        if (ObjectUtils.isNotEmpty(request.getIsActive())){
+            ktxUser.setIsActived(request.getIsActive());
+        }
+        if (StringUtils.isNotBlank(request.getTypeLogin())){
+            ktxUser.setTypeLogin(request.getTypeLogin());
+        }
+        if (StringUtils.isNotBlank(request.getValue())){
+            ktxUser.setValue(request.getValue());
+        }
+        ktxUser.setTimeModified(currentTime);
+        ktxUser.setIdUserModified(ktxUserCurrent.getIdUserModified());
+        ktxUser.setIdYearGroup(yearGroup.getIdYearGroup());
+        ktxUser.setIdPriorityGroup(priorityGroup.getIdPriorityGroup());
+        ktxUserRepository.save(ktxUser);
+    }
+
 
     @Override
     public DetailInformationUserResponse getDetailInformationUser(OidcUser principal) {
@@ -146,8 +204,8 @@ public class KtxUserServiceImpl implements KtxUserService {
 
 
     @Override
-    public InformationStudentHiredResponse searchInformationStudentByNumberStudent(String numberStudent) {
-        Optional<InformationStudentHiredResponse> response = ktxUserRepository.searchInformationStudentHiredRoomByNumberStudent(numberStudent.trim());
+    public InformationStudentHiredResponse searchInformationStudentByNumberStudent(String codeStudent) {
+        Optional<InformationStudentHiredResponse> response = ktxUserRepository.searchInformationStudentHiredRoomByNumberStudent(codeStudent.trim());
         if (response.isEmpty()) {
             throw new NotFoundException();
         }

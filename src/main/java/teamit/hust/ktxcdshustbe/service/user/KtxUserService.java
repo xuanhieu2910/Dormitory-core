@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.multipart.MultipartFile;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.request.user.FindAllStudentsRequest;
+import teamit.hust.ktxcdshustbe.request.user.UpdateProfileUserRequest;
 import teamit.hust.ktxcdshustbe.response.user.DetailInformationUserResponse;
 import teamit.hust.ktxcdshustbe.response.user.FindAllStudentsResponse;
 import teamit.hust.ktxcdshustbe.response.user.InformationStudentHiredResponse;
@@ -28,4 +29,8 @@ public interface KtxUserService extends UserDetailsService {
     void hasCapability(String servletPath, String method) throws ServletException;
     KtxUser findKtxUserByCodeUser(String codeUser);
     int updateStatusRegisterRoom(Integer userId, Integer statusUserRegisterRoom);
+
+    void updateUserProfile(UpdateProfileUserRequest request);
+
+    KtxUser findKtxUserByUserName(String lowerCase);
 }

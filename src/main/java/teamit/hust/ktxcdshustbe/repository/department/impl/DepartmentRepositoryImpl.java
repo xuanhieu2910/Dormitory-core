@@ -205,7 +205,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
                 "                    from student_register_room studentRegisterRoom  " +
                 "                    where studentRegisterRoom.status in (:statusHoldRoom, :statusPayment)  " +
                 "                             ) studentRegisterRoom  on ro.id_room = studentRegisterRoom.id_room  " +
-                "where de.title = :codeDepartment  " +
+                "where de.code_department = :codeDepartment  " +
                 "group by de.id_department, de.title, de.status ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeDepartment", codeDepartment);

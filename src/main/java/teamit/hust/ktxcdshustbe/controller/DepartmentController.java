@@ -70,7 +70,7 @@ public class DepartmentController {
     }
 
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<?> editDepartment(@RequestBody EditDepartmentRequest request){
         try {
             departmentService.editDepartment(request);

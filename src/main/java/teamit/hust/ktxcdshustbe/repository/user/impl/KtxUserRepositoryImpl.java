@@ -131,11 +131,10 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     }
 
     @Override
-    public Optional<InformationStudentHiredResponse> searchInformationStudentHiredRoomByNumberStudent(String numberStudent) {
+    public Optional<InformationStudentHiredResponse> searchInformationStudentHiredRoomByNumberStudent(String codeStudent) {
         StringBuilder sb = new StringBuilder();
         sb.append("select ktxUser.code_user            , " +
-                "       ktxUser.full_name      fullName, " +
-                "       ktxUser.number_student numberStudent, " +
+                "       ktxUser.value      , " +
                 "       ro.code_room                 , " +
                 "       ro.title               titleRoom, " +
                 "       de.code_department                 , " +
@@ -146,20 +145,19 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "                    on ktxUser.id_ktx_user = studentRoom.id_user " +
                 "         inner join room ro on studentRoom.id_room = ro.id_room " +
                 "         inner join department de on ro.id_department = de.id_department " +
-                "where ktxUser.number_student = :numberStudent ");
+                "where ktxUser.code_user = :codeStudent ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("numberStudent", numberStudent);
+        query.setParameter("codeStudent", codeStudent);
         List<Object[]> result = query.getResultList();
         if (!CollectionUtils.isEmpty(result)){
             for (Object[] obj: result){
                 InformationStudentHiredResponse response = new InformationStudentHiredResponse();
                 response.setCodeUser(ValueUtil.getStringByObject(obj[0]));
-                response.setFullName(ValueUtil.getStringByObject(obj[1]));
-                response.setNumberStudent(ValueUtil.getStringByObject(obj[2]));
-                response.setCodeRoom(ValueUtil.getStringByObject(obj[3]));
-                response.setTitleRoom(ValueUtil.getStringByObject(obj[4]));
-                response.setCodeDepartment(ValueUtil.getStringByObject(obj[5]));
-                response.setTitleDepartment(ValueUtil.getStringByObject(obj[6]));
+                response.setValue(ValueUtil.getStringByObject(obj[1]));
+                response.setCodeRoom(ValueUtil.getStringByObject(obj[2]));
+                response.setTitleRoom(ValueUtil.getStringByObject(obj[3]));
+                response.setCodeDepartment(ValueUtil.getStringByObject(obj[4]));
+                response.setTitleDepartment(ValueUtil.getStringByObject(obj[5]));
                 response.setSex(ValueUtil.getStringByObject(obj[7]));
                 return Optional.of(response);
             }

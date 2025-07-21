@@ -72,7 +72,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public Page<ListHiredRoomStudentResponse> getListHiredRoomStudentResponse(OidcUser principal, StudentListRoomHiredRequest request) {
-        KtxUser ktxUser = ktxUserService.findKtxUserByCodeUser(principal.getPreferredUsername().trim().toLowerCase());
+        KtxUser ktxUser = ktxUserService.findKtxUserByUserName(principal.getPreferredUsername().trim().toLowerCase());
         request.setUserId(ktxUser.getIdKtxUser());
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         return studentRoomRepository.getListHiredRoomStudentResponse(request,pageable);
