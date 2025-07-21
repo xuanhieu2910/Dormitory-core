@@ -16,16 +16,14 @@ public class FindAllDepartmentsResponse {
     private String title;
     @JsonProperty("code_department")
     private String codeDepartment;
-    @JsonProperty("user_name_created")
-    private String userNameCreated;
-    @JsonProperty("full_name_created")
-    private String fullNameCreated;
-    @JsonProperty("user_name_modified")
-    private String userNameModified;
-    @JsonProperty("full_name_modified")
-    private String fullNameModified;
-    @JsonProperty("user_name_managed")
-    private String userNameManaged;
-    @JsonProperty("full_name_managed")
-    private String fullNameManaged;
+    @JsonProperty("depth")
+    private Integer depth;
+    @JsonProperty("code_parent_department")
+    private String codeParentDepartment;
+    @JsonProperty("status")
+    private Integer status;
+    @JsonProperty("path")
+    private String path;
+    @JsonProperty("short_name")
+    private String shortName;
 }

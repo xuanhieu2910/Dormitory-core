@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentByCodeAndVisibleDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindDepartmentStatisticDetailDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
@@ -19,6 +20,7 @@ import teamit.hust.ktxcdshustbe.repository.department.DepartmentRepository;
 import teamit.hust.ktxcdshustbe.request.department.CreateDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.EditDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
+import teamit.hust.ktxcdshustbe.response.department.DepartmentDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentStatisticDetailResponse;
 import teamit.hust.ktxcdshustbe.response.department.FindAllDepartmentsResponse;
 import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
@@ -35,8 +37,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     DepartmentRepository departmentRepository;
-    @Autowired
-    KtxUserService ktxUserService;
 
 
     @Override
@@ -52,12 +52,11 @@ public class DepartmentServiceImpl implements DepartmentService {
            FindAllDepartmentsResponse response = new FindAllDepartmentsResponse();
            response.setTitle(dto.getTitle());
            response.setCodeDepartment(dto.getCodeDepartment());
-           response.setUserNameCreated(dto.getUserNameCreated());
-           response.setFullNameCreated(dto.getFullNameCreated());
-           response.setUserNameModified(dto.getUserNameModified());
-           response.setFullNameModified(dto.getFullNameModified());
-           response.setUserNameManaged(dto.getUserNameManaged());
-           response.setFullNameManaged(dto.getFullNameManaged());
+           response.setStatus(dto.getStatus());
+           response.setDepth(dto.getDepth());
+           response.setCodeParentDepartment(dto.getCodeParentDepartment());
+           response.setPath(dto.getPath());
+           response.setShortName(dto.getShortName());
            responses.add(response);
        }
        return responses;
@@ -123,33 +122,41 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void editDepartment(EditDepartmentRequest request) {
-        verifyEditDepartmentRequest(request);
-        Optional<Department> department = departmentRepository.findDepartmentByCode(request.getCodeDepartment());
-        if (department.isEmpty()){
-            throw new NotFoundException();
+        Department department = verifyEditDepartmentRequest(request);
+        departmentRepository.save(editValueDepartment(department, request));
+    }
+
+    private Department editValueDepartment(Department department, EditDepartmentRequest request) {
+        Long currentTime = new Date().getTime();
+        KtxUser ktxUser =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (StringUtils.isNotBlank(request.getTitle())){
+            department.setTitle(request.getTitle());
         }
-        if (!request.getTitle().equals(department.get().getTitle())) {
-            Optional<Department> departmentByTitle = departmentRepository.findDepartmentByTitle(request.getTitle().trim());
-            if (departmentByTitle.isPresent()) {
-                throw new ExitsObjectException();
-            } else {
-                KtxUser userManaged = ktxUserService.findKtxUserByCodeUser(request.getCodeUserManaged());
-                KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                department.get().setTitle(request.getTitle());
-                department.get().setStatus(request.getStatus());
-                department.get().setTimeModified(new Date().getTime());
-                department.get().setIdUserModified(ktxUser.getIdKtxUser());
-                department.get().setIdUserManaged(userManaged.getIdKtxUser());
-                departmentRepository.save(department.get());
+        if (ObjectUtils.isNotEmpty(request.getStatus())){
+            department.setStatus(request.getStatus());
+        }
+        department.setTimeModified(currentTime);
+        department.setIdUserModified(ktxUser.getIdKtxUser());
+        if (StringUtils.isNotBlank(request.getShortName())){
+            department.setShortName(request.getShortName());
+        }
+        if (StringUtils.isNotBlank(request.getDescription())){
+            department.setDescription(request.getDescription());
+        }
+        if (ObjectUtils.isNotEmpty(request.getCodeParentDepartment())){
+            Optional<Department> departmentParentOptional = departmentRepository.findDepartmentByCode(request.getCodeParentDepartment());
+            if (departmentParentOptional.isEmpty()){
+                throw new NotFoundException();
             }
+            department.setParent(departmentParentOptional.get().getIdDepartment());
         }
+        return department;
     }
 
     @Override
     public void createDepartment(CreateDepartmentRequest request) {
         verifyCreateDepartmentRequest(request);
-        KtxUser ktxUser = ktxUserService.findKtxUserByCodeUser(request.getCodeUserManaged());
-        Department department = initializeDepartment(request, ktxUser);
+        Department department = initializeDepartment(request);
         departmentRepository.save(department);
     }
 
@@ -162,23 +169,73 @@ public class DepartmentServiceImpl implements DepartmentService {
         return department.get();
     }
 
-    private Department initializeDepartment(CreateDepartmentRequest request, KtxUser ktxUserManager) {
+    @Override
+    public List<Integer> findIdsStructureDepartment(Integer idDepartment) {
+        List<FindAllDepartmentByCodeAndVisibleDto> dtos = findAllStructureDepartmentByIdDepartment(idDepartment);
+        List<Integer> idsStructureDepartment = new ArrayList<>();
+        for (FindAllDepartmentByCodeAndVisibleDto dto : dtos){
+            idsStructureDepartment.add(dto.getIdDepartment());
+        }
+        return idsStructureDepartment;
+    }
+
+    @Override
+    public void deleteDepartmentByCodeDepartment(String codeDepartment) {
+        Optional<Department> departmentOptional = departmentRepository.findDepartmentByCode(codeDepartment);
+        if (departmentOptional.isEmpty()){
+            throw new NotFoundException();
+        }
+        if (departmentOptional.get().getParent() == null){
+            throw new ExitsObjectException();
+        }
+        if (departmentRepository.isExitsRoomByIdDepartment(departmentOptional.get().getIdDepartment())){
+            throw new ExitsObjectException();
+        }
+        departmentRepository.delete(departmentOptional.get());
+    }
+
+    @Override
+    public DepartmentDetailsResponse findDetailsDepartmentByCodeDepartment(String codeDepartment) {
+        Optional<DepartmentDetailsResponse> departmentOptional = departmentRepository.findDepartmentDetailsByCode(codeDepartment);
+        if (departmentOptional.isEmpty()){
+            throw new NotFoundException();
+        }
+        return departmentOptional.get();
+    }
+
+    private List<FindAllDepartmentByCodeAndVisibleDto> findAllStructureDepartmentByIdDepartment(Integer idDepartment) {
+        return departmentRepository.findAllStructDepartmentByIdDepartment(idDepartment);
+    }
+
+    private Department initializeDepartment(CreateDepartmentRequest request) {
         Long currentTime = new Date().getTime();
         KtxUser ktxUser =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Department department = new Department();
-        department.setTitle(request.getTitleDepartment());
+        department.setTitle(request.getTitle());
         department.setStatus(request.getStatus());
-        department.setCodeDepartment(UUID.nameUUIDFromBytes(request.getTitleDepartment().getBytes()).toString());
+        department.setCodeDepartment(UUID.nameUUIDFromBytes(request.getTitle().getBytes()).toString());
         department.setTimeCreated(currentTime);
         department.setTimeModified(currentTime);
         department.setIdUserCreated(ktxUser.getIdKtxUser());
         department.setIdUserModified(ktxUser.getIdKtxUser());
-        department.setIdUserManaged(ktxUserManager.getIdKtxUser());
+        if (StringUtils.isNotBlank(request.getShortName())){
+            department.setShortName(request.getShortName());
+        }
+        if (StringUtils.isNotBlank(request.getDescription())){
+            department.setDescription(request.getDescription());
+        }
+        if (ObjectUtils.isNotEmpty(request.getCodeParentDepartment())){
+            Optional<Department> departmentParentOptional = departmentRepository.findDepartmentByCode(request.getCodeParentDepartment());
+            if (departmentParentOptional.isEmpty()){
+                throw new NotFoundException();
+            }
+            department.setParent(departmentParentOptional.get().getIdDepartment());
+        }
         return department;
     }
 
     private void verifyCreateDepartmentRequest(CreateDepartmentRequest request) {
-        if (StringUtils.isBlank(request.getTitleDepartment()) || ObjectUtils.isEmpty(request.getStatus())){
+        if (StringUtils.isBlank(request.getTitle()) || ObjectUtils.isEmpty(request.getStatus())){
             throw new ValidParametersException();
         }
         if (!request.getStatus().equals(Constants.STATUS_DEPARTMENT_IS_ACTIVE) &&
@@ -186,13 +243,13 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new ValidParametersException();
         }
         Optional<Department> departmentByTitle =
-                departmentRepository.findDepartmentByTitle(request.getTitleDepartment().trim());
+                departmentRepository.findDepartmentByTitle(request.getTitle().trim());
         if (departmentByTitle.isPresent()) {
             throw new ExitsObjectException();
         }
     }
 
-    private void verifyEditDepartmentRequest(EditDepartmentRequest request) {
+    private Department verifyEditDepartmentRequest(EditDepartmentRequest request) {
         if (StringUtils.isBlank(request.getCodeDepartment()) || StringUtils.isBlank(request.getTitle())
         || ObjectUtils.isEmpty(request.getStatus())){
             throw new ValidParametersException();
@@ -201,6 +258,21 @@ public class DepartmentServiceImpl implements DepartmentService {
                 !request.getStatus().equals(Constants.STATUS_DEPARTMENT_IN_ACTIVE)){
             throw new ValidParametersException();
         }
+        Optional<Department> departmentOptional = departmentRepository.findDepartmentByCode(request.getCodeDepartment());
+        if (departmentOptional.isEmpty()){
+            throw new NotFoundException();
+        }
+        if ( (departmentOptional.get().getTitle() != null && StringUtils.isNotBlank(request.getTitle()) &&
+                departmentOptional.get().getTitle().equals(request.getTitle())) ||
+                (departmentOptional.get().getShortName() != null && StringUtils.isNotBlank(request.getShortName()) &&
+                        !departmentOptional.get().getShortName().equals(request.getShortName()))) {
+            if (departmentRepository.checkExitsDepartmentByTitleOrShortName(request.getTitle(),
+                    request.getShortName())) {
+                throw new ExitsObjectException();
+            }
+        }
+
+        return departmentOptional.get();
     }
 
 }

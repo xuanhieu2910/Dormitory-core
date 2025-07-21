@@ -28,8 +28,12 @@ public class Department {
     private Integer idUserCreated;
     @Column(name = "id_user_modified")
     private Integer idUserModified;
-    @Column(name = "id_user_managed")
-    private Integer idUserManaged;
     @Column(name = "code_department")
     private String codeDepartment;
+    @Column(name = "parent")
+    private Integer parent;
+    @Column(name = "description")
+    private String description;
+    @Column(name = "short_name")
+    private String shortName;
 }

@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import teamit.hust.ktxcdshustbe.dto.userRole.DepartmentUserRoleDto;
 import teamit.hust.ktxcdshustbe.entity.*;
 import teamit.hust.ktxcdshustbe.enums.OAuth2Factory;
 import teamit.hust.ktxcdshustbe.enums.RolePattern;
@@ -25,6 +26,7 @@ import teamit.hust.ktxcdshustbe.request.user.FindAllStudentsRequest;
 import teamit.hust.ktxcdshustbe.response.user.DetailInformationUserResponse;
 import teamit.hust.ktxcdshustbe.response.user.FindAllStudentsResponse;
 import teamit.hust.ktxcdshustbe.response.user.InformationStudentHiredResponse;
+import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
 import teamit.hust.ktxcdshustbe.service.role.RoleService;
 import teamit.hust.ktxcdshustbe.service.room.RoomService;
 import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
@@ -45,11 +47,6 @@ public class KtxUserServiceImpl implements KtxUserService {
 
     @Autowired
     KtxUserRepository ktxUserRepository;
-    @Autowired
-    StudentRegisterRoomService studentRegisterRoomService;
-    @Lazy
-    @Autowired
-    RoomService roomService;
     @Lazy
     @Autowired
     StudentRoomService studentRoomService;
@@ -57,6 +54,8 @@ public class KtxUserServiceImpl implements KtxUserService {
     RoleService roleService;
     @Autowired
     UserRoleService userRoleService;
+    @Autowired
+    DepartmentService departmentService;
 
 
     @Override
@@ -68,7 +67,15 @@ public class KtxUserServiceImpl implements KtxUserService {
         if (!qldtUser.get().isAccountNonLocked()){
             throw new NotFoundException();
         }
+        setIdsDepartment(qldtUser.get());
         return qldtUser.get();
+    }
+
+    private void setIdsDepartment(KtxUser ktxUser) {
+        DepartmentUserRoleDto departmentUserRoleDto = userRoleService.getDepartmentCurrentUserRoleByCodeUser(ktxUser.getCodeUser());
+        List<Integer> idsDepartment = departmentService.findIdsStructureDepartment(departmentUserRoleDto.getIdDepartment());
+        ktxUser.setListDepartmentCurrent(idsDepartment);
+        ktxUser.setIdDepartmentCurrent(departmentUserRoleDto.getIdDepartment());
     }
 
 
@@ -132,7 +139,8 @@ public class KtxUserServiceImpl implements KtxUserService {
     private DetailInformationUserResponse convertToDetailInformationUserResponse(KtxUser userDetails) {
         DetailInformationUserResponse response = new DetailInformationUserResponse();
         response.setCodeUser(userDetails.getCodeUser());
-        response.setSex(userDetails.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
+        response.setValue(userDetails.getValue());
+//        response.setSex(userDetails.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
         return response;
     }
 

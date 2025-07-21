@@ -144,7 +144,15 @@ public class Constants {
     public final static Integer STATUS_STUDENT_HIRING_ROOM = 1;
     public final static Integer STATUS_STUDENT_REFUND_ROOM = -1;
 
-
-
     /*-----------------------------------------------------*/
+
+    /*----------------------------------------------------*/
+    /**
+     * Constant Department
+     * */
+    public static final Integer DEPARTMENT_ACTIVE_STATUS = 1;
+    public static final Integer DEPARTMENT_UN_ACTIVE_STATUS = -1;
+    /*----------------------------------------------------*/
+
+
 }

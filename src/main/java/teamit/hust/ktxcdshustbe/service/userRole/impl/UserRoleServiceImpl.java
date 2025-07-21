@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import teamit.hust.ktxcdshustbe.dto.userRole.DepartmentUserRoleDto;
 import teamit.hust.ktxcdshustbe.dto.userRole.UserRoleDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Role;
@@ -31,8 +32,6 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Autowired
     UserRoleRepository userRoleRepository;
-    @Autowired
-    RoleRepository roleRepository;
     @Autowired
     KtxUserRepository qldtUserRepository;
 
@@ -130,6 +129,11 @@ public class UserRoleServiceImpl implements UserRoleService {
         if (!CollectionUtils.isEmpty(userRoles)) {
             userRoleRepository.deleteAll(userRoles);
         }
+    }
+
+    @Override
+    public DepartmentUserRoleDto getDepartmentCurrentUserRoleByCodeUser(String codeUser) {
+        return userRoleRepository.getDepartmentCurrentUserRoleDtoByCodeUser(codeUser);
     }
 
     private void storeUserRole(AddNewRoleDepartmentUserRequest request, KtxUser user) {

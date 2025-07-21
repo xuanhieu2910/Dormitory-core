@@ -1,5 +1,6 @@
 package teamit.hust.ktxcdshustbe.service.userRole;
 
+import teamit.hust.ktxcdshustbe.dto.userRole.DepartmentUserRoleDto;
 import teamit.hust.ktxcdshustbe.dto.userRole.UserRoleDto;
 import teamit.hust.ktxcdshustbe.entity.Role;
 import teamit.hust.ktxcdshustbe.entity.UserRole;
@@ -29,4 +30,6 @@ public interface UserRoleService {
     void createNewUserRole(AddNewRoleDepartmentUserRequest request);
 
     void deleteUserRoleByIdRole(Integer idRole);
+
+    DepartmentUserRoleDto getDepartmentCurrentUserRoleByCodeUser(String codeUser);
 }

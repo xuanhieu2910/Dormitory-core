@@ -27,7 +27,7 @@ public class DepartmentController {
     @Autowired
     DepartmentService departmentService;
 
-    @GetMapping
+    @GetMapping("/find-all")
     public ResponseEntity<?> getAllDepartment(@And({
             @Spec(path = "page", params = "page", spec = Like.class),
             @Spec(path = "size", params = "size", spec = Like.class),
@@ -70,7 +70,7 @@ public class DepartmentController {
     }
 
 
-    @PostMapping("/edit")
+    @PostMapping("/update")
     public ResponseEntity<?> editDepartment(@RequestBody EditDepartmentRequest request){
         try {
             departmentService.editDepartment(request);
@@ -87,7 +87,7 @@ public class DepartmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> editDepartment(@RequestBody CreateDepartmentRequest request){
+    public ResponseEntity<?> createDepartment(@RequestBody CreateDepartmentRequest request){
         try {
             departmentService.createDepartment(request);
             return ApiResponseDto.createdWithMessage("Create department success!", HttpStatus.OK);
@@ -101,5 +101,28 @@ public class DepartmentController {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
+    @DeleteMapping
+    public ResponseEntity<?> createDepartment(@RequestParam("code-department") String codeDepartment){
+        try {
+            departmentService.deleteDepartmentByCodeDepartment(codeDepartment);
+            return ApiResponseDto.createdWithMessage("delete department success!", HttpStatus.OK);
+        } catch (NotFoundException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (ExitsObjectException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }  catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/details")
+    public ResponseEntity<?> findDetailsAdmissionProgram(@RequestParam("code-department")String codeDepartment){
+        try {
+            return ApiResponseDto.createdWithState(departmentService.findDetailsDepartmentByCodeDepartment(codeDepartment),
+                    "Find details department success!", HttpStatus.OK);
+        }catch (NotFoundException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

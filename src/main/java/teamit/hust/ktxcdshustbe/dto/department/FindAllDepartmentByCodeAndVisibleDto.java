@@ -1,7 +1,5 @@
 package teamit.hust.ktxcdshustbe.dto.department;
 
-import jakarta.persistence.Column;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,18 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class FindAllDepartmentDto {
+public class FindAllDepartmentByCodeAndVisibleDto {
     private Integer idDepartment;
-    private String title;
+    private String name;
     private String codeDepartment;
-    private String shortName;
-    private String description;
     private Integer parent;
     private String timeCreated;
     private String timeModified;
     private Integer depth;
     private Integer status;
     private String path;
-    private String codeParentDepartment;
 }

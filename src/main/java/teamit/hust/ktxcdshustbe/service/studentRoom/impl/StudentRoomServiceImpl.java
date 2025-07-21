@@ -80,6 +80,8 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public Page<ListStudentHiredRoomResponse> getListStudentHiredRoomResponse(ListStudentHiredRoomRequest request) {
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        request.setListDepartmentOriginal(ktxUser.getListDepartmentCurrent());
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         Page<FindAllStudentHiredRoomDto> findAllStudentHiredRoomDtos = studentRoomRepository.getListStudentHiredRoomResponse(request, pageable);
         return new PageImpl<>(convertFindAllStudentHiredRoom(findAllStudentHiredRoomDtos.stream().collect(Collectors.toList())), pageable,findAllStudentHiredRoomDtos.getTotalElements());
@@ -91,16 +93,14 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             ListStudentHiredRoomResponse response = new ListStudentHiredRoomResponse();
             response.setIdStudentRoom(findAllStudentHiredRoomDto.getIdStudentRoom());
             response.setCodeUser(findAllStudentHiredRoomDto.getCodeUser());
-            response.setFullName(findAllStudentHiredRoomDto.getFullName());
-            response.setNumberStudent(findAllStudentHiredRoomDto.getNumberStudent());
-            response.setPhoneNumber(findAllStudentHiredRoomDto.getPhoneNumber());
+            response.setValueUser(findAllStudentHiredRoomDto.getValueUser());
             response.setTimeHired(findAllStudentHiredRoomDto.getTimeHired());
             response.setCodeDepartment(findAllStudentHiredRoomDto.getCodeDepartment());
             response.setTitleDepartment(findAllStudentHiredRoomDto.getTitleDepartment());
             response.setCodeRoom(findAllStudentHiredRoomDto.getCodeRoom());
             response.setTitleRoom(findAllStudentHiredRoomDto.getTitleRoom());
             response.setCodeUserModified(findAllStudentHiredRoomDto.getCodeUserModified());
-            response.setUserModified(findAllStudentHiredRoomDto.getUserModified());
+            response.setValueUserModified(findAllStudentHiredRoomDto.getValueUserModified());
             responses.add(response);
         }
         return responses;

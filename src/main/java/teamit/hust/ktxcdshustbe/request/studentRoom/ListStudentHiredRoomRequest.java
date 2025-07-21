@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import teamit.hust.ktxcdshustbe.request.RequestPageBase;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -18,11 +20,10 @@ public class ListStudentHiredRoomRequest extends RequestPageBase {
     private Integer codeRoom;
     @JsonProperty("codeSemester")
     private Integer codeSemester;
-    @JsonProperty("yearGrade")
-    private Integer yearGrade;
     @JsonProperty("timeStarted")
     private String timeStarted;
     @JsonProperty("timeEnded")
     private String timeEnded;
+    private List<Integer> listDepartmentOriginal;
 
 }
