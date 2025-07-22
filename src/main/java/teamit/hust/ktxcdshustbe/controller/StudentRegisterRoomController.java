@@ -39,24 +39,22 @@ public class StudentRegisterRoomController {
     StudentRegisterRoomService studentRegisterRoomService;
 
 
-    @PostMapping("/declare-information")
-    public ResponseEntity<?> declareInformation(@AuthenticationPrincipal OidcUser principal,
-                                                @RequestBody DeclareInformationRequest request){
-        try {
-            studentRegisterRoomService.declareInformationStudent(principal, request);
-            return ApiResponseDto.createdWithMessage("Declare information student success!", HttpStatus.OK);
-        }catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
+//    @PostMapping("/declare-information")
+//    public ResponseEntity<?> declareInformation(@AuthenticationPrincipal OidcUser principal,
+//                                                @RequestBody DeclareInformationRequest request){
+//        try {
+//            studentRegisterRoomService.declareInformationStudent(principal, request);
+//            return ApiResponseDto.createdWithMessage("Declare information student success!", HttpStatus.OK);
+//        }catch (Exception e){
+//            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @PostMapping("/register-room")
-    public ResponseEntity<?> createRegisterRoom(@AuthenticationPrincipal OidcUser principal,
-                                                @RequestBody CreateRegisterRoomRequest request){
+    public ResponseEntity<?> createRegisterRoom(@RequestBody CreateRegisterRoomRequest request){
         try {
-            StudentRegisterRoom response = studentRegisterRoomService.createStudentRegisterRoom(request,principal);
-            return ApiResponseDto.createdWithState(response,"Register room success!", HttpStatus.OK);
+//            StudentRegisterRoom response = studentRegisterRoomService.createStudentRegisterRoom(request);
+            return ApiResponseDto.createdWithState(null,"Register room success!", HttpStatus.OK);
         } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ExitsObjectException e){

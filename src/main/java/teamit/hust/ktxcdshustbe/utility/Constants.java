@@ -154,5 +154,12 @@ public class Constants {
     public static final Integer DEPARTMENT_UN_ACTIVE_STATUS = -1;
     /*----------------------------------------------------*/
 
+    /**
+     * Constant Batches Registration
+     * */
+    public static final Integer STATUS_BATCHES_REGISTRATION_NOT_YET_OPEN = -1;
+    public static final Integer STATUS_BATCHES_REGISTRATION_OPENING = 1;
+    public static final Integer STATUS_BATCHES_REGISTRATION_CLOSED = 1;
+    /*----------------------------------------------------*/
 
 }

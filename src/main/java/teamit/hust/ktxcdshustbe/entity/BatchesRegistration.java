@@ -18,6 +18,8 @@ public class BatchesRegistration {
     private String title;
     @Column(name = "code_batches_registration")
     private String codeBatchesRegistration;
+    @Column(name = "id_time_hired")
+    private Integer idTimeHired;
     @Column(name = "id_semester")
     private Integer idSemester;
     @Column(name = "description")
@@ -28,4 +30,12 @@ public class BatchesRegistration {
     private Long timeCreated;
     @Column(name = "time_modified")
     private Long timeModified;
+    @Column(name = "id_user_created")
+    private Integer idUserCreated;
+    @Column(name = "id_user_modified")
+    private Integer idUserModified;
+    @Column(name = "start_time")
+    private Long startTime;
+    @Column(name = "end_time")
+    private Long endTime;
 }
