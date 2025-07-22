@@ -9,11 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.CollectionUtils;
+import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentByCodeAndVisibleDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindDepartmentStatisticDetailDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.repository.department.DepartmentRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
+import teamit.hust.ktxcdshustbe.response.department.DepartmentDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentStatisticDetailResponse;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
@@ -31,16 +33,35 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
     @Override
     public Page<FindAllDepartmentDto> findAllDepartment(Pageable pageable, FindAllDepartmentRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select dep.id_department, dep.title, dep.time_created,  " +
-                "       dep.time_modified, dep.status, dep.code_department,  " +
-                "       ku_created.user_name, ku_created.full_name,  " +
-                "       ku_modified.user_name, ku_modified.full_name,  " +
-                "       ku_manager.user_name, ku_manager.full_name  " +
-                "from department dep  " +
-                "    inner join ktx_user ku_created on dep.id_user_created = ku_created.id_ktx_user  " +
-                "    inner join ktx_user ku_modified on dep.id_user_modified = ku_modified.id_ktx_user  " +
-                "    inner join ktx_user ku_manager on dep.id_user_managed = ku_manager.id_ktx_user  " +
-                "where 1 = 1 ");
+        sb.append("WITH RECURSIVE cte_department as ( " +
+                "    select department.id_department,department.title, " +
+                "           department.code_department, department.short_name, " +
+                "           department.description, department.parent, " +
+                "            department.time_created,department.status, " +
+                "           department.time_modified, " +
+                "           1 as depth,   CAST(department.id_department as NCHAR ) as path ," +
+                "       NULL AS code_parent_department " +
+                "    from department " +
+                "    where department.parent is null " +
+                "    union all " +
+                "    select department.id_department,department.title, " +
+                "           department.code_department, department.short_name, " +
+                "           department.description, department.parent, " +
+                "           department.time_created,department.status, " +
+                "           department.time_modified, " +
+                "           cte.depth + 1 as depth, " +
+                "concat_ws('/',cte.path,CAST(department.id_department as NCHAR)) as path," +
+                "  cte.code_department AS code_parent_department " +
+                "from department" +
+                "             INNER JOIN cte_department cte ON department.parent = cte.id_department " +
+                ") " +
+                "select cte.id_department, cte.title,  " +
+                "       cte.code_department, cte.description,  " +
+                "       cte.parent,  " +
+                "        cte.time_created, cte.time_modified,  " +
+                "       cte.depth, cte.status, cte.path , cte.short_name,cte.code_parent_department " +
+                "from cte_department cte  " +
+                "where 1 = 1 and cte.status = :status ");
         setConditionFindAllDepartment(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartment(request, query);
@@ -52,16 +73,16 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
                 FindAllDepartmentDto departmentDto = new FindAllDepartmentDto();
                 departmentDto.setIdDepartment(ValueUtil.getIntegerByObject(obj[0]));
                 departmentDto.setTitle(ValueUtil.getStringByObject(obj[1]));
-                departmentDto.setTimeCreated(ValueUtil.getLongByObject(obj[2]));
-                departmentDto.setTimeModified(ValueUtil.getLongByObject(obj[3]));
-                departmentDto.setStatus(ValueUtil.getIntegerByObject(obj[4]));
-                departmentDto.setCodeDepartment(ValueUtil.getStringByObject(obj[5]));
-                departmentDto.setUserNameCreated(ValueUtil.getStringByObject(obj[6]));
-                departmentDto.setFullNameCreated(ValueUtil.getStringByObject(obj[7]));
-                departmentDto.setUserNameModified(ValueUtil.getStringByObject(obj[8]));
-                departmentDto.setFullNameModified(ValueUtil.getStringByObject(obj[9]));
-                departmentDto.setUserNameManaged(ValueUtil.getStringByObject(obj[10]));
-                departmentDto.setFullNameManaged(ValueUtil.getStringByObject(obj[11]));
+                departmentDto.setCodeDepartment(ValueUtil.getStringByObject(obj[2]));
+                departmentDto.setDescription(ValueUtil.getStringByObject(obj[3]));
+                departmentDto.setParent(ValueUtil.getIntegerByObject(obj[4]));
+                departmentDto.setTimeCreated(ValueUtil.getStringByObject(obj[5]));
+                departmentDto.setTimeModified(ValueUtil.getStringByObject(obj[6]));
+                departmentDto.setDepth(ValueUtil.getIntegerByObject(obj[7]));
+                departmentDto.setStatus(ValueUtil.getIntegerByObject(obj[8]));
+                departmentDto.setPath(ValueUtil.getStringByObject(obj[9]));
+                departmentDto.setShortName(ValueUtil.getStringByObject(obj[10]));
+                departmentDto.setCodeParentDepartment(ValueUtil.getStringByObject(obj[11]));
                 departmentDtos.add(departmentDto);
             }
         }
@@ -70,12 +91,31 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
 
     private long countFindAllDepartment(FindAllDepartmentRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select count(0) " +
-                "from department dep  " +
-                "    inner join ktx_user ku_created on dep.id_user_created = ku_created.id_ktx_user  " +
-                "    inner join ktx_user ku_modified on dep.id_user_modified = ku_modified.id_ktx_user  " +
-                "    inner join ktx_user ku_manager on dep.id_user_managed = ku_manager.id_ktx_user  " +
-                "where 1 = 1 ");
+        sb.append("WITH RECURSIVE cte_department as ( " +
+                "    select department.id_department,department.title, " +
+                "           department.code_department, department.short_name, " +
+                "           department.description, department.parent, " +
+                "            department.time_created,department.status, " +
+                "           department.time_modified, " +
+                "           1 as depth,   CAST(department.id_department as NCHAR ) as path ," +
+                "       NULL AS code_parent_department " +
+                "    from department " +
+                "    where department.parent is null " +
+                "    union all " +
+                "    select department.id_department,department.title, " +
+                "           department.code_department, department.short_name, " +
+                "           department.description, department.parent, " +
+                "           department.time_created,department.status, " +
+                "           department.time_modified, " +
+                "           cte.depth + 1 as depth, " +
+                "concat_ws('/',cte.path,CAST(department.id_department as NCHAR)) as path," +
+                "  cte.code_department AS code_parent_department " +
+                "from department" +
+                "             INNER JOIN cte_department cte ON department.parent = cte.id_department " +
+                ") " +
+                "    select count(cte.id_department) count  " +
+                "from cte_department cte  " +
+                "where 1 = 1 and cte.status = :status ");
         setConditionFindAllDepartment(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartment(request, query);
@@ -83,6 +123,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
     }
 
     private void setParameterFindAllDepartment(FindAllDepartmentRequest request, Query query) {
+        query.setParameter("status", Constants.DEPARTMENT_ACTIVE_STATUS);
         if (StringUtils.isNotBlank(request.getTitleDepartment())){
             query.setParameter("titleDepartment", request.getTitleDepartment());
         }
@@ -98,7 +139,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         if (ObjectUtils.isNotEmpty(request.getStatus())){
             sb.append(" and dep.status = :status ");
         }
-        sb.append(" order by dep.id_department desc  ");
+        sb.append(" order by path  ");
     }
 
 
@@ -107,7 +148,8 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select de.id_department, de.title, de.time_created, " +
                 "       de.time_modified, de.status, de.id_user_created, " +
-                "       de.id_user_modified, de.id_user_managed, de.code_department " +
+                "       de.id_user_modified, de.code_department, de.parent," +
+                "       de.description,de.short_name " +
                 "from department de " +
                 "where de.id_department = :departmentId ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -126,8 +168,8 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select de.id_department, de.title, de.time_created, " +
                 "       de.time_modified, de.status, de.id_user_created, " +
-                "       de.id_user_modified, de.id_user_managed, " +
-                "       de.code_department " +
+                "       de.id_user_modified, de.code_department, " +
+                "       de.parent,de.description,de.short_name " +
                 "from department de   " +
                 "where de.title = :titleDepartment  ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -163,7 +205,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
                 "                    from student_register_room studentRegisterRoom  " +
                 "                    where studentRegisterRoom.status in (:statusHoldRoom, :statusPayment)  " +
                 "                             ) studentRegisterRoom  on ro.id_room = studentRegisterRoom.id_room  " +
-                "where de.title = :codeDepartment  " +
+                "where de.code_department = :codeDepartment  " +
                 "group by de.id_department, de.title, de.status ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeDepartment", codeDepartment);
@@ -194,7 +236,8 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select de.id_department, de.title, de.time_created,  " +
                 "       de.time_modified, de.status, de.id_user_created,  " +
-                "       de.id_user_modified, de.id_user_managed, de.code_department  " +
+                "       de.id_user_modified, de.code_department, de.parent," +
+                "       de.description,de.short_name " +
                 "from department de  " +
                 "where de.code_department = :codeDepartment ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -203,6 +246,127 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         if (!CollectionUtils.isEmpty(result)){
             for (Object[] obj : result){
                 return Optional.of(writeDataDepartment(obj));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<FindAllDepartmentByCodeAndVisibleDto> findAllStructDepartmentByIdDepartment(Integer idDepartment) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" WITH RECURSIVE cte_department as (     " +
+                "       select department.id_department,department.title,     " +
+                "              department.code_department,    " +
+                "               department.parent,     " +
+                "               department.time_created,department.status,     " +
+                "              department.time_modified,     " +
+                "              1 as depth,   CAST(department.id_department as NCHAR ) as path     " +
+                "       from department     " +
+                "       where department.id_department = :idDepartment  " +
+                "       union all     " +
+                "       select department.id_department,department.title,     " +
+                "              department.code_department, department.parent,     " +
+                "              department.time_created,department.status,     " +
+                "              department.time_modified,     " +
+                "              cte.depth + 1 as depth,     " +
+                "   concat_ws('/',cte.path,CAST(department.id_department as NCHAR)) as path     " +
+                "   from department    " +
+                "                INNER JOIN cte_department cte ON department.parent = cte.id_department     " +
+                "   )     " +
+                "select cte.id_department, cte.title,  " +
+                "       cte.code_department,  " +
+                "       cte.parent,  " +
+                "       cte.time_created, cte.time_modified,  " +
+                "       cte.depth, cte.status, cte.path  " +
+                "from cte_department cte  " +
+                "where cte.status = :status ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idDepartment", idDepartment);
+        query.setParameter("status", Constants.DEPARTMENT_ACTIVE_STATUS);
+        List<Object[]> result = query.getResultList();
+        List<FindAllDepartmentByCodeAndVisibleDto> dtos = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(result)) {
+            for (Object[] obj: result){
+                FindAllDepartmentByCodeAndVisibleDto dto= new FindAllDepartmentByCodeAndVisibleDto();
+                dto.setIdDepartment(ValueUtil.getIntegerByObject(obj[0]));
+                dto.setName(ValueUtil.getStringByObject(obj[1]));
+                dto.setCodeDepartment(ValueUtil.getStringByObject(obj[2]));
+                dto.setParent(ValueUtil.getIntegerByObject(obj[3]));
+                dto.setTimeCreated(ValueUtil.getStringByObject(obj[4]));
+                dto.setTimeModified(ValueUtil.getStringByObject(obj[5]));
+                dto.setDepth(ValueUtil.getIntegerByObject(obj[6]));
+                dto.setStatus(ValueUtil.getIntegerByObject(obj[7]));
+                dto.setPath(ValueUtil.getStringByObject(obj[8]));
+                dtos.add(dto);
+            }
+        }
+        return dtos;
+    }
+
+    @Override
+    public boolean checkExitsDepartmentByTitleOrShortName(String title, String shortName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select * " +
+                "from department de " +
+                "where 1 = 1 ");
+        if (StringUtils.isNotBlank(title)){
+            sb.append(" or de.title = :title ");
+        }
+
+        if (StringUtils.isNotBlank(shortName)){
+            sb.append(" or de.short_name = :shortName ");
+        }
+        Query query = entityManager.createNativeQuery(sb.toString());
+        if (StringUtils.isNotBlank(title)){
+            query.setParameter("title", title);
+        }
+        if (StringUtils.isNotBlank(shortName)){
+            query.setParameter("shortName", shortName);
+        }
+        List<Object[]> result = query.getResultList();
+        return CollectionUtils.isEmpty(result);
+    }
+
+    @Override
+    public boolean isExitsRoomByIdDepartment(Integer idDepartment) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select room.id_room " +
+                "from department de " +
+                "    inner join room on de.id_department = room.id_department " +
+                "where de.id_department = :idDepartment LIMIT 1 ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idDepartment", idDepartment);
+        return !CollectionUtils.isEmpty(query.getResultList());
+    }
+
+    @Override
+    public Optional<DepartmentDetailsResponse> findDepartmentDetailsByCode(String codeDepartment) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select de.id_department, de.title, de.code_department, " +
+                "       de.short_name, de.description, de.parent,de.status,de.id_user_created, " +
+                "       de.id_user_modified,de.time_created, de.time_modified,de_parent.name_department,de_parent.code_department " +
+                "from department de left join department de_parent on de_parent.id_department =de.id_parent " +
+                "where de.code_department = :codeDepartment ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("codeDepartment", codeDepartment);
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)) {
+            for (Object[] obj : result) {
+                DepartmentDetailsResponse department = new DepartmentDetailsResponse();
+                department.setIdDepartment(ValueUtil.getIntegerByObject(obj[0]));
+                department.setTitle(ValueUtil.getStringByObject(obj[1]));
+                department.setCodeDepartment(ValueUtil.getStringByObject(obj[2]));
+                department.setShortname(ValueUtil.getStringByObject(obj[3]));
+                department.setDescription(ValueUtil.getStringByObject(obj[4]));
+                department.setIdParent(ValueUtil.getIntegerByObject(obj[5]));
+                department.setStatus(ValueUtil.getIntegerByObject(obj[6]));
+                department.setIdUserCreated(ValueUtil.getIntegerByObject(obj[7]));
+                department.setIdUserModified(ValueUtil.getIntegerByObject(obj[8]));
+                department.setTimeCreated(ValueUtil.getStringByObject(obj[9]));
+                department.setTimeModified(ValueUtil.getStringByObject(obj[10]));
+                department.setNameParent(ValueUtil.getStringByObject(obj[11]));
+                department.setCodeDepartment(ValueUtil.getStringByObject(obj[12]));
+                return Optional.of(department);
             }
         }
         return Optional.empty();
@@ -217,8 +381,10 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         department.setStatus(ValueUtil.getIntegerByObject(obj[4]));
         department.setIdUserCreated(ValueUtil.getIntegerByObject(obj[5]));
         department.setIdUserModified(ValueUtil.getIntegerByObject(obj[6]));
-        department.setIdUserManaged(ValueUtil.getIntegerByObject(obj[7]));
-        department.setCodeDepartment(ValueUtil.getStringByObject(obj[8]));
+        department.setCodeDepartment(ValueUtil.getStringByObject(obj[7]));
+        department.setParent(ValueUtil.getIntegerByObject(obj[8]));
+        department.setDescription(ValueUtil.getStringByObject(obj[9]));
+        department.setShortName(ValueUtil.getStringByObject(obj[10]));
         return department;
     }
 }

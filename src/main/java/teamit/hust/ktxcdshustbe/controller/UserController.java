@@ -20,9 +20,9 @@ import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.user.FindAllStudentsRequest;
 import teamit.hust.ktxcdshustbe.request.user.StudentListRoomHiredRequest;
+import teamit.hust.ktxcdshustbe.request.user.UpdateProfileUserRequest;
 import teamit.hust.ktxcdshustbe.response.user.*;
 import teamit.hust.ktxcdshustbe.service.auth.AuthenticationService;
-import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
 import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 
@@ -38,8 +38,7 @@ public class UserController {
 
     @Autowired
     KtxUserService ktxUserService;
-    @Autowired
-    StudentRegisterRoomService studentRegisterRoomService;
+
     @Autowired
     StudentRoomService studentRoomService;
     @Autowired
@@ -99,9 +98,9 @@ public class UserController {
     }
 
     @GetMapping("/search-students")
-    public ResponseEntity<?> searchInformationStudents(@RequestParam("number_student") String numberStudent){
+    public ResponseEntity<?> searchInformationStudents(@RequestParam("code-student") String codeStudent){
         try {
-            InformationStudentHiredResponse response = ktxUserService.searchInformationStudentByNumberStudent(numberStudent);
+            InformationStudentHiredResponse response = ktxUserService.searchInformationStudentByNumberStudent(codeStudent);
             return ApiResponseDto.createdWithState(response,"Search information student hired room success!", HttpStatus.OK);
         } catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
@@ -152,6 +151,18 @@ public class UserController {
             DetailInformationUserResponse response = ktxUserService.getDetailInformationUserByUserName(userName);
             return ApiResponseDto.createdWithState(response, "Get detail information student!", HttpStatus.OK);
         }catch (Exception e) {
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> findAllStudents(@RequestBody UpdateProfileUserRequest request){
+        try {
+            ktxUserService.updateUserProfile(request);
+            return ApiResponseDto.createdWithMessage("update profile user success!", HttpStatus.OK);
+        } catch (NotFoundException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

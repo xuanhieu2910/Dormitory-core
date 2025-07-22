@@ -13,10 +13,8 @@ public class InformationStudentHiredResponse {
 
     @JsonProperty("code_user")
     private String codeUser;
-    @JsonProperty("full_name")
-    private String fullName;
-    @JsonProperty("number_student")
-    private String numberStudent;
+    @JsonProperty("value")
+    private String value;
     @JsonProperty("code_room")
     private String codeRoom;
     @JsonProperty("title_room")

@@ -15,12 +15,8 @@ public class ListStudentHiredRoomResponse {
     private Integer idStudentRoom;
     @JsonProperty("code_user")
     private String codeUser;
-    @JsonProperty("full_name")
-    private String fullName;
-    @JsonProperty("number_student")
-    private String numberStudent;
-    @JsonProperty("phone_number")
-    private String phoneNumber;
+    @JsonProperty("value_user")
+    private String valueUser;
     @JsonProperty("time_hired")
     private String timeHired;
     @JsonProperty("code_department")
@@ -33,6 +29,6 @@ public class ListStudentHiredRoomResponse {
     private String titleRoom;
     @JsonProperty("code_user_modified")
     private String codeUserModified;
-    @JsonProperty("user_modified")
-    private String userModified;
+    @JsonProperty("value_user_modified")
+    private String valueUserModified;
 }

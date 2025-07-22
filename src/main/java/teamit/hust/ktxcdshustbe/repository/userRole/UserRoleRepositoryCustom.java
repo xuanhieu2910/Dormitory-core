@@ -1,5 +1,6 @@
 package teamit.hust.ktxcdshustbe.repository.userRole;
 
+import teamit.hust.ktxcdshustbe.dto.userRole.DepartmentUserRoleDto;
 import teamit.hust.ktxcdshustbe.dto.userRole.UserRoleDto;
 import teamit.hust.ktxcdshustbe.entity.Role;
 import teamit.hust.ktxcdshustbe.entity.UserRole;
@@ -18,4 +19,6 @@ public interface UserRoleRepositoryCustom {
     List<UserRole> findUserRoleByIdRole(Integer idRole);
     List<UserRoleDto> findUserRoleByNameRoleAndIdDepartment(String nameRole, Integer department);
     Optional<UserRole> findUserRoleByIdUserRoleAndIdUser(Integer idUserRole, Integer idUser);
+
+    DepartmentUserRoleDto getDepartmentCurrentUserRoleDtoByCodeUser(String codeUser);
 }

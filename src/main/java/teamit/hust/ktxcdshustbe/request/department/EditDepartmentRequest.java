@@ -11,7 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class EditDepartmentRequest {
     private String codeDepartment;
+    private String codeParentDepartment;
     private String title;
     private Integer status;
-    private String codeUserManaged;
+    private String shortName;
+    private String Description;
 }

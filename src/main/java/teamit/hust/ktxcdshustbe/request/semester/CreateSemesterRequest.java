@@ -13,6 +13,5 @@ public class CreateSemesterRequest {
 
     private String titleSemester;
     private Integer status;
-    private String note;
 
 }

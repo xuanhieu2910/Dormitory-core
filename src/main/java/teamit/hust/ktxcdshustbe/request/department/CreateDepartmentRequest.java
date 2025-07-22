@@ -1,10 +1,7 @@
 package teamit.hust.ktxcdshustbe.request.department;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -12,8 +9,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateDepartmentRequest {
 
-    private String titleDepartment;
+    private String codeParentDepartment;
+    @NonNull
+    private String title;
+    private String shortName;
+    private String description;
+    @NonNull
     private Integer status;
-    private String codeUserManaged;
 
 }

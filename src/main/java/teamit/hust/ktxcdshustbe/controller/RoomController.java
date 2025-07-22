@@ -124,20 +124,38 @@ public class RoomController {
 
 
     @PostMapping("/search-room")
-    public ResponseEntity<?> searchRoom(@RequestBody SearchRoomToTranferRequest request){
-        try{
+    public ResponseEntity<?> searchRoom(@RequestBody SearchRoomToTranferRequest request) {
+        try {
             SearchRoomResponse response = roomService.searchRoomToTranfer(request);
             return ApiResponseDto.createdWithState(response, "Search room success!", HttpStatus.OK);
-        }
-        catch (NotFoundException e){
+        } catch (ValidParametersException e) {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        }
-        catch (ValidParametersException e){
+        } catch (NotFoundException e) {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+//    @GetMapping("/student-search-room")
+//    public ResponseEntity<?> studentSearchRoom( @And({
+//            @Spec(path = "page", params = "page", spec = Like.class),
+//            @Spec(path = "size", params = "size", spec = Like.class),
+//            @Spec(path = "keyword", params = "keyword", spec = Like.class)
+//    }) StudentSearchRoomRequest request){
+//        try {
+//            return ApiResponseDto.createdWithState(roomService.studentSearchRoom(request),
+//                    "Student search room success!", HttpStatus.OK);
+//        } catch (ValidParametersException e){
+//            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+//        } catch (ValidParametersException e){
+//            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+//        } catch (NotFoundException e){
+//            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+//        } catch (Exception e){
+//            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
 
 }

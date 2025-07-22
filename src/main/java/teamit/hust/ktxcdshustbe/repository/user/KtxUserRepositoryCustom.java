@@ -19,7 +19,7 @@ public interface KtxUserRepositoryCustom {
 
     Optional<KtxUser> findByKtxUserId(Integer userId);
 
-    Optional<InformationStudentHiredResponse> searchInformationStudentHiredRoomByNumberStudent(String numberStudent);
+    Optional<InformationStudentHiredResponse> searchInformationStudentHiredRoomByNumberStudent(String codeStudent);
 
     int updateStatusIsActive(Integer userId, Integer statusIsActive);
     int updateStatusRegisterRoom(Integer userId, Integer statusRegisterRoom);

@@ -33,8 +33,8 @@ public class DataController {
     DepartmentService departmentService;
     @Autowired
     RoomService roomService;
-//    @Autowired
-//    SemesterService semesterService;
+    @Autowired
+    SemesterService semesterService;
 
 
 

@@ -11,18 +11,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.semester.FindAllSemesterDto;
-import teamit.hust.ktxcdshustbe.dto.semester.FindSemesterDetailDto;
 import teamit.hust.ktxcdshustbe.entity.Semester;
 import teamit.hust.ktxcdshustbe.repository.semester.SemesterRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.semester.FindAllSemesterRequest;
-import teamit.hust.ktxcdshustbe.response.semester.DetailSemesterResponse;
-import teamit.hust.ktxcdshustbe.response.semester.FindAllSemesterResponse;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
 
@@ -36,8 +32,8 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         sb.append(" select se.id_semester, se.title, se.time_created,  " +
                 "       se.time_modified, se.status, se.id_user_created,  " +
                 "       se.id_user_modified, se.code_semester,  " +
-                "       ku_created.user_name, " +
-                "       ku_modified.user_name  " +
+                "       ku_created.user_name, ku_created.full_name,  " +
+                "       ku_modified.user_name, ku_modified.full_name  " +
                 "from semester se  " +
                 "        inner join ktx_user ku_created on se.id_user_created = ku_created.id_ktx_user  " +
                 "        inner join ktx_user ku_modified on se.id_user_modified = ku_modified.id_ktx_user  " +
@@ -112,41 +108,4 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         return semester;
     }
 
-    @Override
-    public FindSemesterDetailDto findSemesterDetailByCode(String codeSemester) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("""
-                select se.title, se.code_semester, se.status,
-                    se.id_user_created, se.id_user_modified,
-                    se.time_created, se.time_modified,
-                    ku_created.user_name, ku_modified.user_name,
-                    ku_created.code_user, ku_modified.code_user 
-                from semester se
-                    inner join ktx_user ku_modified on se.id_user_modified = ku_modified.id_ktx_user
-                    inner join ktx_user ku_created on se.id_user_created = ku_created.id_ktx_user
-                where se.code_semester = :codeSemester
-                """);
-        Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("codeSemester", codeSemester);
-        List<Object[]> result = query.getResultList();
-        if(!CollectionUtils.isEmpty(result)){
-            Object[] obj = result.get(0);
-
-            FindSemesterDetailDto findSemesterDetailDto = new FindSemesterDetailDto();
-
-            findSemesterDetailDto.setTitleSemester(ValueUtil.getStringByObject(obj[0]));
-            findSemesterDetailDto.setCodeSemester(ValueUtil.getStringByObject(obj[1]));
-            findSemesterDetailDto.setStatus(ValueUtil.getStringByObject(obj[2]));
-            findSemesterDetailDto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[3]));
-            findSemesterDetailDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[4]));
-            findSemesterDetailDto.setTimeCreated(ValueUtil.getLongByObject(obj[5]));
-            findSemesterDetailDto.setTimeModified(ValueUtil.getLongByObject(obj[6]));
-            findSemesterDetailDto.setUserNameCreated(ValueUtil.getStringByObject(obj[7]));
-            findSemesterDetailDto.setUserNameModified(ValueUtil.getStringByObject(obj[8]));
-            findSemesterDetailDto.setCodeUserCreated(ValueUtil.getStringByObject(obj[9]));
-            findSemesterDetailDto.setCodeUserModified(ValueUtil.getStringByObject(obj[10]));
-            return findSemesterDetailDto;
-        }
-        return null;
-    }
 }

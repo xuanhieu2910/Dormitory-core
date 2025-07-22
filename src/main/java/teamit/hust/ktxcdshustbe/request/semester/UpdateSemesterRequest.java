@@ -11,9 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateSemesterRequest {
-
     private String titleSemester;
     private Integer status;
-    private String codeSemester;
-    private String note;
 }

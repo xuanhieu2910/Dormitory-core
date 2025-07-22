@@ -4,12 +4,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
 import teamit.hust.ktxcdshustbe.dto.room.StudentHiredRoomDto;
+import teamit.hust.ktxcdshustbe.dto.room.StudentSearchRoomDto;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.room.FindAllRoomsForRentRequest;
 import teamit.hust.ktxcdshustbe.request.room.FindAllRoomsRequest;
 import teamit.hust.ktxcdshustbe.request.room.SearchRoomToTranferRequest;
 import teamit.hust.ktxcdshustbe.request.room.StudentsHiredRoomRequest;
+import teamit.hust.ktxcdshustbe.request.room.*;
 import teamit.hust.ktxcdshustbe.request.studentRegister.StudentRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.room.RoomsForStudentRentResponse;
 import teamit.hust.ktxcdshustbe.response.room.SearchRoomResponse;
@@ -48,4 +50,5 @@ public interface RoomRepositoryCustom {
     Page<FindAllRoomsDto> findAllRooms(FindAllRoomsRequest request, Pageable pageable);
     Optional<Room> findRoomByTitleRoom(String title);
     Optional<Room> findRoomByTitleRoomAndCodeDepartment(String title, String codeDepartment);
+    Page<StudentSearchRoomDto> findAllRoomStudentSearch(StudentSearchRoomRequest request, Pageable pageable);
 }

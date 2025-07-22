@@ -8,6 +8,7 @@ import teamit.hust.ktxcdshustbe.response.room.FindAllRoomsResponse;
 import teamit.hust.ktxcdshustbe.response.room.RoomDetailResponse;
 import teamit.hust.ktxcdshustbe.response.room.RoomsForStudentRentResponse;
 import teamit.hust.ktxcdshustbe.response.room.SearchRoomResponse;
+import teamit.hust.ktxcdshustbe.response.room.*;
 
 import java.util.Optional;
 
@@ -28,4 +29,6 @@ public interface RoomService {
     int updateRemainQuantityRoomWhenToRemoveStudent(String codeRoom, Integer idKtxUser);
     Optional<Room> findRoomByCodeRoom(String codeRoom);
     Page<FindAllRoomsResponse> findAllRoom(FindAllRoomsRequest request);
+
+    Page<StudentSearchRoomResponse> studentSearchRoom(StudentSearchRoomRequest request);
 }

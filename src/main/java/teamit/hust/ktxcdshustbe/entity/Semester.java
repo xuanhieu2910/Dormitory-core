@@ -16,7 +16,7 @@ public class Semester {
     @Column(name = "id_semester")
     private Integer idSemester;
 
-    @Column(name = "title", nullable = false, unique = true)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "status")
@@ -33,10 +33,6 @@ public class Semester {
 
     @Column(name = "time_modified")
     private Long timeModified;
-
     @Column(name = "code_semester")
     private String codeSemester;
-
-    @Column(name = "note")
-    private String note;
 }

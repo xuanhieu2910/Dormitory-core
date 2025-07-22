@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.util.CollectionUtils;
+import teamit.hust.ktxcdshustbe.dto.userRole.DepartmentUserRoleDto;
 import teamit.hust.ktxcdshustbe.dto.userRole.UserRoleDto;
 import teamit.hust.ktxcdshustbe.entity.Capabilities;
 import teamit.hust.ktxcdshustbe.entity.Role;
@@ -201,6 +202,30 @@ public class UserRoleRepositoryImpl implements UserRoleRepositoryCustom {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public DepartmentUserRoleDto getDepartmentCurrentUserRoleDtoByCodeUser(String codeUser) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select de.id_department, de.title, userRole.id_user_role " +
+                "from ktx_user ktxUser " +
+                "    inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user " +
+                "    left join department de on userRole.id_department = de.id_department " +
+                "where userRole.picked = :isPicked " +
+                "and csvcUser.code_user = :codeUser ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("codeUser", codeUser);
+        query.setParameter("isPicked", Constants.ROLE_USER_PICKED);
+        List<Object[]> result = query.getResultList();
+        DepartmentUserRoleDto departmentUserRoleDto = new DepartmentUserRoleDto();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                departmentUserRoleDto.setIdDepartment(ValueUtil.getIntegerByObject(obj[0]));
+                departmentUserRoleDto.setNameDepartment(ValueUtil.getStringByObject(obj[1]));
+                departmentUserRoleDto.setIdUserRole(ValueUtil.getIntegerByObject(obj[2]));
+            }
+        }
+        return departmentUserRoleDto;
     }
 
     @Override

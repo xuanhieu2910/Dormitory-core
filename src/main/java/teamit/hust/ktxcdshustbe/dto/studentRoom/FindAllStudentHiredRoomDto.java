@@ -9,14 +9,12 @@ import lombok.Setter;
 public class FindAllStudentHiredRoomDto {
     private Integer idStudentRoom;
     private String codeUser;
-    private String fullName;
-    private String numberStudent;
-    private String phoneNumber;
+    private String valueUser;
     private String timeHired;
     private String codeDepartment;
     private String titleDepartment;
     private String codeRoom;
     private String titleRoom;
     private String codeUserModified;
-    private String userModified;
+    private String valueUserModified;
 }
