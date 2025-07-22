@@ -6,7 +6,6 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class CreateDepartmentRequest {
 
     private String codeParentDepartment;

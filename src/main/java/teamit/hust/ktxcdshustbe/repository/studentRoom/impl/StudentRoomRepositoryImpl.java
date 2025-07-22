@@ -1,8 +1,10 @@
 package teamit.hust.ktxcdshustbe.repository.studentRoom.impl;
 
+import com.azure.core.implementation.util.ObjectsUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -135,7 +137,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         sb.append("select studentRoom.id_student_room,ktxUser.code_user, ktxUser.value, " +
                 "       timeHired.time_started, timeHired.time_ended,semester.title, " +
                 "       de.code_department, de.title titleDepartment, ro.code_room,   " +
-                "       ro.title roomTitle, userModified.code_user,userModified.value " +
+                "       ro.title roomTitle, userModified.code_user,userModified.value,studentRoom.status " +
                 "from student_room studentRoom    " +
                 "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
                 "    left join ktx_user userModified on studentRoom.id_user_modified = userModified.id_ktx_user   " +
@@ -145,7 +147,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join batches_registration_room brr on brr.id_room = ro.id_room " +
                 "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
                 "    inner join semester on semester.id_semester = br.id_semester " +
-                "where studentRoom.status = 1 and and de.id_department in (:listDepartmentOriginal) ");
+                "where 1 = 1  and de.id_department in (:listDepartmentOriginal) ");
         setConditionListStudentHiredRoomResponse(request,sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParametersListStudentHiredRoomResponse(request,query);
@@ -169,6 +171,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 res.setTitleRoom(ValueUtil.getStringByObject(obj[9]));
                 res.setCodeUserModified(ValueUtil.getStringByObject(obj[10]));
                 res.setValueUserModified(ValueUtil.getStringByObject(obj[11]));
+                res.setStatus(ValueUtil.getIntegerByObject(obj[12]));
                 responses.add(res);
             }
         }
@@ -358,7 +361,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join batches_registration_room brr on brr.id_room = ro.id_room " +
                 "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
                 "    inner join semester on semester.id_semester = br.id_semester " +
-                "where studentRoom.status = 1 and and de.id_department in (:listDepartmentOriginal)  ");
+                "where 1=1 and de.id_department in (:listDepartmentOriginal)  ");
         setConditionListStudentHiredRoomResponse(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParametersListStudentHiredRoomResponse(request,query);
@@ -375,14 +378,17 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             query.setParameter("keyword", request.getKeyword());
         }
-        if (Objects.nonNull(request.getCodeDepartment())) {
+        if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             query.setParameter("codeDepartment", request.getCodeDepartment());
         }
-        if (Objects.nonNull(request.getCodeRoom())) {
+        if (StringUtils.isNotBlank(request.getCodeRoom())) {
             query.setParameter("codeRoom", request.getCodeRoom());
         }
-        if (Objects.nonNull(request.getCodeSemester())){
+        if (StringUtils.isNotBlank(request.getCodeSemester())){
             query.setParameter("codeSemester", request.getCodeSemester());
+        }
+        if (ObjectUtils.isNotEmpty(request.getStatus())){
+            query.setParameter("statusStudentRoom", request.getStatus());
         }
         if (StringUtils.isNotBlank(request.getTimeStarted()) && StringUtils.isNotBlank(request.getTimeEnded())) {
             query.setParameter("timeStared", request.getTimeStarted());
@@ -395,14 +401,17 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
             sb.append(" and ( (ktxUser.value REGEXP '[' + :keyword + ']' ) OR " +
                     "      (userModified.value REGEXP '[' + :keyword + ']' ) ) ");
         }
-        if (Objects.nonNull(request.getCodeRoom())) {
+        if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");
         }
-        if (Objects.nonNull(request.getCodeRoom())) {
+        if (StringUtils.isNotBlank(request.getCodeRoom())) {
             sb.append(" and ro.code_room = :codeRoom ");
         }
-        if (Objects.nonNull(request.getCodeSemester())){
+        if (StringUtils.isNotBlank(request.getCodeSemester())){
             sb.append(" and se.code_semester = :codeSemester ");
+        }
+        if (ObjectUtils.isNotEmpty(request.getStatus())){
+            sb.append(" and studentRoom.status = :statusStudentRoom ");
         }
         if (StringUtils.isNotBlank(request.getTimeStarted()) && StringUtils.isNotBlank(request.getTimeEnded())) {
             sb.append(" and ( " +

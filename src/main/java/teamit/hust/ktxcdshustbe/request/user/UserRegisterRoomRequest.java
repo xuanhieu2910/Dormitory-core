@@ -16,4 +16,5 @@ public class UserRegisterRoomRequest extends RequestPageBase {
     private String timeStarted;
     private String timeEnded;
     private Integer status;
+    private String codeUser;
 }

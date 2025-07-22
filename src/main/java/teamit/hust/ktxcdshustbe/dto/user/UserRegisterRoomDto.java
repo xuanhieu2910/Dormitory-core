@@ -13,9 +13,7 @@ public class UserRegisterRoomDto {
 
     private Integer idRegisterRoom;
     private String codeUser;
-    private String fullName;
-    private String numberStudent;
-    private String phoneNumber;
+    private String value;
     private Long timeRegister;
     private String codeDepartment;
     private String titleDepartment;

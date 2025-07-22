@@ -311,8 +311,8 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public Page<UserRegisterRoomDto> findAllUserRegisterRoomDto(UserRegisterRoomRequest request, Pageable pageable) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ktxUser.code_user, ktxUser.full_name,  ktxUser.number_student,  " +
-                "       ktxUser.phone_number,studentRegisterRoom.time_created,  " +
+        sb.append("select ktxUser.code_user, ktxUser.value,  " +
+                "       studentRegisterRoom.time_created,  " +
                 "       de.code_department, de.title, ro.code_room, ro.title,  " +
                 "       se.code_semester, se.title, timeHired.id_time_hired,  " +
                 "       timeHired.time_started, timeHired.time_ended " +
@@ -321,8 +321,10 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
                 "       inner join department de on ro.id_department = de.id_department  " +
                 "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "       inner join semester se on timeHired.id_semester = se.id_semester  " +
-                "where 1 = 1   ");
+                "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
+                "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
+                "       inner join semester se on se.id_semester = br.id_semester " +
+                "       where 1 = 1   ");
         setConditionFindAllUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllUserRegisterRoom(query, request);
@@ -333,19 +335,17 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
             for (Object[] obj: result){
                 UserRegisterRoomDto dto = new UserRegisterRoomDto();
                 dto.setCodeUser(ValueUtil.getStringByObject(obj[0]));
-                dto.setFullName(ValueUtil.getStringByObject(obj[1]));
-                dto.setNumberStudent(ValueUtil.getStringByObject(obj[2]));
-                dto.setPhoneNumber(ValueUtil.getStringByObject(obj[3]));
-                dto.setTimeRegister(ValueUtil.getLongByObject(obj[4]));
-                dto.setCodeDepartment(ValueUtil.getStringByObject(obj[5]));
-                dto.setTitleDepartment(ValueUtil.getStringByObject(obj[6]));
-                dto.setCodeRoom(ValueUtil.getStringByObject(obj[7]));
-                dto.setTitleRoom(ValueUtil.getStringByObject(obj[8]));
-                dto.setCodeSemester(ValueUtil.getStringByObject(obj[9]));
-                dto.setTitleSemester(ValueUtil.getStringByObject(obj[10]));
-                dto.setIdTimeHired(ValueUtil.getIntegerByObject(obj[11]));
-                dto.setTimeHiredStarted(ValueUtil.getLongByObject(obj[12]));
-                dto.setTimeHiredEnded(ValueUtil.getLongByObject(obj[13]));
+                dto.setValue(ValueUtil.getStringByObject(obj[1]));
+                dto.setTimeRegister(ValueUtil.getLongByObject(obj[2]));
+                dto.setCodeDepartment(ValueUtil.getStringByObject(obj[3]));
+                dto.setTitleDepartment(ValueUtil.getStringByObject(obj[4]));
+                dto.setCodeRoom(ValueUtil.getStringByObject(obj[5]));
+                dto.setTitleRoom(ValueUtil.getStringByObject(obj[6]));
+                dto.setCodeSemester(ValueUtil.getStringByObject(obj[7]));
+                dto.setTitleSemester(ValueUtil.getStringByObject(obj[8]));
+                dto.setIdTimeHired(ValueUtil.getIntegerByObject(obj[9]));
+                dto.setTimeHiredStarted(ValueUtil.getLongByObject(obj[10]));
+                dto.setTimeHiredEnded(ValueUtil.getLongByObject(obj[11]));
                 userRegisterRoomDtos.add(dto);
             }
         }
@@ -354,22 +354,20 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
 
     private void setConditionFindAllUserRegisterRoom(StringBuilder sb, UserRegisterRoomRequest request) {
         if (StringUtils.isNotBlank(request.getKeyword())){
-            sb.append(" and ( (ktxUser.full_name REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (ktxUser.number_student REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (ktxUser.phone_number REGEXP '[' + :keyword + ']' ) OR " +
+            sb.append(" and ( (ktxUser.value REGEXP '[' + :keyword + ']' ) OR " +
                     "      (de.title REGEXP '[' + :keyword + ']' ) OR " +
                     "      (ro.title REGEXP '[' + :keyword + ']' ) ) ");
         }
-        if (null != request.getCodeDepartment()) {
+        if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");
         }
-        if (null != request.getCodeRoom()){
+        if (StringUtils.isNotBlank(request.getCodeUser())) {
+            sb.append(" and ktxUser.code_user = :codeUser ");
+        }
+        if (StringUtils.isNotBlank(request.getCodeRoom())){
             sb.append(" and ro.code_room = :codeRoom ");
         }
-        if (null != request.getYearGrade()){
-            sb.append(" and ktxUser.year_grade = :yearGrade ");
-        }
-        if (null != request.getCodeSemester()) {
+        if (StringUtils.isNotBlank(request.getCodeSemester())) {
             sb.append(" and se.codeSemester  = :codeSemester ");
         }
         if (StringUtils.isNotBlank(request.getTimeStarted()) && StringUtils.isNotBlank(request.getTimeEnded())){
@@ -398,16 +396,17 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         if(StringUtils.isNotBlank(request.getKeyword())){
             query.setParameter("keyword", request.getKeyword());
         }
-        if (null != request.getCodeDepartment()){
+        if (StringUtils.isNotBlank(request.getCodeDepartment())){
             query.setParameter("codeDepartment", request.getCodeDepartment());
         }
-        if (null != request.getCodeRoom()){
+        if (StringUtils.isNotBlank(request.getCodeUser())){
+            query.setParameter("codeUser", request.getCodeUser());
+        }
+        if (StringUtils.isNotBlank(request.getCodeRoom())){
             query.setParameter("codeRoom", request.getCodeRoom());
         }
-        if (null != request.getYearGrade()){
-            query.setParameter("yearGrade", request.getYearGrade());
-        }
-        if (null != request.getCodeSemester()) {
+
+        if (StringUtils.isNotBlank(request.getCodeSemester())) {
             query.setParameter("codeSemester", request.getCodeSemester());
         }
         if (StringUtils.isNotBlank(request.getTimeStarted()) && StringUtils.isNotBlank(request.getTimeEnded())){
@@ -427,8 +426,10 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
                 "       inner join department de on ro.id_department = de.id_department  " +
                 "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "       inner join semester se on timeHired.id_semester = se.id_semester  " +
-                "where 1 = 1 ");
+                "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
+                "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
+                "       inner join semester se on se.id_semester = br.id_semester " +
+                "       where 1 = 1   ");
         setConditionFindAllUserRegisterRoom(sb,request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllUserRegisterRoom(query,request);

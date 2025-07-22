@@ -28,4 +28,6 @@ public interface RoomService {
     int updateRemainQuantityRoomWhenToRemoveStudent(String codeRoom, Integer idKtxUser);
     Optional<Room> findRoomByCodeRoom(String codeRoom);
     Page<FindAllRoomsResponse> findAllRoom(FindAllRoomsRequest request);
+
+    Optional<Room> findRoomByIdRoom(Integer idRoom);
 }

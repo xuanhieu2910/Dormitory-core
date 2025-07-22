@@ -16,6 +16,7 @@ import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
+import teamit.hust.ktxcdshustbe.entity.StudentRoom;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
@@ -36,6 +37,7 @@ import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.service.timeHired.TimeHiredService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
+import teamit.hust.ktxcdshustbe.utility.EmailUtil;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
 import java.sql.Timestamp;
@@ -52,15 +54,10 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     StudentRegisterRoomRepository studentRegisterRoomRepository;
     @Lazy
     @Autowired
-    KtxUserRepository ktxUserRepository;
-    @Lazy
-    @Autowired
     RoomService roomService;
     @Lazy
     @Autowired
     StudentRoomService studentRoomService;
-    @Autowired
-    TimeHiredService timeHiredService;
     @Lazy
     @Autowired
     KtxUserService ktxUserService;
@@ -79,7 +76,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     @Override
-    public void approvedStudentRegisterRoom(StudentRegisterRoom room) {
+    public void saveInfoApprovedStudentRegisterRoom(StudentRegisterRoom room) {
         studentRegisterRoomRepository.save(room);
     }
 
@@ -207,9 +204,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             UserRegisterRoomResponse response = new UserRegisterRoomResponse();
             response.setIdRegisterRoom(dto.getIdRegisterRoom());
             response.setCodeUser(dto.getCodeUser());
-            response.setFullName(dto.getFullName());
-            response.setNumberStudent(dto.getNumberStudent());
-            response.setPhoneNumber(dto.getPhoneNumber());
+            response.setValue(dto.getValue());
             response.setTimeRegister(dto.getTimeRegister());
             response.setCodeDepartment(dto.getCodeDepartment());
             response.setTitleDepartment(dto.getTitleDepartment());
@@ -280,6 +275,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
 //        timeHiredService.findTimeHiredById(request.getHiredId());
     }
 
+    @Lazy
     @Transactional
     @Override
     public void approvedStudentRegisterHiredRoom(ApprovedUserRegisterRoomRequest request){
@@ -296,46 +292,50 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
 
 
     public void approvedStudentRegister(ApprovedUserRegisterRoomRequest request,KtxUser ktxUser){
-//        StudentRegisterRoom studentRegisterRoom =  changeApprovedStudent(request,ktxUser.getIdKtxUser());
+        StudentRegisterRoom studentRegisterRoom =  changeApprovedStudent(request,ktxUser.getIdKtxUser());
 //        AcceptStudentRegisterRoomDto acceptStudentRegisterRoomDto = studentRegisterRoomService.getAcceptStudentRegisterRoomDtoById(studentRegisterRoom.ge());
 //        acceptStudentRegisterRoomDto.setStatusAccept(request.getStatus());
-//        if (request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT)) {
-//            roomService.updateQuantityAndRemainAmountCancelRegisterRoom(studentRegisterRoom.getIdRoom(),
-//                    Constants.QUANTITY_UPDATE_ROOM_AND_REGISTER,
-//                    ktxUser.getIdKtxUser());
-//        }
-//        if (request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT)){
-//            roomService.updateQuantityAndRemainAmountAcceptRegisterAndHiredRoom(studentRegisterRoom.getIdRoom(),
-//                    Constants.QUANTITY_UPDATE_ROOM_AND_REGISTER,
-//                    ktxUser.getIdKtxUser());
-//            transformStudentToStudentHiredRoom(studentRegisterRoom,ktxUser.getCodeUser());
+        if (request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT)) {
+            roomService.updateQuantityAndRemainAmountCancelRegisterRoom(studentRegisterRoom.getIdRoom(),
+                    Constants.QUANTITY_UPDATE_ROOM_AND_REGISTER,
+                    ktxUser.getIdKtxUser());
+        }
+        if (request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT)){
+            Optional<Room> roomOptional = roomService.findRoomByIdRoom(studentRegisterRoom.getIdRoom());
+            if(roomOptional.get().getRemainAmount() > Constants.QUANTITY_REMAIN_AMOUNT_REGISTER) {
+                roomService.updateQuantityAndRemainAmountAcceptRegisterAndHiredRoom(studentRegisterRoom.getIdRoom(),
+                        Constants.QUANTITY_UPDATE_ROOM_AND_REGISTER,
+                        ktxUser.getIdKtxUser());
+            }
+
+            transformStudentToStudentHiredRoom(studentRegisterRoom,ktxUser.getCodeUser());
 //            EmailUtil.getInstance().sendApprovedRoom(acceptStudentRegisterRoomDto);
-//        }
+        }
     }
 
 
-//    private StudentRegisterRoom changeApprovedStudent(ApprovedUserRegisterRoomRequest request, Integer userId){
-//        StudentRegisterRoom studentRegisterRoom = findStudentRegisterRoomById(request.getIdUserRegister()).get();
-//        Date timeNow = new Date();
-//        studentRegisterRoom.setStatus(request.getStatus());
-//        studentRegisterRoom.setTimeModified(timeNow.getTime());
-//        studentRegisterRoom.setIdUserModified(userId);
-//        approvedStudentRegisterRoom(studentRegisterRoom);
-//        return studentRegisterRoom;
-//    }
+    private StudentRegisterRoom changeApprovedStudent(ApprovedUserRegisterRoomRequest request, Integer userId){
+        StudentRegisterRoom studentRegisterRoom = findStudentRegisterRoomByCode(request.getCodeUserRegister()).get();
+        Date timeNow = new Date();
+        studentRegisterRoom.setStatus(request.getStatus());
+        studentRegisterRoom.setTimeModified(timeNow.getTime());
+        studentRegisterRoom.setIdUserModified(userId);
+        saveInfoApprovedStudentRegisterRoom(studentRegisterRoom);
+        return studentRegisterRoom;
+    }
 
-//    private void transformStudentToStudentHiredRoom(StudentRegisterRoom studentRegisterRoom,String userId ) {
-//        KtxUser ktxUser = ktxUserRepository.findByCustomUserDetailId(studentRegisterRoom.getUserId()).get();
-//        Date timeNow = new Date();
-//        studentRoomService.saveStudentRoom(StudentRoom.builder()
-//                .userId(customUserDetails.getId())
-//                .userName(customUserDetails.getUsername())
-//                .roomId(studentRegisterRoom.getRoomId())
-//                .timeCreated(new Timestamp(timeNow.getTime()))
-//                .timeModified(new Timestamp(timeNow.getTime()))
-//                .timeIdHired(studentRegisterRoom.getTimeIdHired())
-//                .userIdModified(userId)
-//                .status(Constants.STATUS_STUDENT_HIRING_ROOM)
-//                .build());
-//    }
+    private void transformStudentToStudentHiredRoom(StudentRegisterRoom studentRegisterRoom,String userId ) {
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long timeCurrently = new Date().getTime();
+        StudentRoom studentRoom = new StudentRoom();
+        studentRoom.setIdRoom(studentRegisterRoom.getIdRoom());
+        studentRoom.setIdUser(studentRegisterRoom.getIdUser());
+        studentRoom.setIdTimeHired(studentRegisterRoom.getIdTimeHired());
+        studentRoom.setStatus(Constants.STATUS_STUDENT_HIRING_ROOM);
+        studentRoom.setIdUserCreated(ktxUser.getIdKtxUser());
+        studentRoom.setIdUserModified(ktxUser.getIdKtxUser());
+        studentRoom.setTimeCreated(timeCurrently);
+        studentRoom.setTimeModified(timeCurrently);
+        studentRoomService.saveStudentRoom(studentRoom);
+    }
 }

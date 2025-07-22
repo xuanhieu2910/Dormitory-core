@@ -107,6 +107,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.remain_amount                = ro.remain_amount - :quantity,  " +
                 "    ro.limit_amount_people_register = ro.limit_amount_people_register - :quantity,  " +
                 "    ro.quantity_registered          = ro.quantity_registered - :quantity,  " +
+                "    ro.remain_amount_register          = ro.remain_amount_register - :quantity,  " +
                 "    ro.time_modified                = CURRENT_TIMESTAMP(),  " +
                 "    ro.id_user_modified             = :userIdModified  " +
                 "where ro.id_room = :roomId  " +
@@ -130,7 +131,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.limit_amount_people_register = ro.limit_amount_people_register - :quantity, " +
                 "    ro.remain_amount_register       = ro.remain_amount_register - :quantity, " +
                 "    ro.time_modified                = CURRENT_TIMESTAMP(), " +
-                "    ro.user_id_modified             = :userIdModified " +
+                "    ro.id_user_modified             = :userIdModified " +
                 "where ro.id = :roomId " +
                 "  and ro.remain_amount > 0 " +
                 "  and (ro.quantity_hired < ro.limit_amount_people)  ");
@@ -392,6 +393,30 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("titleRoom", title);
         query.setParameter("codeDepartment", codeDepartment);
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                return Optional.of(writeDataRoom(obj));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Room> findRoomByIdRoom(Integer idRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select ro.id_room, ro.title, ro.id_department, " +
+                "       ro.sex_room, ro.price, ro.time_created, " +
+                "       ro.time_modified, ro.id_user_created, " +
+                "       ro.id_user_modified, ro.is_active, " +
+                "       ro.limit_amount_people, ro.quantity_hired, " +
+                "       ro.remain_amount, ro.limit_amount_people_register, " +
+                "       ro.quantity_registered, ro.remain_amount_register, " +
+                "       ro.code_room " +
+                "from room ro  " +
+                "where ro.id_room = :idRoom ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idRoom", idRoom);
         List<Object[]> result = query.getResultList();
         if (!CollectionUtils.isEmpty(result)){
             for (Object[] obj : result){

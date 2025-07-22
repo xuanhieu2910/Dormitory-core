@@ -309,6 +309,15 @@ public class RoomServiceImpl implements RoomService {
         return new PageImpl<>(convertToFindAllRoomsResponse(findAllRoomsDtos.getContent()), pageable, findAllRoomsDtos.getTotalElements());
     }
 
+    @Override
+    public Optional<Room> findRoomByIdRoom(Integer idRoom) {
+        Optional<Room> roomOptional = roomRepository.findRoomByIdRoom(idRoom);
+        if (roomOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return roomOptional;
+    }
+
     private List<FindAllRoomsResponse> convertToFindAllRoomsResponse(List<FindAllRoomsDto> content) {
         List<FindAllRoomsResponse> responses = new ArrayList<>();
         for (FindAllRoomsDto dto : content){

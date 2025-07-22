@@ -17,4 +17,5 @@ public class FindAllStudentHiredRoomDto {
     private String titleRoom;
     private String codeUserModified;
     private String valueUserModified;
+    private Integer status;
 }

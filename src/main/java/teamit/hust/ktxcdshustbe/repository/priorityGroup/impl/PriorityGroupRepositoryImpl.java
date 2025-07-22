@@ -32,6 +32,24 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
         return Optional.empty();
     }
 
+    @Override
+    public Optional<PriorityGroup> findPriorityGroupByIdPriorityGroup(Integer idPriorityGroup) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select priority_group.id_priority_group, priority_group_code,  " +
+                "       title, description, time_created, " +
+                "       time_modified, id_user_created, id_user_modified " +
+                "from priority_group where priority_group.id_priority_group = :idPriorityGroup ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idPriorityGroup", idPriorityGroup);
+        List<Object[]> results = query.getResultList();
+        if (!CollectionUtils.isEmpty(results)) {
+            for (Object[] obj: results){
+                return Optional.of(writeDataPriorityGroup(obj));
+            }
+        }
+        return Optional.empty();
+    }
+
     private PriorityGroup writeDataPriorityGroup(Object[] obj) {
         PriorityGroup priorityGroup = new PriorityGroup();
         priorityGroup.setIdPriorityGroup(ValueUtil.getIntegerByObject(obj[0]));

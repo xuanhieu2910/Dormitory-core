@@ -1,17 +1,33 @@
 package teamit.hust.ktxcdshustbe.service.timeHired.impl;
 
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import teamit.hust.ktxcdshustbe.dto.timeHired.FindAllTimeHiredDto;
+import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.TimeHired;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.repository.timeHired.TimeHiredRepository;
+import teamit.hust.ktxcdshustbe.request.timeHired.CreateTimeHiredRequest;
+import teamit.hust.ktxcdshustbe.request.timeHired.FindAllTimeHiredRequest;
+import teamit.hust.ktxcdshustbe.request.timeHired.UpdateTimeHiredRequest;
+import teamit.hust.ktxcdshustbe.response.timeHired.FindAllTimeHiredResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 import teamit.hust.ktxcdshustbe.service.timeHired.TimeHiredService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
+import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
 import java.lang.module.Configuration;
-import java.util.Optional;
+import java.sql.Time;
+import java.util.*;
 
 @Service
 public class TimeHiredServiceImpl implements TimeHiredService {
@@ -39,5 +55,126 @@ public class TimeHiredServiceImpl implements TimeHiredService {
             throw new ValidParametersException();
         }
         return timeHired.get();
+    }
+
+    @Override
+    public Page<FindAllTimeHiredResponse> findAllTimeHired(FindAllTimeHiredRequest request) {
+        Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
+        Page<FindAllTimeHiredDto> findAllTimeHiredResponses = timeHiredRepository.findAllTimeHired(pageable,request);
+        return new PageImpl<>(convertFindAllTimeHiredResponse(findAllTimeHiredResponses.getContent()), pageable, findAllTimeHiredResponses.getTotalElements());
+    }
+
+    @Override
+    public void createTimeHired(CreateTimeHiredRequest request) {
+        validateDataCreateTimeHired(request);
+        timeHiredRepository.save(constructTimeHired(request));
+    }
+
+    private TimeHired constructTimeHired(CreateTimeHiredRequest request) {
+        TimeHired timeHired = new TimeHired();
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long timeCurrent = new Date().getTime();
+        timeHired.setTimeStarted(Long.valueOf(request.getTimeStart()));
+        timeHired.setTimeEnded(Long.valueOf(request.getTimeEnd()));
+        if(ObjectUtils.isNotEmpty(request.getStatus())){
+            timeHired.setStatus(request.getStatus());
+        }
+        else {
+            timeHired.setStatus(Constants.TIME_HIRED_STATUS_IN_ACTIVE);
+        }
+        timeHired.setTimeCreated(timeCurrent);
+        timeHired.setTimeModified(timeCurrent);
+        timeHired.setIdUserCreated(ktxUser.getIdKtxUser());
+        timeHired.setCodeTimeHired(String.valueOf(UUID.randomUUID()));
+        timeHired.setIdUserModified(ktxUser.getIdKtxUser());
+        return timeHired;
+    }
+
+    private void validateDataCreateTimeHired(CreateTimeHiredRequest request) {
+        if (StringUtils.isBlank(request.getTimeStart()) || StringUtils.isBlank(request.getTimeEnd())) {
+            throw new ValidParametersException();
+        }
+    }
+
+    @Override
+    public void updateTimeHired(UpdateTimeHiredRequest request) {
+        TimeHired timeHired = validateDataUpdateTimeHired(request);
+        timeHiredRepository.save(editTimeHired(timeHired,request));
+    }
+
+    private TimeHired editTimeHired(TimeHired timeHired, UpdateTimeHiredRequest request) {
+        if(StringUtils.isNotBlank(request.getTimeStart())){
+            timeHired.setTimeStarted(Long.valueOf(request.getTimeStart()));
+        }
+        if(StringUtils.isNotBlank(request.getTimeEnd())){
+            timeHired.setTimeEnded(Long.valueOf(request.getTimeEnd()));
+        }
+        if (ObjectUtils.isNotEmpty(request.getStatus())) {
+            timeHired.setStatus(request.getStatus());
+        }
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long timeCurrent = new Date().getTime();
+        timeHired.setTimeModified(timeCurrent);
+        timeHired.setIdUserModified(ktxUser.getIdKtxUser());
+        return timeHired;
+    }
+
+    private TimeHired validateDataUpdateTimeHired(UpdateTimeHiredRequest request) {
+        Optional<TimeHired> timeHiredOptional = timeHiredRepository.findTimeHiredByCodeTimeHired(request.getCodeTimeHired());
+        if (timeHiredOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return timeHiredOptional.get();
+    }
+
+    @Override
+    public void deleteTimeHiredByCode(String codeTimeHired) {
+        Optional<TimeHired> timeHiredOptional = timeHiredRepository.findTimeHiredByCodeTimeHired(codeTimeHired);
+        if (timeHiredOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        timeHiredRepository.delete(timeHiredOptional.get());
+    }
+
+    @Override
+    public TimeHiredDetailsResponse findDetailsTimeHiredByCode(String codeTimeHired) {
+        Optional<TimeHired> timeHiredOptional = timeHiredRepository.findTimeHiredByCodeTimeHired(codeTimeHired);
+        if (timeHiredOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return convertTimeHiredDetailsResponse(timeHiredOptional.get());
+    }
+
+    private TimeHiredDetailsResponse convertTimeHiredDetailsResponse(TimeHired timeHired) {
+        TimeHiredDetailsResponse timeHiredDetailsResponse = new TimeHiredDetailsResponse();
+        timeHiredDetailsResponse.setCodeTimeHired(timeHired.getCodeTimeHired());
+        timeHiredDetailsResponse.setIdTimeHired(timeHired.getIdTimeHired());
+        timeHiredDetailsResponse.setTimeStarted(timeHired.getTimeStarted().toString());
+        timeHiredDetailsResponse.setTimeEnded(timeHired.getTimeEnded().toString());
+        timeHiredDetailsResponse.setTimeHired(timeHired.getTimeStarted() + "_" + timeHired.getTimeEnded());
+        timeHiredDetailsResponse.setStatus(timeHired.getStatus());
+        timeHiredDetailsResponse.setTimeCreated(timeHired.getTimeCreated().toString());
+        timeHiredDetailsResponse.setTimeModified(timeHired.getTimeModified().toString());
+        timeHiredDetailsResponse.setIdUserCreated(timeHired.getIdUserCreated());
+        timeHiredDetailsResponse.setIdUserModified(timeHired.getIdUserModified());
+        return timeHiredDetailsResponse;
+    }
+
+    private List<FindAllTimeHiredResponse> convertFindAllTimeHiredResponse(List<FindAllTimeHiredDto> content) {
+        List<FindAllTimeHiredResponse> findAllTimeHiredResponses = new ArrayList<>();
+        for (FindAllTimeHiredDto findAllTimeHiredDto : content) {
+            FindAllTimeHiredResponse findAllTimeHiredResponse = new FindAllTimeHiredResponse();
+            findAllTimeHiredResponse.setTimeHired(findAllTimeHiredDto.getTimeHired());
+            findAllTimeHiredResponse.setStatus(findAllTimeHiredDto.getStatus());
+            findAllTimeHiredResponse.setIdTimeHired(findAllTimeHiredDto.getIdTimeHired());
+            findAllTimeHiredResponse.setTimeStarted(findAllTimeHiredDto.getTimeStarted());
+            findAllTimeHiredResponse.setTimeEnd(findAllTimeHiredDto.getTimeEnd());
+            findAllTimeHiredResponse.setTimeCreated(findAllTimeHiredDto.getTimeCreated());
+            findAllTimeHiredResponse.setTimeModified(findAllTimeHiredDto.getTimeModified());
+            findAllTimeHiredResponse.setIdUserCreated(findAllTimeHiredDto.getIdUserCreated());
+            findAllTimeHiredResponse.setIdUserModified(findAllTimeHiredDto.getIdUserModified());
+            findAllTimeHiredResponses.add(findAllTimeHiredResponse);
+        }
+        return findAllTimeHiredResponses;
     }
 }

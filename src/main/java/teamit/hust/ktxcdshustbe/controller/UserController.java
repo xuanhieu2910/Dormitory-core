@@ -146,9 +146,9 @@ public class UserController {
     }
 
     @GetMapping("/detail-student")
-    public ResponseEntity<?> findAllStudents(@RequestParam("user_name") String userName){
+    public ResponseEntity<?> findAllStudents(@RequestParam("code_user") String codeUser){
         try {
-            DetailInformationUserResponse response = ktxUserService.getDetailInformationUserByUserName(userName);
+            DetailInformationUserResponse response = ktxUserService.getDetailInformationUserByCodeUser(codeUser);
             return ApiResponseDto.createdWithState(response, "Get detail information student!", HttpStatus.OK);
         }catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);

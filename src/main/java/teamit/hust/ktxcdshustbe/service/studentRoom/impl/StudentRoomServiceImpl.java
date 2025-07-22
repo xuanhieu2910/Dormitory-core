@@ -58,8 +58,8 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
 
     @Override
-    public StudentRoom saveStudentRoom(StudentRoom room) {
-        return studentRoomRepository.save(room);
+    public void saveStudentRoom(StudentRoom room) {
+        studentRoomRepository.save(room);
     }
 
 
@@ -101,6 +101,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             response.setTitleRoom(findAllStudentHiredRoomDto.getTitleRoom());
             response.setCodeUserModified(findAllStudentHiredRoomDto.getCodeUserModified());
             response.setValueUserModified(findAllStudentHiredRoomDto.getValueUserModified());
+            response.setStatus(findAllStudentHiredRoomDto.getStatus());
             responses.add(response);
         }
         return responses;
@@ -130,18 +131,18 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public void addStudentToRoom(StudentToRoomRequest request) throws Exception {
-        KtxUser student = validateStudentToRoom(request);
+        validateStudentToRoom(request);
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<Room> roomOptional = roomService.findRoomByCodeRoom(request.getCodeRoom());
         KtxUser ktxUserOptional = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
-        studentRoomRepository.save(createStudentRoom(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser()));
+        studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
         updateQuantityRoom(roomOptional.get().getIdRoom(), ktxUser.getIdKtxUser());
-        updateStatusStudentAddToRoom(student);
+//        updateStatusStudentAddToRoom(student);
     }
 
-    private void updateStatusStudentAddToRoom(KtxUser student){
-        ktxUserService.save(student);
-    }
+//    private void updateStatusStudentAddToRoom(KtxUser student){
+//        ktxUserService.save(student);
+//    }
 
     @Override
     public void removeStudentRoom(RemoveStudentInRoomRequest request) throws Exception {
@@ -178,27 +179,29 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         }
     }
 
-    private StudentRoom createStudentRoom(Integer idRoom, Integer idUser, Integer userIdModified) {
+    private StudentRoom createStudentRoomNew(Integer idRoom, Integer idUser, Integer userIdModified,Integer idTimeHired) {
         StudentRoom studentRoom = new StudentRoom();
         studentRoom.setIdUser(idUser);
         studentRoom.setIdRoom(idRoom);
         var timeCurrent = Long.valueOf(new Date().getTime());
         studentRoom.setTimeCreated(timeCurrent);
         studentRoom.setTimeModified(timeCurrent);
-        studentRoom.setIdTimeHired(timeHiredRepository.getTimeHiredActiveResponse().get().getIdTimeHired());
+        studentRoom.setIdTimeHired(idTimeHired);
         studentRoom.setIdUserCreated(userIdModified);
         studentRoom.setIdUserModified(userIdModified);
         studentRoom.setStatus(Constants.STATUS_STUDENT_HIRING_ROOM);
         return studentRoom;
     }
 
-    private KtxUser validateStudentToRoom(StudentToRoomRequest request) {
+    private void validateStudentToRoom(StudentToRoomRequest request) {
         KtxUser ktxUser = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
+        if (ktxUser == null) {
+            throw new NotFoundException();
+        }
         Optional<Room> room = roomService.findRoomByCodeRoom(request.getCodeRoom());
         if (room.isEmpty()) {
             throw new NotFoundException();
         }
-        return ktxUser;
     }
 
     private void validateStudentRegisterRoom(String codeUser) throws ValidateFiledException {
@@ -309,9 +312,9 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateOriginalRoom(Room originalRoom, Integer userIdModified) {
         originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmount(originalRoom.getLimitAmountPeople() - originalRoom.getQuantityHired());
-        originalRoom.setLimitAmountPeopleRegister(originalRoom.getRemainAmount());
-        originalRoom.setRemainAmountRegister(originalRoom.getLimitAmountPeopleRegister() - originalRoom.getQuantityRegistered());
+        originalRoom.setRemainAmount(originalRoom.getLimitAmountPeople() - originalRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setLimitAmountPeopleRegister(originalRoom.getLimitAmountPeopleRegister() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmountRegister(originalRoom.getLimitAmountPeopleRegister() - originalRoom.getQuantityRegistered() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setTimeModified(new Date().getTime());
         originalRoom.setIdUserModified(userIdModified);
         roomRepository.save(originalRoom);

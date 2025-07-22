@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface PriorityGroupRepositoryCustom {
     Optional<PriorityGroup> findPriorityGroupByTitle(String titlePriorityGroup);
+
+    Optional<PriorityGroup> findPriorityGroupByIdPriorityGroup(Integer idPriorityGroup);
 }

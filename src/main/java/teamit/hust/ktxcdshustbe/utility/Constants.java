@@ -60,6 +60,7 @@ public class Constants {
     public final static Integer STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT = -1;
     public final static Integer QUANTITY_UPDATE_ROOM_AND_REGISTER = 1;
     public final static Integer QUANTITY_UPDATE_HIRED_ROOM = 1;
+    public final static Integer QUANTITY_REMAIN_AMOUNT_REGISTER = 0;
 
     public final static Integer STUDENT_REGISTER_ROOM_STATUS_NOT_FULL_FILL = -1;
     public final static Integer STUDENT_REGISTER_ROOM_STATUS_FULL_FILL = 1;

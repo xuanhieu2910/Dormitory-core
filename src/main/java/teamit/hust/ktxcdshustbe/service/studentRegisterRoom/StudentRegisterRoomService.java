@@ -22,7 +22,7 @@ public interface StudentRegisterRoomService {
 
     StudentRegisterRoomDetailResponse findStudentRegisterRoomDetailByRegisterId(Integer registerId);
 
-    void approvedStudentRegisterRoom(StudentRegisterRoom room);
+    void saveInfoApprovedStudentRegisterRoom(StudentRegisterRoom room);
 
     void changeRegisterRoomStudent(ChangeRegisterRoomRequest request) throws Exception;
 
