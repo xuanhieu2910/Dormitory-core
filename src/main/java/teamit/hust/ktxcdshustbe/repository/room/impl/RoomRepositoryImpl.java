@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
 import teamit.hust.ktxcdshustbe.dto.room.StudentHiredRoomDto;
+import teamit.hust.ktxcdshustbe.dto.room.StudentSearchRoomDto;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.repository.room.RoomRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.room.FindAllRoomsForRentRequest;
 import teamit.hust.ktxcdshustbe.request.room.FindAllRoomsRequest;
+import teamit.hust.ktxcdshustbe.request.room.StudentSearchRoomRequest;
 import teamit.hust.ktxcdshustbe.request.room.StudentsHiredRoomRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.StudentRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.room.RoomsForStudentRentResponse;
@@ -399,6 +401,68 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Page<StudentSearchRoomDto> findAllRoomStudentSearch(StudentSearchRoomRequest request, Pageable pageable) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select de.code_department, de.title,  " +
+                "       ro.code_room, ro.title, ro.price, " +
+                "       ro.limit_amount_people_register, ro.sex_room, " +
+                "       ro.remain_amount_register " +
+                "from department de " +
+                "    inner join room ro on de.id_department = ro.id_department " +
+                "where de.code_department = :codeDepartment " +
+                "and ro.sex_room = :sexRoom ");
+        setConditionFindAllRoomStudentSearch(request, sb);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllRoomStudentSearch(request, query);
+        PageUtils.buildQuery(pageable, query);
+        List<StudentSearchRoomDto> studentSearchRoomDtos = new ArrayList<>();
+        List<Object[]> results = query.getResultList();
+        if (!CollectionUtils.isEmpty(results)){
+            for (Object[] obj : results){
+                StudentSearchRoomDto studentSearchRoomDto = new StudentSearchRoomDto();
+                studentSearchRoomDto.setCodeDepartment(ValueUtil.getStringByObject(obj[0]));
+                studentSearchRoomDto.setTitleDepartment(ValueUtil.getStringByObject(obj[1]));
+                studentSearchRoomDto.setCodeRoom(ValueUtil.getStringByObject(obj[2]));
+                studentSearchRoomDto.setTitleRoom(ValueUtil.getStringByObject(obj[3]));
+                studentSearchRoomDto.setPrice(ValueUtil.getStringByObject(obj[4]));
+                studentSearchRoomDto.setLimitAmountPeopleRegister(ValueUtil.getIntegerByObject(obj[5]));
+                studentSearchRoomDto.setSex(ValueUtil.getIntegerByObject(obj[6]));
+                studentSearchRoomDto.setRemainAmountRegister(ValueUtil.getIntegerByObject(obj[7]));
+                studentSearchRoomDtos.add(studentSearchRoomDto);
+            }
+        }
+        return new PageImpl<>(studentSearchRoomDtos, pageable, countFindAllRoomStudentSearch(request));
+    }
+
+    private long countFindAllRoomStudentSearch(StudentSearchRoomRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select count(0) " +
+                "from department de " +
+                "    inner join room ro on de.id_department = ro.id_department " +
+                "where de.code_department = :codeDepartment " +
+                "and ro.sex_room = :sexRoom ");
+        setConditionFindAllRoomStudentSearch(request, sb);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllRoomStudentSearch(request, query);
+        return ValueUtil.getIntegerByObject(query.getSingleResult());
+    }
+
+    private void setParameterFindAllRoomStudentSearch(StudentSearchRoomRequest request, Query query) {
+        query.setParameter("codeDepartment", request.getCodeDepartment());
+        query.setParameter("sexRoom", request.getGender());
+        if (StringUtils.isNotBlank(request.getTitleRoom())){
+            query.setParameter("titleRoom", request.getTitleRoom());
+        }
+    }
+
+    private void setConditionFindAllRoomStudentSearch(StudentSearchRoomRequest request, StringBuilder sb) {
+        if (StringUtils.isNotBlank(request.getTitleRoom())){
+            sb.append(" and ro.title REGEXP :titleRoom ");
+        }
+        sb.append(" order by ro.id_room desc ");
     }
 
     private void setParameterFindAllRoom(FindAllRoomsRequest request, Query query) {

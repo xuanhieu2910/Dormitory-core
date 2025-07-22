@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
+import teamit.hust.ktxcdshustbe.dto.room.StudentSearchRoomDto;
 import teamit.hust.ktxcdshustbe.dto.serviceRoom.ServiceRoomDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
@@ -307,6 +308,37 @@ public class RoomServiceImpl implements RoomService {
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         Page<FindAllRoomsDto> findAllRoomsDtos = roomRepository.findAllRooms(request, pageable);
         return new PageImpl<>(convertToFindAllRoomsResponse(findAllRoomsDtos.getContent()), pageable, findAllRoomsDtos.getTotalElements());
+    }
+
+    @Override
+    public Page<StudentSearchRoomResponse> studentSearchRoom(StudentSearchRoomRequest request) {
+        verifyStudentSearchRoom(request);
+        Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
+        Page<StudentSearchRoomDto> studentSearchRoom = roomRepository.findAllRoomStudentSearch(request, pageable);
+        return new PageImpl<>(convertToStudentSearchRoom(studentSearchRoom.getContent()), pageable, studentSearchRoom.getTotalElements());
+    }
+
+    private List<StudentSearchRoomResponse> convertToStudentSearchRoom(List<StudentSearchRoomDto> content) {
+        List<StudentSearchRoomResponse> responses = new ArrayList<>();
+        for (StudentSearchRoomDto dto : content){
+            StudentSearchRoomResponse response = new StudentSearchRoomResponse();
+            response.setCodeDepartment(dto.getCodeDepartment());
+            response.setTitleDepartment(dto.getTitleDepartment());
+            response.setCodeRoom(dto.getCodeRoom());
+            response.setTitleRoom(dto.getTitleRoom());
+            response.setPrice(dto.getPrice());
+            response.setLimitAmountPeopleRegister(dto.getLimitAmountPeopleRegister());
+            response.setSex(dto.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
+            response.setRemainAmountRegister(dto.getRemainAmountRegister());
+            responses.add(response);
+        }
+        return responses;
+    }
+
+    private void verifyStudentSearchRoom(StudentSearchRoomRequest request) {
+        if (StringUtils.isBlank(request.getCodeDepartment()) || ObjectUtils.isEmpty(request.getGender())){
+            throw new ValidParametersException();
+        }
     }
 
     private List<FindAllRoomsResponse> convertToFindAllRoomsResponse(List<FindAllRoomsDto> content) {
