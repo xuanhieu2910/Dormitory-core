@@ -124,12 +124,16 @@ public class RoomController {
 
 
     @PostMapping("/search-room")
-    public ResponseEntity<?> searchRoom(@RequestBody SearchRoomToTranferRequest request){
-        try{
+    public ResponseEntity<?> searchRoom(@RequestBody SearchRoomToTranferRequest request) {
+        try {
             SearchRoomResponse response = roomService.searchRoomToTranfer(request);
             return ApiResponseDto.createdWithState(response, "Search room success!", HttpStatus.OK);
-        }catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (ValidParametersException e) {
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (NotFoundException e) {
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -150,5 +154,6 @@ public class RoomController {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 }

@@ -19,4 +19,20 @@ public class SearchRoomResponse {
     private Integer roomId;
     @JsonProperty("titleRoom")
     private String titleRoom;
+    @JsonProperty("codeDepartment")
+    private String codeDepartment;
+    @JsonProperty("codeRoom")
+    private String codeRoom;
+    @JsonProperty("price")
+    private String price;
+    @JsonProperty("capacity")
+    private Integer capacity;
+    @JsonProperty("quantity")
+    private Integer quantity;
+    @JsonProperty("remainQuantity")
+    private Integer remainQuantity;
+    @JsonProperty("sex")
+    private Integer sex;
+    @JsonProperty("status")
+    private String status;
 }

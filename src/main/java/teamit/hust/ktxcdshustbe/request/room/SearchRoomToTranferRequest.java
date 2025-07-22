@@ -10,8 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SearchRoomToTranferRequest {
 
-    @JsonProperty("keyword")
-    private String keyword;
+    @JsonProperty("codeDepartment")
+    private String codeDepartment;
+    @JsonProperty("codeRoom")
+    private String codeRoom;
     @JsonProperty("sexUser")
     private Integer sexUser;
 }

@@ -263,8 +263,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public SearchRoomResponse searchRoomToTranfer(SearchRoomToTranferRequest searchRoom){
         validateSearchRoom(searchRoom);
-        Optional<SearchRoomResponse> response = roomRepository.searchRoomToTranfer(searchRoom.getKeyword().split("-")[0],
-                searchRoom.getKeyword().split("-")[1], searchRoom.getSexUser());
+        Optional<SearchRoomResponse> response = roomRepository.searchRoomToTranfer(searchRoom.getCodeDepartment(),
+                searchRoom.getCodeRoom(), searchRoom.getSexUser());
         if (response.isEmpty()){
             throw new NotFoundException();
         }
@@ -374,10 +374,10 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private void validateSearchRoom(SearchRoomToTranferRequest searchRoom)  {
-        String[] keyword = searchRoom.getKeyword().split("-");
-        if (keyword.length != 2 || Objects.isNull(searchRoom.getSexUser())) {
+        if(StringUtils.isBlank(searchRoom.getCodeDepartment()) || StringUtils.isBlank(searchRoom.getCodeRoom())
+            || Objects.isNull(searchRoom.getSexUser())) {
             throw new ValidParametersException();
-        };
+        }
     }
 
     private void validateStudentRegisterRoomRequest(FindAllRoomsForRentRequest request) {

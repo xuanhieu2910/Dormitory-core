@@ -4,6 +4,10 @@ import org.springframework.data.domain.Page;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.exception.ValidateFiledException;
 import teamit.hust.ktxcdshustbe.request.room.*;
+import teamit.hust.ktxcdshustbe.response.room.FindAllRoomsResponse;
+import teamit.hust.ktxcdshustbe.response.room.RoomDetailResponse;
+import teamit.hust.ktxcdshustbe.response.room.RoomsForStudentRentResponse;
+import teamit.hust.ktxcdshustbe.response.room.SearchRoomResponse;
 import teamit.hust.ktxcdshustbe.response.room.*;
 
 import java.util.Optional;
