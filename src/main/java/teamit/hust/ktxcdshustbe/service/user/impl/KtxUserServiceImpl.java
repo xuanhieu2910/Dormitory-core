@@ -228,9 +228,24 @@ public class KtxUserServiceImpl implements KtxUserService {
     }
 
     @Override
-    public DetailInformationUserResponse getDetailInformationUserByUserName(String userName) {
-        KtxUser userDetails = (KtxUser) this.loadUserByUsername(userName);
-        return convertToDetailInformationUserResponse(userDetails);
+    public DetailInformationUserResponse getDetailInformationUserByCodeUser(String codeUser) {
+        Optional<KtxUser>  userDetails = ktxUserRepository.findByKtxUserCode(codeUser);
+        YearGroup yearGroup = yearGroupService.findYearGroupByIdYearGroup(userDetails.get().getIdYearGroup());
+        PriorityGroup priorityGroup =  priorityGroupService.findPriorGroupByIdPriorGroup(userDetails.get().getIdPriorityGroup());
+        return convertToDetailInformationStudentResponse(userDetails.get(),yearGroup,priorityGroup);
+    }
+
+    private DetailInformationUserResponse convertToDetailInformationStudentResponse(KtxUser ktxUser, YearGroup yearGroup, PriorityGroup priorityGroup) {
+        DetailInformationUserResponse response = new DetailInformationUserResponse();
+        response.setCodeUser(ktxUser.getCodeUser());
+        response.setValue(ktxUser.getValue());
+        response.setPassword(ktxUser.getPassword());
+        response.setSex(ktxUser.getSex());
+        response.setIsActive(ktxUser.getIsActived());
+        response.setTypeLogin(ktxUser.getTypeLogin());
+        response.setTitleYearGroup(yearGroup.getTitle());
+        response.setTitlePriorityGroup(priorityGroup.getTitle());
+        return response;
     }
 
     private void createUserRole(List<KtxUser> ktxUsers) {

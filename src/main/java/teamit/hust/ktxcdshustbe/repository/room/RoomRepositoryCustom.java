@@ -33,5 +33,7 @@ public interface RoomRepositoryCustom {
     Page<FindAllRoomsDto> findAllRooms(FindAllRoomsRequest request, Pageable pageable);
     Optional<Room> findRoomByTitleRoom(String title);
     Optional<Room> findRoomByTitleRoomAndCodeDepartment(String title, String codeDepartment);
+
+    Optional<Room> findRoomByIdRoom(Integer idRoom);
     Page<StudentSearchRoomDto> findAllRoomStudentSearch(StudentSearchRoomRequest request, Pageable pageable);
 }

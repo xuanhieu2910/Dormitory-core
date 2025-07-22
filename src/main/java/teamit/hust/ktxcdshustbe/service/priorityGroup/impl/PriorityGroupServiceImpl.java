@@ -21,4 +21,13 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
         }
         return priorityGroupOptional.get();
     }
+
+    @Override
+    public PriorityGroup findPriorGroupByIdPriorGroup(Integer idPriorityGroup) {
+        Optional<PriorityGroup> priorityGroupOptional = priorityGroupRepository.findPriorityGroupByIdPriorityGroup(idPriorityGroup);
+        if (priorityGroupOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return priorityGroupOptional.get();
+    }
 }

@@ -14,4 +14,6 @@ public class StudentToRoomRequest {
     private String codeUser;
     @JsonProperty("codeRoom")
     private String codeRoom;
+    @JsonProperty("idTimeHired")
+    private Integer idTimeHired;
 }

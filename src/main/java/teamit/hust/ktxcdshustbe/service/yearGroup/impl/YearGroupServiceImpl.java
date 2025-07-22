@@ -22,4 +22,13 @@ public class YearGroupServiceImpl implements YearGroupService {
         }
         return yearGroupOptional.get();
     }
+
+    @Override
+    public YearGroup findYearGroupByIdYearGroup(Integer idYearGroup) {
+        Optional<YearGroup> yearGroupOptional = yearGroupRepository.findYearGroupByIdYearGroup(idYearGroup);
+        if (yearGroupOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return yearGroupOptional.get();
+    }
 }

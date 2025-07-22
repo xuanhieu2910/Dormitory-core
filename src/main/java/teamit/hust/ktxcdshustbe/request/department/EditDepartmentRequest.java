@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class EditDepartmentRequest {
     private String codeDepartment;
     private String codeParentDepartment;

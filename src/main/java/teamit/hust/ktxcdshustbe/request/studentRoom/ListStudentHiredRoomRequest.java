@@ -15,11 +15,13 @@ import java.util.List;
 public class ListStudentHiredRoomRequest extends RequestPageBase {
 
     @JsonProperty("codeDepartment")
-    private Integer codeDepartment;
+    private String codeDepartment;
     @JsonProperty("codeRoom")
-    private Integer codeRoom;
+    private String codeRoom;
+    @JsonProperty("status")
+    private Integer status;
     @JsonProperty("codeSemester")
-    private Integer codeSemester;
+    private String codeSemester;
     @JsonProperty("timeStarted")
     private String timeStarted;
     @JsonProperty("timeEnded")

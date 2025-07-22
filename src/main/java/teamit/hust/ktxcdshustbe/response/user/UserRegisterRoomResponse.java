@@ -14,12 +14,8 @@ public class UserRegisterRoomResponse {
     private Integer idRegisterRoom;
     @JsonProperty("code_user")
     private String codeUser;
-    @JsonProperty("full_name")
-    private String fullName;
-    @JsonProperty("number_student")
-    private String numberStudent;
-    @JsonProperty("phone_number")
-    private String phoneNumber;
+    @JsonProperty("value")
+    private String value;
     @JsonProperty("time_register")
     private Long timeRegister;
     @JsonProperty("code_department")

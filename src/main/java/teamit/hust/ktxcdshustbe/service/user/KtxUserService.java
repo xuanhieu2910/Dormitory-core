@@ -25,7 +25,7 @@ public interface KtxUserService extends UserDetailsService {
 
     void uploadFileAccountStudent(MultipartFile file);
     Page<FindAllStudentsResponse> findAllStudentRequest(FindAllStudentsRequest request);
-    DetailInformationUserResponse getDetailInformationUserByUserName(String userName);
+    DetailInformationUserResponse getDetailInformationUserByCodeUser(String userName);
     void hasCapability(String servletPath, String method) throws ServletException;
     KtxUser findKtxUserByCodeUser(String codeUser);
     int updateStatusRegisterRoom(Integer userId, Integer statusUserRegisterRoom);

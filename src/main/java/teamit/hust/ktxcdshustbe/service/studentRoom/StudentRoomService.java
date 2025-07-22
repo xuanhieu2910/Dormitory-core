@@ -2,8 +2,6 @@ package teamit.hust.ktxcdshustbe.service.studentRoom;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import teamit.hust.ktxcdshustbe.entity.KtxUser;
-import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.entity.StudentRoom;
 import teamit.hust.ktxcdshustbe.exception.ValidateFiledException;
 import teamit.hust.ktxcdshustbe.request.studentRoom.ListStudentHiredRoomRequest;
@@ -15,13 +13,12 @@ import teamit.hust.ktxcdshustbe.response.studentRoom.ListStudentHiredRoomRespons
 import teamit.hust.ktxcdshustbe.response.studentRoom.StudentSearchAddNewRoomResponse;
 import teamit.hust.ktxcdshustbe.response.user.HiredRoomsResponse;
 import teamit.hust.ktxcdshustbe.response.user.ListHiredRoomStudentResponse;
-import teamit.hust.ktxcdshustbe.response.user.UserHiredRoomDetailResponse;
 
 import java.util.List;
 
 public interface StudentRoomService {
 
-    StudentRoom saveStudentRoom(StudentRoom room);
+    void saveStudentRoom(StudentRoom room);
     List<HiredRoomsResponse> getRoomsHiredByUser(String codeUser) throws ValidateFiledException;
     Page<ListHiredRoomStudentResponse> getListHiredRoomStudentResponse(OidcUser principal,StudentListRoomHiredRequest request);
     Page<ListStudentHiredRoomResponse> getListStudentHiredRoomResponse(ListStudentHiredRoomRequest request);

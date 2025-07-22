@@ -102,7 +102,7 @@ public class DepartmentController {
         }
     }
     @DeleteMapping
-    public ResponseEntity<?> createDepartment(@RequestParam("code-department") String codeDepartment){
+    public ResponseEntity<?> deleteDepartmentByCodeDepartment(@RequestParam("code-department") String codeDepartment){
         try {
             departmentService.deleteDepartmentByCodeDepartment(codeDepartment);
             return ApiResponseDto.createdWithMessage("delete department success!", HttpStatus.OK);
@@ -115,7 +115,7 @@ public class DepartmentController {
         }
     }
     @GetMapping("/details")
-    public ResponseEntity<?> findDetailsAdmissionProgram(@RequestParam("code-department")String codeDepartment){
+    public ResponseEntity<?> findDetailsDepartmentByCodeDepartment(@RequestParam("code-department")String codeDepartment){
         try {
             return ApiResponseDto.createdWithState(departmentService.findDetailsDepartmentByCodeDepartment(codeDepartment),
                     "Find details department success!", HttpStatus.OK);

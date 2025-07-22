@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface YearGroupRepositoryCustom {
     Optional<YearGroup> findYearGroupByTitle(String titleYearGroup);
+
+    Optional<YearGroup> findYearGroupByIdYearGroup(Integer idYearGroup);
 }

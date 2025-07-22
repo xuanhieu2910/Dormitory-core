@@ -29,4 +29,6 @@ public class TimeHired {
     private Integer idUserCreated;
     @Column(name = "id_user_modified")
     private Integer idUserModified;
+    @Column(name = "code_time_hired")
+    private String codeTimeHired;
 }
