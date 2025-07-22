@@ -33,6 +33,10 @@ public class Semester {
 
     @Column(name = "time_modified")
     private Long timeModified;
+
     @Column(name = "code_semester")
     private String codeSemester;
+
+    @Column(name = "note")
+    private String note;
 }
