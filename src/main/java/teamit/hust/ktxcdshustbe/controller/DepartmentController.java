@@ -101,5 +101,4 @@ public class DepartmentController {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
 }

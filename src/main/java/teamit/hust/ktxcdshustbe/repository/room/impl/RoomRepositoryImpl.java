@@ -157,30 +157,69 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return query.executeUpdate();
     }
 
+//    @Override
+//    public Optional<SearchRoomResponse> searchRoomToTranfer(String titleDepartment, String titleRoom, Integer sex) {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append(" select de.id departmentId, de.title titleDepartment, " +
+//                "       ro.id roomId, ro.title titleRoom " +
+//                "from room ro " +
+//                "    inner join department de on ro.department_id = de.id " +
+//                "where ro.title = :titleRoom " +
+//                "  and de.title = :titleDepartment " +
+//                "  and ro.is_actived = 1 " +
+//                "  and ro.remain_amount > 0 " +
+//                "  and ro.sex_room = :sexUser ");
+//        Query query = entityManager.createNativeQuery(sb.toString());
+//        query.setParameter("titleRoom", titleRoom);
+//        query.setParameter("titleDepartment", titleDepartment);
+//        query.setParameter("sexUser", sex);
+//        List<Object[]> result = query.getResultList();
+//        SearchRoomResponse response = new SearchRoomResponse();
+//        if (!CollectionUtils.isEmpty(result)) {
+//            for (Object[] obj: result){
+//                response.setDepartmentId(ValueUtil.getIntegerByObject(obj[0]));
+//                response.setTitleDepartment(ValueUtil.getStringByObject(obj[1]));
+//                response.setRoomId(ValueUtil.getIntegerByObject(obj[2]));
+//                response.setTitleRoom(ValueUtil.getStringByObject(obj[3]));
+//                return Optional.of(response);
+//            }
+//        }
+//        return Optional.empty();
+//    }
     @Override
     public Optional<SearchRoomResponse> searchRoomToTranfer(String titleDepartment, String titleRoom, Integer sex) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select de.id departmentId, de.title titleDepartment, " +
-                "       ro.id roomId, ro.title titleRoom " +
-                "from room ro " +
-                "    inner join department de on ro.department_id = de.id " +
-                "where ro.title = :titleRoom " +
-                "  and de.title = :titleDepartment " +
-                "  and ro.is_actived = 1 " +
-                "  and ro.remain_amount > 0 " +
-                "  and ro.sex_room = :sexUser ");
+        sb.append("""
+                select d.code_department, d.title, r.code_room, r.title,
+                    r.sex_room, r.price, r.limit_amount_people, r.quantity_hired,
+                    r.remain_amount, r.is_active
+                from room r
+                    inner join department d on r.id_department = d.id_department
+                where 
+                    d.title = :titleDepartment and
+                    r.title = :titleRoom and
+                    r.is_active = 1 and
+                    r.remain_amount > 0 and
+                    r.sex_room = :sex
+                """);
         Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("titleDeparment", titleDepartment);
         query.setParameter("titleRoom", titleRoom);
-        query.setParameter("titleDepartment", titleDepartment);
-        query.setParameter("sexUser", sex);
+        query.setParameter("sex", sex);
         List<Object[]> result = query.getResultList();
         SearchRoomResponse response = new SearchRoomResponse();
-        if (!CollectionUtils.isEmpty(result)) {
-            for (Object[] obj: result){
-                response.setDepartmentId(ValueUtil.getIntegerByObject(obj[0]));
+        if(!CollectionUtils.isEmpty(result)){
+            for(Object[] obj : result){
+                response.setCodeDepartment(ValueUtil.getStringByObject(obj[0]));
                 response.setTitleDepartment(ValueUtil.getStringByObject(obj[1]));
-                response.setRoomId(ValueUtil.getIntegerByObject(obj[2]));
+                response.setCodeRoom(ValueUtil.getStringByObject(obj[2]));
                 response.setTitleRoom(ValueUtil.getStringByObject(obj[3]));
+                response.setSex(ValueUtil.getIntegerByObject(obj[4]));
+                response.setPrice(ValueUtil.getStringByObject(obj[5]));
+                response.setCapacity(ValueUtil.getIntegerByObject(obj[6]));
+                response.setQuantity(ValueUtil.getIntegerByObject(obj[7]));
+                response.setRemainQuantity(ValueUtil.getIntegerByObject(obj[8]));
+                response.setStatus(ValueUtil.getStringByObject(obj[9]));
                 return Optional.of(response);
             }
         }
