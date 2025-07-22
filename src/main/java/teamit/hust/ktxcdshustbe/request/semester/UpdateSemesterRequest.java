@@ -13,4 +13,7 @@ import lombok.Setter;
 public class UpdateSemesterRequest {
     private String titleSemester;
     private Integer status;
+    private String codeSemester;
+    private String note;
+
 }

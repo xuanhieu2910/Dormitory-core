@@ -5,6 +5,7 @@ import teamit.hust.ktxcdshustbe.entity.Semester;
 import teamit.hust.ktxcdshustbe.request.semester.CreateSemesterRequest;
 import teamit.hust.ktxcdshustbe.request.semester.FindAllSemesterRequest;
 import teamit.hust.ktxcdshustbe.request.semester.UpdateSemesterRequest;
+import teamit.hust.ktxcdshustbe.response.semester.DetailSemesterResponse;
 import teamit.hust.ktxcdshustbe.response.semester.FindAllSemesterResponse;
 
 public interface SemesterService {
@@ -13,4 +14,5 @@ public interface SemesterService {
     Semester create(CreateSemesterRequest request);
     Semester update(UpdateSemesterRequest request);
     void delete(String codeSemester);
+    DetailSemesterResponse findSemesterDetailByCode(String codeSemester);
 }
