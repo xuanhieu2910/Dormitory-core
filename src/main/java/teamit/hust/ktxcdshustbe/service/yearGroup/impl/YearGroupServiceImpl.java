@@ -22,16 +22,33 @@ import teamit.hust.ktxcdshustbe.response.yearGroup.YearGroupDetailResponse;
 import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 @Log4j2
 @Service
 public class YearGroupServiceImpl implements YearGroupService {
 
     @Autowired
     private YearGroupRepository yearGroupRepository;
+
+    @Override
+    public YearGroup findYearGroupByTitle(String titleYearGroup) {
+        Optional<YearGroup> yearGroupOptional = yearGroupRepository.findYearGroupByTitle(titleYearGroup);
+        if (yearGroupOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return yearGroupOptional.get();
+    }
+
+    @Override
+    public YearGroup findYearGroupByIdYearGroup(Integer idYearGroup) {
+        Optional<YearGroup> yearGroupOptional = yearGroupRepository.findYearGroupByIdYearGroup(idYearGroup);
+        if (yearGroupOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return yearGroupOptional.get();
+    }
+
 
     @Override
     public Page<FindAllYearGroupsResponse> findAllYearGroup(FindAllYearGroupsRequest request) {

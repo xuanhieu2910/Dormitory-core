@@ -8,6 +8,11 @@ import teamit.hust.ktxcdshustbe.request.yearGroup.FindAllYearGroupsRequest;
 import java.util.Optional;
 
 public interface YearGroupRepositoryCustom {
+
+    Optional<YearGroup> findYearGroupByTitle(String titleYearGroup);
+
+    Optional<YearGroup> findYearGroupByIdYearGroup(Integer idYearGroup);
+
     Page<FindAllYearGroupsDto> findAllYearGroups(FindAllYearGroupsRequest request, Pageable pageable);
 
     Optional<FindAllYearGroupsDto> findYearGroupDetailsByCode(String code);
