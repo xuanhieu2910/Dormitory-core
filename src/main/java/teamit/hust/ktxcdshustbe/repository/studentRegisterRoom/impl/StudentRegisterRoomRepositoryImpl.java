@@ -375,11 +375,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                     "    DATE_FORMAT(STR_TO_DATE(:timeStared, '%d/%m/%Y'),'%d/%m/%Y') AND " +
                     "    DATE_FORMAT(STR_TO_DATE(:timeEnded,'%d/%m/%Y'),'%d/%m/%Y')) ");
         }
-        if (null != request.getStatus()){
-            sb.append(" and studentRegisterRoom.status = :status  ");
-        } else {
-            sb.append(" and studentRegisterRoom.status in (2,3) ");
-        }
+
 
         if (StringUtils.isNotBlank(request.getSortBy())
                 && request.getSortBy().equals("timeRegister")) {
