@@ -344,8 +344,8 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 dto.setCodeSemester(ValueUtil.getStringByObject(obj[7]));
                 dto.setTitleSemester(ValueUtil.getStringByObject(obj[8]));
                 dto.setIdTimeHired(ValueUtil.getIntegerByObject(obj[9]));
-                dto.setTimeHiredStarted(ValueUtil.getLongByObject(obj[10]));
-                dto.setTimeHiredEnded(ValueUtil.getLongByObject(obj[11]));
+                dto.setTimeHiredStarted(ValueUtil.getStringByObject(obj[10]));
+                dto.setTimeHiredEnded(ValueUtil.getStringByObject(obj[11]));
                 userRegisterRoomDtos.add(dto);
             }
         }
