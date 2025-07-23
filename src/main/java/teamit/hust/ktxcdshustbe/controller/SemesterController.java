@@ -1,7 +1,5 @@
 package teamit.hust.ktxcdshustbe.controller;
 
-
-import com.google.protobuf.Api;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
@@ -14,7 +12,6 @@ import teamit.hust.ktxcdshustbe.dto.ApiResponseDto;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.IsBlankException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
-import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.semester.CreateSemesterRequest;
 import teamit.hust.ktxcdshustbe.request.semester.FindAllSemesterRequest;
 import teamit.hust.ktxcdshustbe.request.semester.UpdateSemesterRequest;
@@ -30,19 +27,6 @@ public class SemesterController {
     @Autowired
     SemesterService semesterService;
 
-//    @GetMapping("/semester")
-//    public ResponseEntity<?> getListSemester(@And({
-//            @Spec(path = "page", params = "page", spec = Like.class),
-//            @Spec(path = "size", params = "size", spec = Like.class),
-//            @Spec(path = "keyword", params = "keyword", spec = Like.class)
-//    }) FindAllSemesterRequest request){
-//        try {
-//            return ApiResponseDto.createdWithState(semesterService.findAllSemester(request),
-//                    "Find all semester success!", HttpStatus.OK);
-//        }catch (Exception e){
-//            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
 
     @GetMapping("/find-all")
     public ResponseEntity<?> getListSemester(@And({
@@ -55,6 +39,7 @@ public class SemesterController {
             return ApiResponseDto.createdWithState(semesterService.findAllSemester(request), "Find all semester success", HttpStatus.OK);
         }
         catch (Exception e) {
+            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -62,7 +47,7 @@ public class SemesterController {
 
 
     @GetMapping("/details")
-    public ResponseEntity<?> getDetailSemester(@RequestParam("codeSemester") String codeSemester) {
+    public ResponseEntity<?> getDetailSemester(@RequestParam("code-semester") String codeSemester) {
         try {
             DetailSemesterResponse semester = semesterService.findSemesterDetailByCode(codeSemester);
             return ApiResponseDto.createdWithState(semester, "Find details semester success!", HttpStatus.OK);
@@ -110,7 +95,7 @@ public class SemesterController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteSemester(@RequestParam("codeSemester") String codeSemester) {
+    public ResponseEntity<?> deleteSemester(@RequestParam("code-semester") String codeSemester) {
         try {
             semesterService.delete(codeSemester);
             return ApiResponseDto.createdWithMessage("Delete semester success", HttpStatus.OK);

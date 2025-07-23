@@ -34,12 +34,8 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select se.id_semester, se.title, se.time_created,  " +
                 "       se.time_modified, se.status, se.id_user_created,  " +
-                "       se.id_user_modified, se.code_semester,  " +
-                "       ku_created.user_name, " +
-                "       ku_modified.user_name  " +
+                "       se.id_user_modified, se.code_semester " +
                 "from semester se  " +
-                "        inner join ktx_user ku_created on se.id_user_created = ku_created.id_ktx_user  " +
-                "        inner join ktx_user ku_modified on se.id_user_modified = ku_modified.id_ktx_user  " +
                 "where 1 = 1 ");
         setConditionFindAllSemesterDto(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -53,14 +49,11 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
                 findAllSemesterDto.setIdSemester(ValueUtil.getIntegerByObject(obj[0]));
                 findAllSemesterDto.setTitleSemester(ValueUtil.getStringByObject(obj[1]));
                 findAllSemesterDto.setTimeCreated(ValueUtil.getLongByObject(obj[2]));
-                findAllSemesterDto.setStatus(ValueUtil.getIntegerByObject(obj[3]));
-                findAllSemesterDto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[4]));
-                findAllSemesterDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[5]));
-                findAllSemesterDto.setCodeSemester(ValueUtil.getStringByObject(obj[6]));
-                findAllSemesterDto.setUserNameCreated(ValueUtil.getStringByObject(obj[7]));
-                findAllSemesterDto.setFullNameCreated(ValueUtil.getStringByObject(obj[8]));
-                findAllSemesterDto.setUserNameModified(ValueUtil.getStringByObject(obj[9]));
-                findAllSemesterDto.setFullNameModified(ValueUtil.getStringByObject(obj[10]));
+                findAllSemesterDto.setTimeModified(ValueUtil.getLongByObject(obj[3]));
+                findAllSemesterDto.setStatus(ValueUtil.getIntegerByObject(obj[4]));
+                findAllSemesterDto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[5]));
+                findAllSemesterDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[6]));
+                findAllSemesterDto.setCodeSemester(ValueUtil.getStringByObject(obj[7]));
                 semesterDtos.add(findAllSemesterDto);
             }
         }
@@ -71,8 +64,6 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) " +
                 "from semester se  " +
-                "        inner join ktx_user ku_created on se.id_user_created = ku_created.id_ktx_user  " +
-                "        inner join ktx_user ku_modified on se.id_user_modified = ku_modified.id_ktx_user  " +
                 "where 1 = 1 ");
         setConditionFindAllSemesterDto(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());

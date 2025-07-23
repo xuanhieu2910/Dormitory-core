@@ -27,7 +27,7 @@ public class RoomController {
     @Autowired
     RoomService roomService;
 
-    @GetMapping
+    @GetMapping("/find-all")
     public ResponseEntity<?> findAllRoom( @And({
                     @Spec(path = "page", params = "page", spec = Like.class),
                     @Spec(path = "size", params = "size", spec = Like.class),
@@ -37,8 +37,10 @@ public class RoomController {
             Page<FindAllRoomsResponse> roomsResponsePage = roomService.findAllRoom(request);
             return ApiResponseDto.createdWithState(roomsResponsePage, "Find all rooms success!", HttpStatus.OK);
         } catch (ValidParametersException e){
+            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
