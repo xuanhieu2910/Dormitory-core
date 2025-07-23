@@ -350,8 +350,8 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "       ro.quantity_registered, ro.remain_amount_register,  " +
                 "       ro.code_room,  " +
                 "       de.title, de.code_department,  " +
-                "       kuCreated.user_name, kuCreated.full_name,  " +
-                "       kuModified.user_name, kuModified.full_name  " +
+                "       kuCreated.user_name, kuCreated.value,  " +
+                "       kuModified.user_name, kuModified.value  " +
                 "from room ro  " +
                 "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
                 "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +
@@ -386,9 +386,9 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 roomDto.setTitleDepartment(ValueUtil.getStringByObject(obj[17]));
                 roomDto.setCodeDepartment(ValueUtil.getStringByObject(obj[18]));
                 roomDto.setUserNameCreated(ValueUtil.getStringByObject(obj[19]));
-                roomDto.setFullNameCreated(ValueUtil.getStringByObject(obj[20]));
+                roomDto.setValueCreated(ValueUtil.getStringByObject(obj[20]));
                 roomDto.setUserNameModified(ValueUtil.getStringByObject(obj[21]));
-                roomDto.setFullNameModified(ValueUtil.getStringByObject(obj[22]));
+                roomDto.setValueModified(ValueUtil.getStringByObject(obj[22]));
                 findAllRoomsDtos.add(roomDto);
             }
         }
@@ -575,8 +575,8 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "       ro.quantity_registered, ro.remain_amount_register,   " +
                 "       ro.code_room,   " +
                 "       de.code_department, de.title,    " +
-                "       kuCreated.user_name, kuCreated.full_name,   " +
-                "       kuModified.user_name, kuModified.full_name   " +
+                "       kuCreated.user_name, kuCreated.value,   " +
+                "       kuModified.user_name, kuModified.value   " +
                 "from room ro   " +
                 "        inner join department de on ro.id_department = de.id_department   " +
                 "        inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user   " +
@@ -612,9 +612,9 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 dto.setCodeDepartment(ValueUtil.getStringByObject(obj[17]));
                 dto.setTitleDepartment(ValueUtil.getStringByObject(obj[18]));
                 dto.setUserNameCreated(ValueUtil.getStringByObject(obj[19]));
-                dto.setFullNameCreated(ValueUtil.getStringByObject(obj[20]));
+                dto.setValueCreated(ValueUtil.getStringByObject(obj[20]));
                 dto.setUserNameModified(ValueUtil.getStringByObject(obj[21]));
-                dto.setFullNameModified(ValueUtil.getStringByObject(obj[22]));
+                dto.setValueModified(ValueUtil.getStringByObject(obj[22]));
                 findAllRoomsDtos.add(dto);
             }
         }
