@@ -26,6 +26,6 @@ public class ListStudentHiredRoomRequest extends RequestPageBase {
     private String timeStarted;
     @JsonProperty("timeEnded")
     private String timeEnded;
-    private List<Integer> listDepartmentOriginal;
+//    private List<Integer> listDepartmentOriginal;
 
 }

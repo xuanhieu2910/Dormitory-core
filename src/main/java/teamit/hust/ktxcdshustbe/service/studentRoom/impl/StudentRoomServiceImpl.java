@@ -80,8 +80,8 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public Page<ListStudentHiredRoomResponse> getListStudentHiredRoomResponse(ListStudentHiredRoomRequest request) {
-        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        request.setListDepartmentOriginal(ktxUser.getListDepartmentCurrent());
+//        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        request.setListDepartmentOriginal(ktxUser.getListDepartmentCurrent());
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         Page<FindAllStudentHiredRoomDto> findAllStudentHiredRoomDtos = studentRoomRepository.getListStudentHiredRoomResponse(request, pageable);
         return new PageImpl<>(convertFindAllStudentHiredRoom(findAllStudentHiredRoomDtos.stream().collect(Collectors.toList())), pageable,findAllStudentHiredRoomDtos.getTotalElements());
