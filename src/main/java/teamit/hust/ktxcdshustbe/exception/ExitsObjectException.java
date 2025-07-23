@@ -11,4 +11,12 @@ public class ExitsObjectException extends RuntimeException{
         errorsDetails.setDescription(httpStatusCustom.getDescription());
         return errorsDetails;
     }
+
+    public ExitsObjectException() {
+        super();
+    }
+
+    public ExitsObjectException(String message) {
+        super(message);
+    }
 }

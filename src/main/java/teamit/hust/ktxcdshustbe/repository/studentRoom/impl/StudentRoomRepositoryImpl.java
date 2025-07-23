@@ -179,6 +179,55 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
     }
 
     @Override
+    public List<FindAllStudentHiredRoomDto> findAllStudentsForExport(ListStudentHiredRoomRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select studentRoom.id_student_room,ktxUser.code_user, ktxUser.value, " +
+                "       timeHired.time_started, timeHired.time_ended,semester.title, " +
+                "       de.code_department, de.title titleDepartment, ro.code_room,   " +
+                "       ro.title roomTitle, userModified.code_user,userModified.value,studentRoom.status " +
+                "from student_room studentRoom    " +
+                "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
+                "    left join ktx_user userModified on studentRoom.id_user_modified = userModified.id_ktx_user   " +
+                "    inner join room ro on studentRoom.id_room = ro.id_room   " +
+                "    inner join department de on ro.id_department = de.id_department   " +
+                "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired " +
+                "    inner join batches_registration_room brr on brr.id_room = ro.id_room " +
+                "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
+                "    inner join semester on semester.id_semester = br.id_semester " +
+                "where 1 = 1   ");
+
+        setConditionListStudentHiredRoomResponse(request, sb);
+        sb.append(" ORDER BY de.title, ro.title, ktxUser.code_user ASC");
+
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParametersListStudentHiredRoomResponse(request, query);
+
+        List<Object[]> result = query.getResultList();
+        List<FindAllStudentHiredRoomDto> responses = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(result)) {
+            for (Object[] obj : result) {
+                String dateStarted = ValueUtil.getStringByObject(obj[3]);
+                String dateEnded = ValueUtil.getStringByObject(obj[4]);
+                String titleSemester = ValueUtil.getStringByObject(obj[5]);
+                FindAllStudentHiredRoomDto res = new FindAllStudentHiredRoomDto();
+                res.setIdStudentRoom(ValueUtil.getIntegerByObject(obj[0]));
+                res.setCodeUser(ValueUtil.getStringByObject(obj[1]));
+                res.setValueUser(ValueUtil.getStringByObject(obj[2]));
+                res.setTimeHired(titleSemester + " - " + dateStarted + " - " + dateEnded);
+                res.setCodeDepartment(ValueUtil.getStringByObject(obj[6]));
+                res.setTitleDepartment(ValueUtil.getStringByObject(obj[7]));
+                res.setCodeRoom(ValueUtil.getStringByObject(obj[8]));
+                res.setTitleRoom(ValueUtil.getStringByObject(obj[9]));
+                res.setCodeUserModified(ValueUtil.getStringByObject(obj[10]));
+                res.setValueUserModified(ValueUtil.getStringByObject(obj[11]));
+                res.setStatus(ValueUtil.getIntegerByObject(obj[12]));
+                responses.add(res);
+            }
+        }
+        return responses;
+    }
+
+    @Override
     public Optional<StudentRoom> findStudentRoomByStudentRoomId(Integer studentRoomId) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select id_student_room, id_user, id_room, " +

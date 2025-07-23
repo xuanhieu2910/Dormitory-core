@@ -25,7 +25,8 @@ public class FileUtil {
     public static final String SEPARATOR = "/";
     public static String pathReturn = "";
     private static final StringBuilder builder = new StringBuilder();
-
+    private static final String CREATE_FILE_WIN = "copy con";
+    private static final String CREATE_FILE_UNIX = "touch";
 
     // Save file if success then return file path, else return null
     public static Map<String, String> saveFiles(MultipartFile[] uploadedFile) {
@@ -215,6 +216,50 @@ public class FileUtil {
         return Base64.getDecoder().decode(pathFilePhysical);
     }
 
+    public static File createFileSampleAsset(String nameFile) throws IOException {
+        // Define the file path
+        File file = new File(nameFile);
+        if(!file.exists()) {
+            System.out.println("creating file");
+            executeCreateFileCommand(nameFile);
+        }
+        return file;
+    }
 
-
+    public static String executeCreateFileCommand(String file) throws IOException {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        String osName = System.getProperty("os.name").toLowerCase();
+        String[] cmdArray = null;
+        if (osName.contains("win")) {
+            file = CREATE_FILE_WIN + " " + file;
+            cmdArray = new String[]{"cmd.exe", "/c", file};
+        } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
+            file = CREATE_FILE_UNIX + " " + file + " && chmod 751 " + file;
+            cmdArray = new String[]{"/bin/bash", "-c", file};
+        }
+        log.info("Cmd: " + Arrays.toString(cmdArray));
+        processBuilder.command(cmdArray);
+        try {
+            Process process = processBuilder.start();
+            int exitCode = process.waitFor();
+            if (exitCode == 0) {
+                System.out.println("File created successfully: " + file);
+            } else {
+                System.out.println("Failed to create file. Exit code: " + exitCode);
+            }
+            return file;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void createFolder(String folder){
+        File directory = new File(folder);
+        if (!directory.exists()) {
+            directory.mkdirs();// Create directories if they don't exist
+            log.info("Create folder " + folder + " success!");
+        }
+    }
 }

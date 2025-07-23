@@ -31,4 +31,6 @@ public interface StudentRoomRepositoryCustom {
 
     Optional<StudentRoom> findStudentHiringRoomByCodeUser(String codeUser);
     Optional<StudentRoom> getStudentRoomIsActiveByCodeUserAndRoomIdRoom(String codeUser, Integer idRoom);
+
+    List<FindAllStudentHiredRoomDto> findAllStudentsForExport(ListStudentHiredRoomRequest request);
 }

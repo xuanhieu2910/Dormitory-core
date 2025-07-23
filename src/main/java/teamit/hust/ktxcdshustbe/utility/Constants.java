@@ -15,6 +15,7 @@ public class Constants {
 
     public final static String CLAIMS_INFORMATION_USER = "informationUser";
 
+    public final static String NAME_REPORT_STUDENT_HIRED_ROOM_LIST = "Bao cao danh sach sinh vien dang ky phong.xlsx";
     public static int VN = 1;
     public final static Integer ACCOUNT_IS_ACTIVED = 1;
     public  final static Integer ACCOUNT_IS_UN_ACTIVED = 0; // Not yet validate email

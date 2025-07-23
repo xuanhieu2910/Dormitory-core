@@ -12,4 +12,12 @@ public class ValidParametersException extends RuntimeException {
         errorsDetails.setDescription(httpStatusCustom.getDescription());
         return errorsDetails;
     }
+
+    public ValidParametersException() {
+        super();
+    }
+
+    public ValidParametersException(String message) {
+        super(message);
+    }
 }
