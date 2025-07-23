@@ -7,6 +7,7 @@ import teamit.hust.ktxcdshustbe.dto.priorityGroup.FindPriorityGroupDetailDto;
 import teamit.hust.ktxcdshustbe.entity.PriorityGroup;
 import teamit.hust.ktxcdshustbe.request.priorityGroup.FindAllPriorityGroupRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PriorityGroupRepositoryCustom {
@@ -17,4 +18,8 @@ public interface PriorityGroupRepositoryCustom {
 
     FindPriorityGroupDetailDto getPriorityGroupDetailByPriorityGroupCode(String priorityGroupCode);
 
+
+    Optional<List<PriorityGroup>> findPriorityGroupByListPriorityGroupCode(List<String> codesPriorityGroup);
+
+    Optional<List<PriorityGroup>> findPriorityGroupByIdsPriorityGroup(List<Integer> idsPriorityGroup);
 }

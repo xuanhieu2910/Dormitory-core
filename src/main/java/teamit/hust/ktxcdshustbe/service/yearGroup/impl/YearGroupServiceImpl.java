@@ -8,6 +8,7 @@ import teamit.hust.ktxcdshustbe.repository.yearGroup.YearGroupRepository;
 import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
 
 import javax.swing.text.html.Option;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,5 +31,23 @@ public class YearGroupServiceImpl implements YearGroupService {
             throw new NotFoundException();
         }
         return yearGroupOptional.get();
+    }
+
+    @Override
+    public List<YearGroup> findYearGroupsByListCode(List<String> codes) {
+        Optional<List<YearGroup>>yearGroups = yearGroupRepository.findYearGroupsByListCodes(codes);
+        if (yearGroups.isEmpty() || yearGroups.get().size() != codes.size()){
+            throw new NotFoundException();
+        }
+        return yearGroups.get();
+    }
+
+    @Override
+    public List<YearGroup> findYearGroupsByIds(List<Integer> idsYearGroup) {
+        Optional<List<YearGroup>>yearGroups = yearGroupRepository.findYearGroupsByIds(idsYearGroup);
+        if (yearGroups.isEmpty() || yearGroups.get().size() != idsYearGroup.size()){
+            throw new NotFoundException();
+        }
+        return yearGroups.get();
     }
 }

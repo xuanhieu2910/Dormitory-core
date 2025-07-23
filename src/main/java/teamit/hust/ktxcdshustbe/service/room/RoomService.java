@@ -10,6 +10,7 @@ import teamit.hust.ktxcdshustbe.response.room.RoomsForStudentRentResponse;
 import teamit.hust.ktxcdshustbe.response.room.SearchRoomResponse;
 import teamit.hust.ktxcdshustbe.response.room.*;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RoomService {
@@ -33,4 +34,6 @@ public interface RoomService {
     Page<StudentSearchRoomResponse> studentSearchRoom(StudentSearchRoomRequest request);
 
     Optional<Room> findRoomByIdRoom(Integer idRoom);
+    List<Room> findAllRoomByListCodeRoom(List<String> codesRoom);
+    List<Room> findAllRoomByListIdsRoom(List<Integer> idsRoom);
 }

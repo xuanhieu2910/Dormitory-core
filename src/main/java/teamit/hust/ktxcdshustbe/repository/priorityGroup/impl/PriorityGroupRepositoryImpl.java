@@ -170,4 +170,46 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
         return null;
     }
 
+    @Override
+    public Optional<List<PriorityGroup>> findPriorityGroupByListPriorityGroupCode(List<String> codesPriorityGroup) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select id_priority_group, priority_group_code,   " +
+                "       title, description, time_created,   " +
+                "       time_modified, id_user_created, id_user_modified  " +
+                "from priority_group  " +
+                "where priority_group_code in (:priorityCodes) ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("priorityCodes", codesPriorityGroup);
+        List<Object[]> results = query.getResultList();
+        if (!CollectionUtils.isEmpty(results)){
+            List<PriorityGroup> priorityGroups = new ArrayList<>();
+            for (Object[] obj : results){
+                priorityGroups.add(writeDataPriorityGroup(obj));
+            }
+            return Optional.of(priorityGroups);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<List<PriorityGroup>> findPriorityGroupByIdsPriorityGroup(List<Integer> idsPriorityGroup) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select id_priority_group, priority_group_code,   " +
+                "       title, description, time_created,   " +
+                "       time_modified, id_user_created, id_user_modified  " +
+                "from priority_group  " +
+                "where id_priority_group in (:idsPriorityGroup) ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idsPriorityGroup", idsPriorityGroup);
+        List<Object[]> results = query.getResultList();
+        if (!CollectionUtils.isEmpty(results)){
+            List<PriorityGroup> priorityGroups = new ArrayList<>();
+            for (Object[] obj : results){
+                priorityGroups.add(writeDataPriorityGroup(obj));
+            }
+            return Optional.of(priorityGroups);
+        }
+        return Optional.empty();
+    }
+
 }

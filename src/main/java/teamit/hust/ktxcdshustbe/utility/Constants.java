@@ -163,4 +163,23 @@ public class Constants {
     public static final Integer STATUS_BATCHES_REGISTRATION_CLOSED = 1;
     /*----------------------------------------------------*/
 
+    /**
+     * Constant Batches Year Group Registration
+     * */
+    public static final Integer STATUS_BATCHES_YEAR_GROUP_REGISTRATION_IN_ACTIVE = -1;
+    public static final Integer STATUS_BATCHES_YEAR_GROUP_REGISTRATION_ACTIVE = 1;
+    /*----------------------------------------------------*/
+    /**
+     * Constant Batches Registration Schedule
+     * */
+    public static final Integer STATUS_BATCHES_REGISTRATION_SCHEDULE_IN_ACTIVE = -1;
+    public static final Integer STATUS_BATCHES_REGISTRATION_SCHEDULE_ACTIVE = 1;
+    /*----------------------------------------------------*/
+    /**
+     * Constant Batches Registration Room
+     * */
+    public static final Integer STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE = -1;
+    public static final Integer STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE = 1;
+    /*----------------------------------------------------*/
+
 }

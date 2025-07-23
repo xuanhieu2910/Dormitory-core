@@ -14,6 +14,7 @@ import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.CreateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
+import teamit.hust.ktxcdshustbe.request.batchesRegistration.UpdateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
 
 @Tag(name = "Batches Registration API", description = "The Batches Registration API. Contains operations like CRUD room.")
@@ -68,4 +69,21 @@ public class BatchesRegistrationController {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> updateBatchesRegistration(@RequestBody UpdateBatchesRegistrationRequest request){
+        try {
+            batchesRegistrationService.updateBatchesRegistration(request);
+            return ApiResponseDto.createdWithMessage("Update batches registration success!", HttpStatus.OK);
+        } catch (ValidParametersException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (NotFoundException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (ExitsObjectException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

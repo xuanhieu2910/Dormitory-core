@@ -13,8 +13,8 @@ public class BatchesYearGroupRegistration {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_batches_user_registration")
-    private Integer idBatchesUserRegistration;
+    @Column(name = "id_batches_year_group_registration")
+    private Integer idBatchesYearGroupRegistration;
     @Column(name = "id_batches_registration")
     private Integer idBatchesRegistration;
     @Column(name = "id_year_group")

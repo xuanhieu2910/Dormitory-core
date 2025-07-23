@@ -15,4 +15,5 @@ public interface SemesterService {
     Semester update(UpdateSemesterRequest request);
     void delete(String codeSemester);
     DetailSemesterResponse findSemesterDetailByCode(String codeSemester);
+    Semester findSemesterByCode(String codeSemester);
 }

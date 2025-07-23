@@ -502,6 +502,58 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return new PageImpl<>(studentSearchRoomDtos, pageable, countFindAllRoomStudentSearch(request));
     }
 
+    @Override
+    public Optional<List<Room>> findAllRoomByListCodeRoom(List<String> codesRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select id_room, title, id_department,   " +
+                "       sex_room, price, time_created,   " +
+                "       time_modified, id_user_created,   " +
+                "       id_user_modified, is_active,   " +
+                "       limit_amount_people, quantity_hired,   " +
+                "       remain_amount, limit_amount_people_register,   " +
+                "       quantity_registered, remain_amount_register,   " +
+                "       code_room   " +
+                "from room   " +
+                "where code_room in (:codesRoom) ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("codesRoom", codesRoom);
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)){
+            List<Room> rooms = new ArrayList<>();
+            for (Object[] obj : result){
+                rooms.add(writeDataRoom(obj));
+            }
+            return Optional.of(rooms);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<List<Room>> findAllRoomByIdsRoom(List<Integer> idsRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select id_room, title, id_department,   " +
+                "       sex_room, price, time_created,   " +
+                "       time_modified, id_user_created,   " +
+                "       id_user_modified, is_active,   " +
+                "       limit_amount_people, quantity_hired,   " +
+                "       remain_amount, limit_amount_people_register,   " +
+                "       quantity_registered, remain_amount_register,   " +
+                "       code_room   " +
+                "from room   " +
+                "where id_room in (:idsRoom) ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idsRoom", idsRoom);
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)){
+            List<Room> rooms = new ArrayList<>();
+            for (Object[] obj : result){
+                rooms.add(writeDataRoom(obj));
+            }
+            return Optional.of(rooms);
+        }
+        return Optional.empty();
+    }
+
     private long countFindAllRoomStudentSearch(StudentSearchRoomRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(0) " +

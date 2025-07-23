@@ -350,6 +350,24 @@ public class RoomServiceImpl implements RoomService {
         return roomOptional;
     }
 
+    @Override
+    public List<Room> findAllRoomByListCodeRoom(List<String> codesRoom) {
+        Optional<List<Room>> rooms = roomRepository.findAllRoomByListCodeRoom(codesRoom);
+        if (rooms.isEmpty()){
+            throw new NotFoundException();
+        }
+        return rooms.get();
+    }
+
+    @Override
+    public List<Room> findAllRoomByListIdsRoom(List<Integer> idsRoom) {
+        Optional<List<Room>> rooms = roomRepository.findAllRoomByIdsRoom(idsRoom);
+        if (rooms.isEmpty()){
+            throw new NotFoundException();
+        }
+        return rooms.get();
+    }
+
     private List<FindAllRoomsResponse> convertToFindAllRoomsResponse(List<FindAllRoomsDto> content) {
         List<FindAllRoomsResponse> responses = new ArrayList<>();
         for (FindAllRoomsDto dto : content){

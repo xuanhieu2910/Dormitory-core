@@ -8,6 +8,8 @@ import teamit.hust.ktxcdshustbe.request.priorityGroup.UpdatePriorityGroupRequest
 import teamit.hust.ktxcdshustbe.response.priorityGroup.FindAllPriorityGroupResponse;
 import teamit.hust.ktxcdshustbe.response.priorityGroup.PriorityGroupDetailResponse;
 
+import java.util.List;
+
 public interface PriorityGroupService {
     PriorityGroup findPriorGroupByTitle(String titlePriorityGroup);
 
@@ -22,4 +24,8 @@ public interface PriorityGroupService {
     void delete(String priorityGroupCode);
 
     PriorityGroupDetailResponse getPriorityGroupDetail(String priorityGroupCode);
+
+    List<PriorityGroup> findPriorityGroupsByListPriorityGroupCode(List<String> codesPriorityGroup);
+
+    List<PriorityGroup> findAllPriorityGroupByIdsPriorGroup(List<Integer> idsPriorityGroup);
 }

@@ -138,6 +138,16 @@ public class SemesterServiceImpl implements SemesterService {
         FindSemesterDetailDto semesterDetailDto = semesterRepository.findSemesterDetailByCode(codeSemester);
         return convertToDetailSemesterResponse(semesterDetailDto);
     }
+
+    @Override
+    public Semester findSemesterByCode(String codeSemester) {
+        Optional<Semester> semester = semesterRepository.findByCodeSemester(codeSemester);
+        if (semester.isEmpty()){
+            throw new NotFoundException();
+        }
+        return semester.get();
+    }
+
     private DetailSemesterResponse convertToDetailSemesterResponse(FindSemesterDetailDto findSemesterDetailDto) {
         DetailSemesterResponse response = new DetailSemesterResponse();
         response.setCodeSemester(findSemesterDetailDto.getCodeSemester());

@@ -30,6 +30,7 @@ import java.util.*;
 
 @Service
 public class PriorityGroupServiceImpl implements PriorityGroupService {
+
     @Autowired
     PriorityGroupRepository priorityGroupRepository;
     @Autowired
@@ -82,6 +83,25 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
         return convertToPriorityGroupDetailResponse(dto);
 
     }
+
+    @Override
+    public List<PriorityGroup> findPriorityGroupsByListPriorityGroupCode(List<String> codesPriorityGroup) {
+        Optional<List<PriorityGroup>> priorityGroups = priorityGroupRepository.findPriorityGroupByListPriorityGroupCode(codesPriorityGroup);
+        if (priorityGroups.isEmpty() || priorityGroups.get().size() != codesPriorityGroup.size()){
+            throw new NotFoundException();
+        }
+        return priorityGroups.get();
+    }
+
+    @Override
+    public List<PriorityGroup> findAllPriorityGroupByIdsPriorGroup(List<Integer> idsPriorityGroup) {
+        Optional<List<PriorityGroup>> priorityGroups = priorityGroupRepository.findPriorityGroupByIdsPriorityGroup(idsPriorityGroup);
+        if (priorityGroups.isEmpty() || priorityGroups.get().size() != idsPriorityGroup.size()){
+            throw new NotFoundException();
+        }
+        return priorityGroups.get();
+    }
+
     private PriorityGroupDetailResponse convertToPriorityGroupDetailResponse(FindPriorityGroupDetailDto dto) {
         PriorityGroupDetailResponse response = new PriorityGroupDetailResponse();
         response.setTitlePriortityGroup(dto.getTitlePriorityGroup());

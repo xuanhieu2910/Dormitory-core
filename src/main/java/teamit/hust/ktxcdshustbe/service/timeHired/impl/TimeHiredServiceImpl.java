@@ -51,7 +51,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
         if (timeHired.isEmpty()) {
             throw new NotFoundException();
         }
-        if (timeHired.isPresent() && timeHired.get().getStatus().equals(Constants.TIME_HIRED_STATUS_IN_ACTIVE)){
+        if (timeHired.get().getStatus().equals(Constants.TIME_HIRED_STATUS_IN_ACTIVE)){
             throw new ValidParametersException();
         }
         return timeHired.get();

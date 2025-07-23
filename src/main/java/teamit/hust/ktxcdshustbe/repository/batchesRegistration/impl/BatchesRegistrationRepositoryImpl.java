@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.BatchesRegistrationDetailDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllBatchesRegistrationDto;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
+import teamit.hust.ktxcdshustbe.entity.BatchesRegistration;
 import teamit.hust.ktxcdshustbe.repository.batchesRegistration.BatchesRegistrationRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
@@ -129,24 +130,61 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
     }
 
     @Override
-    public boolean checkNotExitsBatchesRegistration(List<String> codeYearGroups, String codeSemester,
-                                                    Long startDate, Long endDate) {
+    public boolean checkNotExitsBatchesRegistration(List<String> codeYearGroups, Long startDate, Long endDate) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select case when br.id_batches_registration is null then 1 else 0 end  " +
                 "from batches_registration br  " +
                 "    inner join semester se on br.id_semester = se.id_semester  " +
                 "    inner join batches_year_group_registration bygr on br.id_batches_registration = bygr.id_batches_registration  " +
                 "    inner join year_group yg on bygr.id_year_group = yg.id_year_group  " +
-                "where se.code_semester = :codeSemester  " +
-                "and yg.code_year_group in (:codeYearGroups)  " +
+                "where yg.code_year_group in (:codeYearGroups)  " +
                 "and (((:startDate >= br.start_time and :startDate <= br.end_time) or (:endDate >= br.start_time and :endDate <= br.end_time))  " +
                 "    or (:startDate <= br.start_time and :endDate >= br.end_time)) ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("codeSemester", codeSemester);
         query.setParameter("codeYearGroups", codeYearGroups);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
         return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
+    }
+
+    @Override
+    public Optional<BatchesRegistration> findBatchesRegistrationByCodeBatchesRegistration(String codeBatchesRegistration) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select br.id_batches_registration, br.title, br.code_batches_registration,  " +
+                "       br.id_time_hired, br.id_semester, br.description, br.notes,  " +
+                "       br.time_created, br.time_modified, br.id_user_created,  " +
+                "       br.id_user_modified, br.start_time, br.end_time  " +
+                "from batches_registration br  " +
+                "    inner join time_hired th on br.id_time_hired = th.id_time_hired  " +
+                "    inner join semester se on br.id_semester = se.id_semester  " +
+                "where br.code_batches_registration = :codeBatchesRegistration ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("codeBatchesRegistration", codeBatchesRegistration);
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                return Optional.of(writeDataBatchesRegistration(obj));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private BatchesRegistration writeDataBatchesRegistration(Object[] obj) {
+        BatchesRegistration batchesRegistration = new BatchesRegistration();
+        batchesRegistration.setIdBatchesRegistration(ValueUtil.getIntegerByObject(obj[0]));
+        batchesRegistration.setTitle(ValueUtil.getStringByObject(obj[1]));
+        batchesRegistration.setCodeBatchesRegistration(ValueUtil.getStringByObject(obj[2]));
+        batchesRegistration.setIdTimeHired(ValueUtil.getIntegerByObject(obj[3]));
+        batchesRegistration.setIdSemester(ValueUtil.getIntegerByObject(obj[4]));
+        batchesRegistration.setDescription(ValueUtil.getStringByObject(obj[5]));
+        batchesRegistration.setNotes(ValueUtil.getStringByObject(obj[6]));
+        batchesRegistration.setTimeCreated(ValueUtil.getLongByObject(obj[7]));
+        batchesRegistration.setTimeModified(ValueUtil.getLongByObject(obj[8]));
+        batchesRegistration.setIdUserCreated(ValueUtil.getIntegerByObject(obj[9]));
+        batchesRegistration.setIdUserModified(ValueUtil.getIntegerByObject(obj[10]));
+        batchesRegistration.setStartTime(ValueUtil.getLongByObject(obj[11]));
+        batchesRegistration.setEndTime(ValueUtil.getLongByObject(obj[12]));
+        return batchesRegistration;
     }
 
     private long countFindAllBatchesRegistration(FindAllBatchesRegistrationRequest request) {

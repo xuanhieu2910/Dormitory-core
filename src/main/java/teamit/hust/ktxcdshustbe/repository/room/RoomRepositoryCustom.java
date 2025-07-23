@@ -43,7 +43,6 @@ public interface RoomRepositoryCustom {
     Page<FindAllRoomsDto> findAllRoomsForRent(FindAllRoomsForRentRequest request, Pageable pageable);
     int updateRemainQuantityRoomWhenToRemoveStudent(String codeRoom, Integer id);
 
-
     Optional<Room> findByIdWithDepartment(Integer roomId);
 
     Optional<Room> findRoomByCodeRoom(String codeRoom);
@@ -53,4 +52,8 @@ public interface RoomRepositoryCustom {
 
     Optional<Room> findRoomByIdRoom(Integer idRoom);
     Page<StudentSearchRoomDto> findAllRoomStudentSearch(StudentSearchRoomRequest request, Pageable pageable);
+
+    Optional<List<Room>> findAllRoomByListCodeRoom(List<String> codesRoom);
+
+    Optional<List<Room>> findAllRoomByIdsRoom(List<Integer> idsRoom);
 }
