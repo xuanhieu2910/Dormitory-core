@@ -3,6 +3,7 @@ package teamit.hust.ktxcdshustbe.repository.yearGroup.impl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -161,33 +162,33 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
     }
 
     private void setConditionFindAllYearGroups(FindAllYearGroupsRequest request, StringBuilder sb) {
-        if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append(" AND (yg.title LIKE :keyword OR yg.description LIKE :keyword) ");
-        }
+//        if (StringUtils.isNotBlank(request.getKeyword())) {
+//            sb.append(" AND (yg.title REGEXP :keyword OR yg.description REGEXP :keyword) ");
+//        }
         if (StringUtils.isNotBlank(request.getCodeYearGroup())) {
             sb.append(" AND yg.code_year_group = :codeYearGroup ");
         }
         if (StringUtils.isNotBlank(request.getTitle())) {
-            sb.append(" AND yg.title LIKE :title ");
+            sb.append(" AND yg.title REGEXP :title ");
         }
         if (StringUtils.isNotBlank(request.getDescription())) {
-            sb.append(" AND yg.description LIKE :description ");
+            sb.append(" AND yg.description REGEXP :description ");
         }
         if (request.getIdUserCreated() != null) {
             sb.append(" AND yg.id_user_created = :idUserCreated ");
         }
         if (StringUtils.isNotBlank(request.getUserNameCreated())) {
-            sb.append(" AND kuCreated.user_name LIKE :userNameCreated ");
+            sb.append(" AND kuCreated.user_name REGEXP :userNameCreated ");
         }
         if (StringUtils.isNotBlank(request.getFullNameCreated())) {
-            sb.append(" AND kuCreated.full_name LIKE :fullNameCreated ");
+            sb.append(" AND kuCreated.full_name REGEXP :fullNameCreated ");
         }
     }
 
     private void setParameterFindAllYearGroups(FindAllYearGroupsRequest request, Query query) {
-        if (StringUtils.isNotBlank(request.getKeyword())) {
-            query.setParameter("keyword", "%" + request.getKeyword() + "%");
-        }
+//        if (StringUtils.isNotBlank(request.getKeyword())) {
+//            query.setParameter("keyword", "%" + request.getKeyword() + "%");
+//        }
 
         if (StringUtils.isNotBlank(request.getCodeYearGroup())) {
             query.setParameter("codeYearGroup", request.getCodeYearGroup());
@@ -198,7 +199,7 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         if (StringUtils.isNotBlank(request.getDescription())) {
             query.setParameter("description", "%" + request.getDescription() + "%");
         }
-        if (request.getIdUserCreated() != null) {
+        if (ObjectUtils.isNotEmpty(request.getIdUserCreated())) {
             query.setParameter("idUserCreated", request.getIdUserCreated());
         }
         if (StringUtils.isNotBlank(request.getUserNameCreated())) {
