@@ -75,7 +75,7 @@ public class KtxUserServiceImpl implements KtxUserService {
         if (!qldtUser.get().isAccountNonLocked()){
             throw new NotFoundException();
         }
-        setIdsDepartment(qldtUser.get());
+//        setIdsDepartment(qldtUser.get());
         return qldtUser.get();
     }
 

@@ -20,8 +20,8 @@ public class UserRegisterRoomDto {
     private String codeRoom;
     private String titleRoom;
     private Integer idTimeHired;
-    private Long timeHiredStarted;
-    private Long timeHiredEnded;
+    private String timeHiredStarted;
+    private String timeHiredEnded;
     private String codeSemester;
     private String titleSemester;
     private Integer statusInformationRegister;

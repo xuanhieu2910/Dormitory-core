@@ -196,23 +196,18 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     @Override
     public Page<FindAllStudentsResponse> findAllStudent(FindAllStudentsRequest request, Pageable pageable) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ktxUser.id_ktx_user, " +
+        sb.append("select ktxUser.id_ktx_user,  " +
                 "       ktxUser.user_name, " +
-                "       ktxUser.full_name, " +
-                "       ktxUser.number_student, " +
-                "       ktxUser.phone_number, " +
-                "       ktxUser.title_major, " +
-                "       ktxUser.status_register_room, " +
-                "       if(studentRoom.id_user is not null, 1, -1) statusHiredRoom " +
-                "from ktx_user ktxUser " +
-                "         inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user " +
-                "         inner join role roles on userRole.id_role = roles.id_role " +
-                "         left join (select * " +
-                "                    from student_room studentRoom " +
-                "                    where studentRoom.status = 1) " +
-                "             studentRoom on ktxUser.id_ktx_user = studentRoom.id_user " +
-                "where 1 = 1 " +
-                "  and roles.title = 'STUDENT' ");
+                "       ktxUser.code_user, " +
+                "       ktxUser.value, " +
+                "        ktxUser.sex, " +
+                "       student_room.status statusHiredRoom  " +
+                "from ktx_user ktxUser  " +
+                "         inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user  " +
+                "         inner join role roles on userRole.id_role = roles.id_role  " +
+                "         left join student_room on ktxUser.id_ktx_user = student_room.id_user  " +
+                "where 1 = 1  " +
+                "  and roles.title = 'STUDENT'");
         setConditionFindAllStudents(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudents(query, request);
@@ -222,14 +217,11 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         if (!CollectionUtils.isEmpty(result)){
             for (Object [] obj: result){
                 FindAllStudentsResponse response = new FindAllStudentsResponse();
-                response.setCodeUser(ValueUtil.getStringByObject(obj[0]));
                 response.setUserName(ValueUtil.getStringByObject(obj[1]));
-                response.setFullName(ValueUtil.getStringByObject(obj[2]));
-                response.setNumberStudent(ValueUtil.getStringByObject(obj[3]));
-                response.setPhoneNumber(ValueUtil.getStringByObject(obj[4]));
-                response.setTitleMajor(ValueUtil.getStringByObject(obj[5]));
-                response.setStatusDeclareInformation(ValueUtil.getIntegerByObject(obj[6]));
-                response.setStatusHireRoom(ValueUtil.getIntegerByObject(obj[7]));
+                response.setCodeUser(ValueUtil.getStringByObject(obj[2]));
+                response.setValue(ValueUtil.getStringByObject(obj[3]));
+                response.setSex(ValueUtil.getIntegerByObject(obj[4]));
+                response.setStatusHireRoom(ValueUtil.getIntegerByObject(obj[5]));
                 responses.add(response);
             }
         }
@@ -332,9 +324,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
 
     private void setConditionFindAllStudents(FindAllStudentsRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append("   and ((ktxUser.full_name like '%' + :keyword + '%') OR " +
-                    "       (ktxUser.number_student REGEXP '[' + :keyword + ']') OR " +
-                    "       (ktxUser.phone_number REGEXP '[' + :keyword + ']') OR " +
+            sb.append("   and (ktxUser.value REGEXP '[' + :keyword + ']') OR " +
                     "       (ktxUser.user_name REGEXP '[' + :keyword + ']')) ");
         }
     }
@@ -343,14 +333,11 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     private long countFindAllStudents(FindAllStudentsRequest request){
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) as count " +
-                "from ktx_user ktxUser " +
-                "         inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user " +
-                "         inner join role roles on userRole.id_role = roles.id_role " +
-                "         left join (select * " +
-                "                    from student_room studentRoom " +
-                "                    where studentRoom.status = 1) " +
-                "             studentRoom on ktxUser.id_ktx_user = studentRoom.id_user " +
-                "where 1 = 1 " +
+                "from ktx_user ktxUser  " +
+                "         inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user  " +
+                "         inner join role roles on userRole.id_role = roles.id_role  " +
+                "         left join student_room on ktxUser.id_ktx_user = student_room.id_user " +
+                "where 1 = 1  " +
                 "  and roles.title = 'STUDENT' ");
         setConditionFindAllStudents(request,sb);
         Query query = entityManager.createNativeQuery(sb.toString());

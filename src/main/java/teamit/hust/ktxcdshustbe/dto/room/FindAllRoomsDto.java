@@ -34,6 +34,6 @@ public class FindAllRoomsDto {
     private String titleDepartment;
     private String userNameCreated;
     private String userNameModified;
-    private String fullNameCreated;
-    private String fullNameModified;
+    private String valueCreated;
+    private String valueModified;
 }

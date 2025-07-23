@@ -147,7 +147,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join batches_registration_room brr on brr.id_room = ro.id_room " +
                 "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
                 "    inner join semester on semester.id_semester = br.id_semester " +
-                "where 1 = 1  and de.id_department in (:listDepartmentOriginal) ");
+                "where 1 = 1   ");
         setConditionListStudentHiredRoomResponse(request,sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParametersListStudentHiredRoomResponse(request,query);
@@ -361,7 +361,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join batches_registration_room brr on brr.id_room = ro.id_room " +
                 "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
                 "    inner join semester on semester.id_semester = br.id_semester " +
-                "where 1=1 and de.id_department in (:listDepartmentOriginal)  ");
+                "where 1=1  ");
         setConditionListStudentHiredRoomResponse(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParametersListStudentHiredRoomResponse(request,query);
@@ -373,13 +373,16 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
 
     private void setParametersListStudentHiredRoomResponse(ListStudentHiredRoomRequest request, Query query) {
 
-        query.setParameter("listDepartmentOriginal", request.getListDepartmentOriginal());
+//        query.setParameter("listDepartmentOriginal", request.getListDepartmentOriginal());
 
         if (StringUtils.isNotBlank(request.getKeyword())) {
             query.setParameter("keyword", request.getKeyword());
         }
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             query.setParameter("codeDepartment", request.getCodeDepartment());
+        }
+        if (StringUtils.isNotBlank(request.getCodeUser())) {
+            query.setParameter("codeUser", request.getCodeUser());
         }
         if (StringUtils.isNotBlank(request.getCodeRoom())) {
             query.setParameter("codeRoom", request.getCodeRoom());
@@ -403,6 +406,9 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         }
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");
+        }
+        if (StringUtils.isNotBlank(request.getCodeUser())) {
+            sb.append(" and ktxUser.code_user= :codeUser ");
         }
         if (StringUtils.isNotBlank(request.getCodeRoom())) {
             sb.append(" and ro.code_room = :codeRoom ");

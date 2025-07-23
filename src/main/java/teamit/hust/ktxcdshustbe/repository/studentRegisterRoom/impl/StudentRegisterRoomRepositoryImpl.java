@@ -344,8 +344,8 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 dto.setCodeSemester(ValueUtil.getStringByObject(obj[7]));
                 dto.setTitleSemester(ValueUtil.getStringByObject(obj[8]));
                 dto.setIdTimeHired(ValueUtil.getIntegerByObject(obj[9]));
-                dto.setTimeHiredStarted(ValueUtil.getLongByObject(obj[10]));
-                dto.setTimeHiredEnded(ValueUtil.getLongByObject(obj[11]));
+                dto.setTimeHiredStarted(ValueUtil.getStringByObject(obj[10]));
+                dto.setTimeHiredEnded(ValueUtil.getStringByObject(obj[11]));
                 userRegisterRoomDtos.add(dto);
             }
         }
@@ -375,11 +375,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                     "    DATE_FORMAT(STR_TO_DATE(:timeStared, '%d/%m/%Y'),'%d/%m/%Y') AND " +
                     "    DATE_FORMAT(STR_TO_DATE(:timeEnded,'%d/%m/%Y'),'%d/%m/%Y')) ");
         }
-        if (null != request.getStatus()){
-            sb.append(" and studentRegisterRoom.status = :status  ");
-        } else {
-            sb.append(" and studentRegisterRoom.status in (2,3) ");
-        }
+
 
         if (StringUtils.isNotBlank(request.getSortBy())
                 && request.getSortBy().equals("timeRegister")) {
