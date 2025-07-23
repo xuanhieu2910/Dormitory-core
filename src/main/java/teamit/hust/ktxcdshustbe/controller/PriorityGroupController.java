@@ -91,17 +91,17 @@ public class PriorityGroupController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deletePriorityGroup(@RequestParam("priorityGroupCode") String priorityGroupCode){
-        try {
-            priorityGroupService.delete(priorityGroupCode);
-            return ApiResponseDto.createdWithMessage("Delete priority group success", HttpStatus.OK);
-        }
-        catch (NotFoundException e) {
-            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @DeleteMapping("/delete")
+//    public ResponseEntity<?> deletePriorityGroup(@RequestParam("priorityGroupCode") String priorityGroupCode){
+//        try {
+//            priorityGroupService.delete(priorityGroupCode);
+//            return ApiResponseDto.createdWithMessage("Delete priority group success", HttpStatus.OK);
+//        }
+//        catch (NotFoundException e) {
+//            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+//        }
+//        catch (Exception e) {
+//            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 }

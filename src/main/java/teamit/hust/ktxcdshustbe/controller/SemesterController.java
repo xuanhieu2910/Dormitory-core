@@ -109,17 +109,17 @@ public class SemesterController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteSemester(@RequestParam("codeSemester") String codeSemester) {
-        try {
-            semesterService.delete(codeSemester);
-            return ApiResponseDto.createdWithMessage("Delete semester success", HttpStatus.OK);
-        }
-        catch (NotFoundException e) {
-            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @DeleteMapping("/delete")
+//    public ResponseEntity<?> deleteSemester(@RequestParam("codeSemester") String codeSemester) {
+//        try {
+//            semesterService.delete(codeSemester);
+//            return ApiResponseDto.createdWithMessage("Delete semester success", HttpStatus.OK);
+//        }
+//        catch (NotFoundException e) {
+//            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+//        }
+//        catch (Exception e) {
+//            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 }

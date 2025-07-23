@@ -33,4 +33,6 @@ public interface RoomService {
     Page<StudentSearchRoomResponse> studentSearchRoom(StudentSearchRoomRequest request);
 
     Optional<Room> findRoomByIdRoom(Integer idRoom);
+
+    Page<SearchInformationRegisterRoomResponse> SearchInformationRegisterRoom(SearchInformationRegisterRoomRequest request);
 }

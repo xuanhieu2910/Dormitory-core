@@ -3,6 +3,7 @@ package teamit.hust.ktxcdshustbe.repository.room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
+import teamit.hust.ktxcdshustbe.dto.room.SearchInformationRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.room.StudentHiredRoomDto;
 import teamit.hust.ktxcdshustbe.dto.room.StudentSearchRoomDto;
 import teamit.hust.ktxcdshustbe.entity.Room;
@@ -34,6 +35,7 @@ public interface RoomRepositoryCustom {
     Optional<SearchRoomResponse> searchRoomToTranfer(String titleDepartment, String titleRoom, Integer sex);
 
 
+
     int updateQuantityRegisterOriginRoom(Integer originRoomId);
 
     int updateQuantityStudentRegisterDestinationRoom(Integer roomId);
@@ -53,4 +55,5 @@ public interface RoomRepositoryCustom {
 
     Optional<Room> findRoomByIdRoom(Integer idRoom);
     Page<StudentSearchRoomDto> findAllRoomStudentSearch(StudentSearchRoomRequest request, Pageable pageable);
+    Page<SearchInformationRegisterRoomDto> findInformationRegisterRoom(SearchInformationRegisterRoomRequest request, Pageable pageable);
 }

@@ -212,7 +212,7 @@ public class UserRoleRepositoryImpl implements UserRoleRepositoryCustom {
                 "    inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user " +
                 "    left join department de on userRole.id_department = de.id_department " +
                 "where userRole.picked = :isPicked " +
-                "and csvcUser.code_user = :codeUser ");
+                "and ktxUser.code_user = :codeUser ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeUser", codeUser);
         query.setParameter("isPicked", Constants.ROLE_USER_PICKED);
