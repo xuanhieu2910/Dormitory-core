@@ -13,4 +13,11 @@ public class NotFoundException extends RuntimeException {
         return errorsDetails;
     }
 
+    public NotFoundException() {
+        super();
+    }
+
+    public NotFoundException(String message) {
+        super(message);
+    }
 }
