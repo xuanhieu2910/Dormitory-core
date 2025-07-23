@@ -381,6 +381,9 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             query.setParameter("codeDepartment", request.getCodeDepartment());
         }
+        if (StringUtils.isNotBlank(request.getCodeUser())) {
+            query.setParameter("codeUser", request.getCodeUser());
+        }
         if (StringUtils.isNotBlank(request.getCodeRoom())) {
             query.setParameter("codeRoom", request.getCodeRoom());
         }
@@ -403,6 +406,9 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         }
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");
+        }
+        if (StringUtils.isNotBlank(request.getCodeUser())) {
+            sb.append(" and ktxUser.code_user= :codeUser ");
         }
         if (StringUtils.isNotBlank(request.getCodeRoom())) {
             sb.append(" and ro.code_room = :codeRoom ");
