@@ -170,8 +170,6 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
             throw new NotFoundException();
         }
         priorityGroupRepository.delete(optionalPriorityGroup.get());
-        ktxUserRepository.deleteIdPriorityGroup(optionalPriorityGroup.get().getIdPriorityGroup());
-        batchesRegistrationScheduleRepository.deleteIdPriorityGroup(optionalPriorityGroup.get().getIdPriorityGroup());
     }
 
 }

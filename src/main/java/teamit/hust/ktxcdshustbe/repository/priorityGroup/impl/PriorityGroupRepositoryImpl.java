@@ -114,12 +114,23 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
                 priorityGroupDtos.add(findAllPriorityGroupDto);
             }
         }
-        return new PageImpl<>(priorityGroupDtos, pageable, priorityGroupDtos.size() );
+        return new PageImpl<>(priorityGroupDtos, pageable, countFindAllPriorityGroup(request) );
     }
-//    private Long countFindAllPriorityGroup(FindAllPriorityGroupRequest request){
-//        StringBuilder sb = new StringBuilder();
-//        //select count
-//    }
+    private Long countFindAllPriorityGroup(FindAllPriorityGroupRequest request){
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select count(*)
+                from priority_group pg
+                    inner join ktx_user ku_created on pg.id_user_created = ku_created.id_ktx_user
+                    inner join ktx_user ku_modified on pg.id_user_modified = ku_modified.id_ktx_user
+                    inner join batches_registration_schedule brs on pg.id_priority_group = brs.id_priority_group
+                where 1 = 1    
+                """);
+        setConditionFindAllPriorityGroupDto(request, sb);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllPriorityGroupDto(request, query);
+        return ValueUtil.getLongByObject(query.getSingleResult());
+    }
 
     private  void setParameterFindAllPriorityGroupDto(FindAllPriorityGroupRequest request, Query query) {
         if(StringUtils.isNotBlank(request.getTitlePriorityGroup())){
@@ -212,4 +223,46 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
         return Optional.empty();
     }
 
+    @Override
+    public Optional<PriorityGroup> findByPriorityGroupCode(String priorityGroupCode){
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                 select pg.id_priority_group, pg.priority_group_code,
+                pg.title, pg.description, pg.time_created, pg.time_modified,
+                pg.id_user_created, pg.id_user_modified,
+                from priority_group pg
+                where pg.priority_group_code=:priorityGroupCode
+                """);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("priorityGroupCode", priorityGroupCode);
+        List<Object[]> result = query.getResultList();
+        if(!CollectionUtils.isEmpty(result)){
+            for(Object[] obj : result){
+                PriorityGroup priorityGroup = new PriorityGroup();
+                priorityGroup.setIdPriorityGroup(ValueUtil.getIntegerByObject(obj[0]));
+                priorityGroup.setPriorityGroupCode(ValueUtil.getStringByObject(obj[1]));
+                priorityGroup.setTitle(ValueUtil.getStringByObject(obj[2]));
+                priorityGroup.setDescription(ValueUtil.getStringByObject(obj[3]));
+                priorityGroup.setTimeCreated(ValueUtil.getLongByObject(obj[4]));
+                priorityGroup.setTimeModified(ValueUtil.getLongByObject(obj[5]));
+                priorityGroup.setIdUserCreated(ValueUtil.getIntegerByObject(obj[6]));
+                priorityGroup.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
+                return Optional.of(priorityGroup);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean existsByPriorityGroupCode(String priorityGroupCode) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("""
+                    select pg.id_priority_group
+                    from priority_group pg
+                    where pg.priority_group_code=:priorityGroupCode
+                    """);
+            Query query = entityManager.createNativeQuery(sb.toString());
+            query.setParameter("priorityGroupCode", priorityGroupCode);
+            return !CollectionUtils.isEmpty(query.getResultList());
+    }
 }

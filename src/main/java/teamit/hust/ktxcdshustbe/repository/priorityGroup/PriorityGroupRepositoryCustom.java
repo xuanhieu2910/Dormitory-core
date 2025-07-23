@@ -17,9 +17,11 @@ public interface PriorityGroupRepositoryCustom {
     Page<FindAllPriorityGroupDto> findAllPriorityGroup(FindAllPriorityGroupRequest request, Pageable pageable);
 
     FindPriorityGroupDetailDto getPriorityGroupDetailByPriorityGroupCode(String priorityGroupCode);
+    Optional<PriorityGroup> findByPriorityGroupCode(String priorityGroupCode);
 
 
     Optional<List<PriorityGroup>> findPriorityGroupByListPriorityGroupCode(List<String> codesPriorityGroup);
 
     Optional<List<PriorityGroup>> findPriorityGroupByIdsPriorityGroup(List<Integer> idsPriorityGroup);
+    boolean existsByPriorityGroupCode(String priorityGroupCode);
 }

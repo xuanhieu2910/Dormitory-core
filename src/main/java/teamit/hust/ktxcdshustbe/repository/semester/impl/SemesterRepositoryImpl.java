@@ -22,6 +22,7 @@ import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
 
@@ -138,5 +139,48 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
             return findSemesterDetailDto;
         }
         return null;
+    }
+    @Override
+    public boolean existsByTitle(String title){
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select se.code_semester
+                from semester se
+                where se.title = :title LIMIT 1
+                """);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("title", title);
+        return !CollectionUtils.isEmpty(query.getResultList());
+    }
+
+    @Override
+    public Optional<Semester> findByCodeSemester(String codeSemester){
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select se.title, se.code_semester, se.status,
+                    se.id_user_created, se.id_user_modified,
+                    se.time_created, se.time_modified,
+                    se.note
+                from semester se
+                where se.code_semester = :codeSemester
+                """);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("codeSemester", codeSemester);
+        List<Object[]> result = query.getResultList();
+        if(!CollectionUtils.isEmpty(result)){
+            for(Object[] obj : result){
+                Semester semester = new Semester();
+                semester.setTitle(ValueUtil.getStringByObject(obj[0]));
+                semester.setCodeSemester(ValueUtil.getStringByObject(obj[1]));
+                semester.setStatus(ValueUtil.getIntegerByObject(obj[2]));
+                semester.setIdUserCreated(ValueUtil.getIntegerByObject(obj[3]));
+                semester.setIdUserModified(ValueUtil.getIntegerByObject(obj[4]));
+                semester.setTimeCreated(ValueUtil.getLongByObject(obj[5]));
+                semester.setTimeModified(ValueUtil.getLongByObject(obj[6]));
+                semester.setNote(ValueUtil.getStringByObject(obj[7]));
+                return Optional.of(semester);
+            }
+        }
+        return Optional.empty();
     }
 }

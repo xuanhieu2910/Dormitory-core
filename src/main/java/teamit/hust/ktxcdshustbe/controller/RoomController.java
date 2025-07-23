@@ -16,6 +16,7 @@ import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.room.*;
 import teamit.hust.ktxcdshustbe.response.room.FindAllRoomsResponse;
 import teamit.hust.ktxcdshustbe.response.room.RoomDetailResponse;
+import teamit.hust.ktxcdshustbe.response.room.SearchInformationRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.response.room.SearchRoomResponse;
 import teamit.hust.ktxcdshustbe.service.room.RoomService;
 
@@ -45,6 +46,21 @@ public class RoomController {
         }
     }
 
+    // dung lai cua find-all GET
+    @PostMapping("/find-all")
+    public ResponseEntity<?> searchRoomAndFindAll(@RequestBody FindAllRoomsRequest request) {
+        try {
+            Page<FindAllRoomsResponse> roomsResponsePage = roomService.findAllRoom(request);
+            return ApiResponseDto.createdWithState(roomsResponsePage, "Find all rooms success!", HttpStatus.OK);
+        }
+        catch (ValidParametersException e) {
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
     @GetMapping("/room-details")
     public ResponseEntity<?> getInformationDetailRoom(@RequestParam("code") String codeRoom){
@@ -124,7 +140,6 @@ public class RoomController {
         }
     }
 
-
     @PostMapping("/search-room")
     public ResponseEntity<?> searchRoom(@RequestBody SearchRoomToTranferRequest request) {
         try {
@@ -135,6 +150,21 @@ public class RoomController {
         } catch (NotFoundException e) {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // cho màn danh sách đăng kí
+    @PostMapping("/search-room-v2")
+    public ResponseEntity<?> searchRoomV2(@RequestBody SearchInformationRegisterRoomRequest request) {
+        try {
+            Page<SearchInformationRegisterRoomResponse> response = roomService.SearchInformationRegisterRoom(request);
+            return ApiResponseDto.createdWithState(response, "Search room success!", HttpStatus.OK);
+        }
+        catch (ValidParametersException e) {
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e){
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -156,6 +186,4 @@ public class RoomController {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
+import teamit.hust.ktxcdshustbe.dto.room.SearchInformationRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.room.StudentSearchRoomDto;
 import teamit.hust.ktxcdshustbe.dto.serviceRoom.ServiceRoomDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
@@ -337,6 +338,36 @@ public class RoomServiceImpl implements RoomService {
 
     private void verifyStudentSearchRoom(StudentSearchRoomRequest request) {
         if (StringUtils.isBlank(request.getCodeDepartment()) || ObjectUtils.isEmpty(request.getGender())){
+            throw new ValidParametersException();
+        }
+    }
+
+    @Override
+    public Page<SearchInformationRegisterRoomResponse> SearchInformationRegisterRoom(SearchInformationRegisterRoomRequest request){
+        verifySearchInformationRegisterRoom(request);
+        Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
+        Page<SearchInformationRegisterRoomDto> searchInformationRegisterRoomDtos = roomRepository.findInformationRegisterRoom(request, pageable);
+        return new PageImpl<>(convertToSearchInformationRegisterRoomResponse(searchInformationRegisterRoomDtos.getContent()), pageable, searchInformationRegisterRoomDtos.getTotalElements());
+    }
+
+    private List<SearchInformationRegisterRoomResponse> convertToSearchInformationRegisterRoomResponse(List<SearchInformationRegisterRoomDto> dtos) {
+        List<SearchInformationRegisterRoomResponse> responses = new ArrayList<>();
+        for (SearchInformationRegisterRoomDto dto : dtos){
+            SearchInformationRegisterRoomResponse response = new SearchInformationRegisterRoomResponse();
+            response.setCodeUser(dto.getCodeUser());
+            response.setUserName(dto.getUserName());
+            response.setTitleRoom(dto.getTitleRoom());
+            response.setTitleSemester(dto.getTitleSemester());
+            response.setTimeStarted(dto.getTimeStarted());
+            response.setCodeDepartment(dto.getCodeDepartment());
+            responses.add(response);
+        }
+        return responses;
+    }
+    private void verifySearchInformationRegisterRoom(SearchInformationRegisterRoomRequest request) {
+        if (StringUtils.isBlank(request.getCodeDepartment())
+        || StringUtils.isBlank(request.getTitleRoom())
+        || StringUtils.isBlank(request.getTitleSemester())){
             throw new ValidParametersException();
         }
     }

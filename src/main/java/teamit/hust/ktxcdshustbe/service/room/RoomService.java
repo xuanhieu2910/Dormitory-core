@@ -36,4 +36,6 @@ public interface RoomService {
     Optional<Room> findRoomByIdRoom(Integer idRoom);
     List<Room> findAllRoomByListCodeRoom(List<String> codesRoom);
     List<Room> findAllRoomByListIdsRoom(List<Integer> idsRoom);
+
+    Page<SearchInformationRegisterRoomResponse> SearchInformationRegisterRoom(SearchInformationRegisterRoomRequest request);
 }

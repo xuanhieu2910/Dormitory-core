@@ -12,15 +12,13 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
+import teamit.hust.ktxcdshustbe.dto.room.SearchInformationRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.room.StudentHiredRoomDto;
 import teamit.hust.ktxcdshustbe.dto.room.StudentSearchRoomDto;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.repository.room.RoomRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
-import teamit.hust.ktxcdshustbe.request.room.FindAllRoomsForRentRequest;
-import teamit.hust.ktxcdshustbe.request.room.FindAllRoomsRequest;
-import teamit.hust.ktxcdshustbe.request.room.StudentSearchRoomRequest;
-import teamit.hust.ktxcdshustbe.request.room.StudentsHiredRoomRequest;
+import teamit.hust.ktxcdshustbe.request.room.*;
 import teamit.hust.ktxcdshustbe.request.studentRegister.StudentRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.room.RoomsForStudentRentResponse;
 import teamit.hust.ktxcdshustbe.response.room.SearchRoomResponse;
@@ -350,8 +348,8 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "       ro.quantity_registered, ro.remain_amount_register,  " +
                 "       ro.code_room,  " +
                 "       de.title, de.code_department,  " +
-                "       kuCreated.user_name, kuCreated.value,  " +
-                "       kuModified.user_name, kuModified.value  " +
+                "       kuCreated.user_name,  " +
+                "       kuModified.user_name " +
                 "from room ro  " +
                 "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
                 "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +

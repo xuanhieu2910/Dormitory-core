@@ -115,7 +115,6 @@ public class SemesterServiceImpl implements SemesterService {
             throw new NotFoundException();
         }
         semesterRepository.delete(optionalSemester.get());
-        batchesRegistrationRepository.deleteIdSemester(optionalSemester.get().getIdSemester());
     }
 
     private List<FindAllSemesterResponse> convertToFindAllSemesterResponse(List<FindAllSemesterDto> content) {
