@@ -22,8 +22,6 @@ import java.util.Optional;
 
 public interface RoomRepositoryCustom {
 
-    List<StudentHiredRoomDto> findStudentsHiredRoom(Integer id,StudentsHiredRoomRequest request);
-
     int updateQuantityAndRemainAmountCancelRegisterRoom(Integer idRoom, Integer quantity, Integer userIdModified);
 
     int updateQuantityAndRemainAmountAcceptRegisterAndHiredRoom(Integer idRoom, Integer quantity, Integer userIdModified);
@@ -34,28 +32,19 @@ public interface RoomRepositoryCustom {
 
     Optional<SearchRoomResponse> searchRoomToTranfer(String titleDepartment, String titleRoom, Integer sex);
 
-
-
     int updateQuantityRegisterOriginRoom(Integer originRoomId);
 
     int updateQuantityStudentRegisterDestinationRoom(Integer roomId);
 
-    int updateRemainQuantiyRoomWhenToRemoveStudent(Integer roomId, Integer id);
-
     Page<FindAllRoomsDto> findAllRoomsForRent(FindAllRoomsForRentRequest request, Pageable pageable);
     int updateRemainQuantityRoomWhenToRemoveStudent(String codeRoom, Integer id);
-
-    Optional<Room> findByIdWithDepartment(Integer roomId);
-
     Optional<Room> findRoomByCodeRoom(String codeRoom);
     Page<FindAllRoomsDto> findAllRooms(FindAllRoomsRequest request, Pageable pageable);
-    Optional<Room> findRoomByTitleRoom(String title);
     Optional<Room> findRoomByTitleRoomAndCodeDepartment(String title, String codeDepartment);
 
     Optional<Room> findRoomByIdRoom(Integer idRoom);
     Page<StudentSearchRoomDto> findAllRoomStudentSearch(StudentSearchRoomRequest request, Pageable pageable);
     Page<SearchInformationRegisterRoomDto> findInformationRegisterRoom(SearchInformationRegisterRoomRequest request, Pageable pageable);
-
     Optional<List<Room>> findAllRoomByListCodeRoom(List<String> codesRoom);
 
     Optional<List<Room>> findAllRoomByIdsRoom(List<Integer> idsRoom);

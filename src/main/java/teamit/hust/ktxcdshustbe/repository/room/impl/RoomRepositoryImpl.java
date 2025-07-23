@@ -36,47 +36,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
     @PersistenceContext
     EntityManager entityManager;
 
-    @Override
-    public List<StudentHiredRoomDto> findStudentsHiredRoom(Integer roomId,StudentsHiredRoomRequest request) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" select ktxUser.id, ktxUser.full_name fullName, ktxUser.number_student numberStudent, ktxUser.phone_number, " +
-                "       ktxUser.year_grade yearGrade, ktxUser.class_user classUser, timeHired.id timeHiredId, " +
-                "       timeHired.time_started timeStared, timeHired.time_ended timeEnded, " +
-                "       timeHired.status, se.id semesterId, se.title titleSemester " +
-                "from room ro " +
-                "    inner join student_room studentRoom on studentRoom.room_id = ro.id " +
-                "    inner join ktx_user ktxUser on ktxUser.id = studentRoom.user_id " +
-                "    inner join time_hired timeHired on studentRoom.time_id_hired = timeHired.id " +
-                "    inner join semester se on timeHired.semester_id = se.id " +
-                "where ro.id = :roomId " +
-                "and ro.is_actived = 1 ");
-        setConditionFindStudentsHiredRoom(sb,request);
-        Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("roomId", roomId);
-        setParamsFindStudentsHiredRoom(query,request);
-        List<Object[]> results = query.getResultList();
-        List<StudentHiredRoomDto> responses = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(results)) {
-            for (Object[] obj: results){
-                responses.add(StudentHiredRoomDto.builder()
-                        .userId(ValueUtil.getIntegerByObject(obj[0]))
-                        .fullName(ValueUtil.getStringByObject(obj[1]))
-                        .numberStudent(ValueUtil.getStringByObject(obj[2]))
-                        .phoneNumber(ValueUtil.getStringByObject(obj[3]))
-                        .yearGrade(ValueUtil.getIntegerByObject(obj[4]))
-                        .classUser(ValueUtil.getStringByObject(obj[5]))
-                        .timeHiredId(ValueUtil.getIntegerByObject(obj[6]))
-                        .timeStared(ValueUtil.getTimestampByObject(obj[7]))
-                        .timeEnded(ValueUtil.getTimestampByObject(obj[8]))
-                        .status(ValueUtil.getIntegerByObject(obj[9]))
-                        .semesterId(ValueUtil.getIntegerByObject(obj[10]))
-                        .titleSemester(ValueUtil.getStringByObject(obj[11]))
-                        .build());
-            }
-        }
-        return responses;
-    }
-
 
     @Modifying
     @Transactional
@@ -259,11 +218,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return query.executeUpdate();
     }
 
-    @Override
-    public int updateRemainQuantiyRoomWhenToRemoveStudent(Integer roomId, Integer id) {
-        return 0;
-    }
-
 
     @Transactional
     @Modifying
@@ -285,10 +239,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return query.executeUpdate();
     }
 
-    @Override
-    public Optional<Room> findByIdWithDepartment(Integer roomId) {
-        return Optional.empty();
-    }
 
     @Override
     public Optional<Room> findRoomByCodeRoom(String codeRoom) {
@@ -393,29 +343,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return new PageImpl<>(findAllRoomsDtos, pageable, countFindAllRooms(request));
     }
 
-    @Override
-    public Optional<Room> findRoomByTitleRoom(String titleRoom) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" select ro.id_room, ro.title, ro.id_department, " +
-                "       ro.sex_room, ro.price, ro.time_created, " +
-                "       ro.time_modified, ro.id_user_created, " +
-                "       ro.id_user_modified, ro.is_active, " +
-                "       ro.limit_amount_people, ro.quantity_hired, " +
-                "       ro.remain_amount, ro.limit_amount_people_register, " +
-                "       ro.quantity_registered, ro.remain_amount_register, " +
-                "       ro.code_room " +
-                "from room ro  " +
-                "where ro.title = :titleRoom ");
-        Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("titleRoom", titleRoom);
-        List<Object[]> result = query.getResultList();
-        if (!CollectionUtils.isEmpty(result)){
-            for (Object[] obj : result){
-                return Optional.of(writeDataRoom(obj));
-            }
-        }
-        return Optional.empty();
-    }
 
     @Override
     public Optional<Room> findRoomByTitleRoomAndCodeDepartment(String title, String codeDepartment) {
@@ -498,6 +425,11 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
             }
         }
         return new PageImpl<>(studentSearchRoomDtos, pageable, countFindAllRoomStudentSearch(request));
+    }
+
+    @Override
+    public Page<SearchInformationRegisterRoomDto> findInformationRegisterRoom(SearchInformationRegisterRoomRequest request, Pageable pageable) {
+        return null;
     }
 
     @Override

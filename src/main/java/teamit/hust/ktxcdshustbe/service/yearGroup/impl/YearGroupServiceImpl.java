@@ -69,7 +69,7 @@ public class YearGroupServiceImpl implements YearGroupService {
         }
         return yearGroups.get();
     }
-}
+
 
 
     @Override
@@ -100,11 +100,11 @@ public class YearGroupServiceImpl implements YearGroupService {
     @Override
     public YearGroupDetailResponse findYearGroupDetailsByCode(String code) {
         if (StringUtils.isBlank(code)) {
-            throw new ValidParametersException("Code is required");
+            throw new ValidParametersException();
         }
 
         FindAllYearGroupsDto dto = yearGroupRepository.findYearGroupDetailsByCode(code)
-                .orElseThrow(() -> new NotFoundException("Year group not found with code: " + code));
+                .orElseThrow(() -> new NotFoundException());
 
         return convertToDetailResponse(dto);
     }
@@ -126,11 +126,11 @@ public class YearGroupServiceImpl implements YearGroupService {
     @Override
     public void createYearGroup(CreateYearGroupRequest request) {
         if (StringUtils.isBlank(request.getTitle())) {
-            throw new ValidParametersException("Title is required and cannot be blank.");
+            throw new ValidParametersException();
         }
 
         yearGroupRepository.findByTitle(request.getTitle()).ifPresent(yg -> {
-            throw new ExitsObjectException("A year group with title '" + request.getTitle() + "' already exists.");
+            throw new ExitsObjectException();
         });
 
         Integer currentUserId = 1;
@@ -159,11 +159,11 @@ public class YearGroupServiceImpl implements YearGroupService {
     @Override
     public void updateYearGroup(UpdateYearGroupRequest request) {
         if (StringUtils.isBlank(request.getCodeYearGroup()) || StringUtils.isBlank(request.getTitle())) {
-            throw new ValidParametersException("codeYearGroup and title are required.");
+            throw new ValidParametersException();
         }
 
         YearGroup existingYearGroup = yearGroupRepository.findByCodeYearGroup(request.getCodeYearGroup())
-                .orElseThrow(() -> new NotFoundException("Year group not found with code: " + request.getCodeYearGroup()));
+                .orElseThrow(() -> new NotFoundException());
 
         if (!existingYearGroup.getTitle().equals(request.getTitle())) {
             yearGroupRepository.findByTitle(request.getTitle()).ifPresent(yg -> {
@@ -190,11 +190,11 @@ public class YearGroupServiceImpl implements YearGroupService {
     @Override
     public void deleteYearGroup(String code) {
         if (StringUtils.isBlank(code)) {
-            throw new ValidParametersException("Code is required to delete a year group.");
+            throw new ValidParametersException();
         }
 
         YearGroup yearGroupToDelete = yearGroupRepository.findByCodeYearGroup(code)
-                .orElseThrow(() -> new NotFoundException("Cannot delete. Year group not found with code: " + code));
+                .orElseThrow(() -> new NotFoundException());
 
         yearGroupRepository.delete(yearGroupToDelete);
     }

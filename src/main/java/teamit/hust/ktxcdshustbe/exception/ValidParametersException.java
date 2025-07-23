@@ -13,11 +13,4 @@ public class ValidParametersException extends RuntimeException {
         return errorsDetails;
     }
 
-    public ValidParametersException() {
-        super();
-    }
-
-    public ValidParametersException(String message) {
-        super(message);
-    }
 }

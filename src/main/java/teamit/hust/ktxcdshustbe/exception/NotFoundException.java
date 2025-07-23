@@ -12,12 +12,4 @@ public class NotFoundException extends RuntimeException {
         errorsDetails.setDescription(httpStatusCustom.getDescription());
         return errorsDetails;
     }
-
-    public NotFoundException() {
-        super();
-    }
-
-    public NotFoundException(String message) {
-        super(message);
-    }
 }
