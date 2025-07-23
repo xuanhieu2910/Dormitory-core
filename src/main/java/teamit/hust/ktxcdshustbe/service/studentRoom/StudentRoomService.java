@@ -14,6 +14,7 @@ import teamit.hust.ktxcdshustbe.response.studentRoom.StudentSearchAddNewRoomResp
 import teamit.hust.ktxcdshustbe.response.user.HiredRoomsResponse;
 import teamit.hust.ktxcdshustbe.response.user.ListHiredRoomStudentResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface StudentRoomService {
@@ -27,4 +28,7 @@ public interface StudentRoomService {
     void addStudentToRoom(StudentToRoomRequest request) throws Exception;
     void removeStudentRoom(RemoveStudentInRoomRequest request) throws Exception;
     void transferRoom(TransferRoomRequest request);
+
+    String downloadStudentHiredRoomList(ListStudentHiredRoomRequest request) throws IOException;
+
 }

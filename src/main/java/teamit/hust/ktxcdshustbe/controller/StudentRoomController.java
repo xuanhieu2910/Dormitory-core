@@ -91,4 +91,15 @@ public class StudentRoomController {
             return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    @GetMapping("/download-list-student-hired-room")
+    public ResponseEntity<?> downloadReportToolInventory(ListStudentHiredRoomRequest request){
+        try {
+            return ApiResponseDto.createdWithState(studentRoomService.downloadStudentHiredRoomList(request),
+                    "Download inventory report success!", HttpStatus.OK);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
