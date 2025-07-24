@@ -299,7 +299,9 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "       ro.code_room,  " +
                 "       de.title, de.code_department,  " +
                 "       kuCreated.user_name,  " +
-                "       kuModified.user_name " +
+                "       kuCreated.value,  " +
+                "       kuModified.user_name, " +
+                "       kuModified.value " +
                 "from room ro  " +
                 "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
                 "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +
