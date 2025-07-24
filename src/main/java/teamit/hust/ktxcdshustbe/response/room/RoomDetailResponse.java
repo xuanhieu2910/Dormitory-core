@@ -25,7 +25,7 @@ public class RoomDetailResponse {
     private String sex;
     @JsonProperty("remain_amount")
     private Integer remainAmount;
-    @JsonProperty("is_Active")
+    @JsonProperty("is_active")
     private Integer isActive;
     @JsonProperty("code_department")
     private String codeDepartment;
