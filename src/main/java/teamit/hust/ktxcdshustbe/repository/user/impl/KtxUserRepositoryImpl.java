@@ -197,18 +197,23 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     @Override
     public Page<FindAllStudentsResponse> findAllStudent(FindAllStudentsRequest request, Pageable pageable) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ktxUser.id_ktx_user,  " +
-                "       ktxUser.user_name, " +
-                "       ktxUser.code_user, " +
-                "       ktxUser.value, " +
-                "        ktxUser.sex, " +
-                "       student_room.status statusHiredRoom  " +
-                "from ktx_user ktxUser  " +
-                "         inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user  " +
-                "         inner join role roles on userRole.id_role = roles.id_role  " +
-                "         left join student_room on ktxUser.id_ktx_user = student_room.id_user  " +
-                "where 1 = 1  " +
-                "  and roles.title = 'STUDENT'");
+        sb.append("SELECT   " +
+                "    ktxUser.id_ktx_user,    " +
+                "    ktxUser.user_name,   " +
+                "    ktxUser.code_user,   " +
+                "    ktxUser.value,   " +
+                "    ktxUser.sex    " +
+                "FROM   " +
+                "    ktx_user ktxUser    " +
+                "    INNER JOIN user_role userRole ON ktxUser.id_ktx_user = userRole.id_user    " +
+                "    INNER JOIN role roles ON userRole.id_role = roles.id_role    " +
+                "WHERE   " +
+                "    roles.title = 'STUDENT'  " +
+                "    AND NOT EXISTS (  " +
+                "        SELECT 1 FROM student_room sr   " +
+                "        WHERE sr.id_user = ktxUser.id_ktx_user   " +
+                "          AND sr.status = :statusStudent  " +
+                "    )");
         setConditionFindAllStudents(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudents(query, request);
@@ -222,7 +227,6 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 response.setCodeUser(ValueUtil.getStringByObject(obj[2]));
                 response.setValue(ValueUtil.getStringByObject(obj[3]));
                 response.setSex(ValueUtil.getIntegerByObject(obj[4]));
-                response.setStatusHireRoom(ValueUtil.getIntegerByObject(obj[5]));
                 responses.add(response);
             }
         }
@@ -318,6 +322,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     }
 
     private void setParameterFindAllStudents(Query query, FindAllStudentsRequest request) {
+        query.setParameter("statusStudent", Constants.STATUS_STUDENT_HIRING_ROOM);
         if (StringUtils.isNotBlank(request.getKeyword())){
             query.setParameter("keyword", request.getKeyword());
         }
@@ -340,12 +345,17 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     private long countFindAllStudents(FindAllStudentsRequest request){
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) as count " +
-                "from ktx_user ktxUser  " +
-                "         inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user  " +
-                "         inner join role roles on userRole.id_role = roles.id_role  " +
-                "         left join student_room on ktxUser.id_ktx_user = student_room.id_user " +
-                "where 1 = 1  " +
-                "  and roles.title = 'STUDENT' ");
+                "FROM   " +
+                "    ktx_user ktxUser    " +
+                "    INNER JOIN user_role userRole ON ktxUser.id_ktx_user = userRole.id_user    " +
+                "    INNER JOIN role roles ON userRole.id_role = roles.id_role    " +
+                "WHERE   " +
+                "    roles.title = 'STUDENT'  " +
+                "    AND NOT EXISTS (  " +
+                "        SELECT 1 FROM student_room sr   " +
+                "        WHERE sr.id_user = ktxUser.id_ktx_user   " +
+                "          AND sr.status = :statusStudent  " +
+                "    )");
         setConditionFindAllStudents(request,sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudents(query, request);
