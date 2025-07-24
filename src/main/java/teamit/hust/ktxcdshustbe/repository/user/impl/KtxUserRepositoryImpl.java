@@ -208,12 +208,8 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "    INNER JOIN user_role userRole ON ktxUser.id_ktx_user = userRole.id_user    " +
                 "    INNER JOIN role roles ON userRole.id_role = roles.id_role    " +
                 "WHERE   " +
-                "    roles.title = 'STUDENT'  " +
-                "    AND NOT EXISTS (  " +
-                "        SELECT 1 FROM student_room sr   " +
-                "        WHERE sr.id_user = ktxUser.id_ktx_user   " +
-                "          AND sr.status = :statusStudent  " +
-                "    )");
+                "    roles.title = 'STUDENT'  " );
+
         setConditionFindAllStudents(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudents(query, request);
@@ -322,12 +318,11 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     }
 
     private void setParameterFindAllStudents(Query query, FindAllStudentsRequest request) {
-        query.setParameter("statusStudent", Constants.STATUS_STUDENT_HIRING_ROOM);
         if (StringUtils.isNotBlank(request.getKeyword())){
             query.setParameter("keyword", request.getKeyword());
         }
-        if(ObjectUtils.isNotEmpty(request.getStatus())){
-           query.setParameter("status", request.getStatus());
+        if(request.isStatusHired()){
+            query.setParameter("statusStudent", Constants.STATUS_STUDENT_HIRING_ROOM);
         }
     }
 
@@ -336,8 +331,11 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
             sb.append("   and (ktxUser.value REGEXP '[' + :keyword + ']') OR " +
                     "       (ktxUser.user_name REGEXP '[' + :keyword + ']')) ");
         }
-        if(ObjectUtils.isNotEmpty(request.getStatus())){
-            sb.append("student_room.status = :status");
+        if(request.isStatusHired()){
+            sb.append("  AND NOT EXISTS  (  " +
+                    "  SELECT 1 FROM student_room sr  " +
+                    "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
+                    "  AND sr.status = :statusStudent )  ");
         }
     }
 
@@ -350,12 +348,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "    INNER JOIN user_role userRole ON ktxUser.id_ktx_user = userRole.id_user    " +
                 "    INNER JOIN role roles ON userRole.id_role = roles.id_role    " +
                 "WHERE   " +
-                "    roles.title = 'STUDENT'  " +
-                "    AND NOT EXISTS (  " +
-                "        SELECT 1 FROM student_room sr   " +
-                "        WHERE sr.id_user = ktxUser.id_ktx_user   " +
-                "          AND sr.status = :statusStudent  " +
-                "    )");
+                "    roles.title = 'STUDENT'  " );
         setConditionFindAllStudents(request,sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudents(query, request);
