@@ -137,7 +137,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         sb.append("select studentRoom.id_student_room,ktxUser.code_user, ktxUser.value, " +
                 "       timeHired.time_started, timeHired.time_ended,semester.title, " +
                 "       de.code_department, de.title titleDepartment, ro.code_room,   " +
-                "       ro.title roomTitle, userModified.code_user,userModified.value,studentRoom.  " +
+                "       ro.title roomTitle, userModified.code_user,userModified.value,studentRoom.status  " +
                 "from student_room studentRoom    " +
                 "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
                 "    left join ktx_user userModified on studentRoom.id_user_modified = userModified.id_ktx_user   " +
