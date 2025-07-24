@@ -12,5 +12,6 @@ import teamit.hust.ktxcdshustbe.request.RequestPageBase;
 @NoArgsConstructor
 public class FindAllStudentsRequest extends RequestPageBase {
 
+    private Integer status;
 
 }

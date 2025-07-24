@@ -3,6 +3,7 @@ package teamit.hust.ktxcdshustbe.repository.user.impl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -320,12 +321,18 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         if (StringUtils.isNotBlank(request.getKeyword())){
             query.setParameter("keyword", request.getKeyword());
         }
+        if(ObjectUtils.isNotEmpty(request.getStatus())){
+           query.setParameter("status", request.getStatus());
+        }
     }
 
     private void setConditionFindAllStudents(FindAllStudentsRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             sb.append("   and (ktxUser.value REGEXP '[' + :keyword + ']') OR " +
                     "       (ktxUser.user_name REGEXP '[' + :keyword + ']')) ");
+        }
+        if(ObjectUtils.isNotEmpty(request.getStatus())){
+            sb.append("student_room.status = :status");
         }
     }
 

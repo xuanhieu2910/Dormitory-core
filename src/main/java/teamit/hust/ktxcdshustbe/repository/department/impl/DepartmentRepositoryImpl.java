@@ -344,8 +344,8 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select de.id_department, de.title, de.code_department, " +
                 "       de.short_name, de.description, de.parent,de.status,de.id_user_created, " +
-                "       de.id_user_modified,de.time_created, de.time_modified,de_parent.name_department,de_parent.code_department " +
-                "from department de left join department de_parent on de_parent.id_department =de.id_parent " +
+                "       de.id_user_modified,de.time_created, de.time_modified,de_parent.title,de_parent.code_department " +
+                "from department de left join department de_parent on de_parent.id_department =de.parent " +
                 "where de.code_department = :codeDepartment ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeDepartment", codeDepartment);
@@ -365,7 +365,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
                 department.setTimeCreated(ValueUtil.getStringByObject(obj[9]));
                 department.setTimeModified(ValueUtil.getStringByObject(obj[10]));
                 department.setNameParent(ValueUtil.getStringByObject(obj[11]));
-                department.setCodeDepartment(ValueUtil.getStringByObject(obj[12]));
+                department.setCodeParent(ValueUtil.getStringByObject(obj[12]));
                 return Optional.of(department);
             }
         }

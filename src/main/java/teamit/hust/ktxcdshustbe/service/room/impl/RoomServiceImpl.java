@@ -509,7 +509,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private Room initializeRoom(CreateNewRoomRequest request, Department department){
-        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication();
+        KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Room room = new Room();
         Long timeCurrent = new Date().getTime();
         room.setTitle(request.getTitle());
@@ -518,8 +518,8 @@ public class RoomServiceImpl implements RoomService {
         room.setPrice(request.getPrice());
         room.setTimeCreated(timeCurrent);
         room.setTimeModified(timeCurrent);
-        room.setIdUserCreated(ktxUser.getIdKtxUser());
-        room.setIdUserModified(ktxUser.getIdKtxUser());
+        room.setIdUserCreated(ktxUserCurrent.getIdKtxUser());
+        room.setIdUserModified(ktxUserCurrent.getIdKtxUser());
         room.setIsActive(request.getStatus());
         room.setLimitAmountPeople(request.getLimitAmountPeople());
         room.setQuantityHired(Constants.DEFAULT_QUANTITY_HIRED);
