@@ -20,6 +20,7 @@ public class  CreateNewRoomRequest {
     private Integer sexRoom;
     private String price;
     private Integer limitAmountPeople;
+    private Integer limitAmountPeopleRegister;
     private Integer status;
     private List<CreateNewServiceRoomRequest> servicesRoom;
 }
