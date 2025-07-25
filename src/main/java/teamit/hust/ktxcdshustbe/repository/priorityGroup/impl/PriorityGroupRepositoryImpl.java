@@ -229,7 +229,7 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
         sb.append("""
                  select pg.id_priority_group, pg.priority_group_code,
                 pg.title, pg.description, pg.time_created, pg.time_modified,
-                pg.id_user_created, pg.id_user_modified,
+                pg.id_user_created, pg.id_user_modified
                 from priority_group pg
                 where pg.priority_group_code=:priorityGroupCode
                 """);
@@ -253,16 +253,28 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
         return Optional.empty();
     }
 
+//    @Override
+//    public boolean existsByPriorityGroupCode(String priorityGroupCode) {
+//            StringBuilder sb = new StringBuilder();
+//            sb.append("""
+//                    select pg.id_priority_group
+//                    from priority_group pg
+//                    where pg.priority_group_code=:priorityGroupCode
+//                    """);
+//            Query query = entityManager.createNativeQuery(sb.toString());
+//            query.setParameter("priorityGroupCode", priorityGroupCode);
+//            return !CollectionUtils.isEmpty(query.getResultList());
+//    }
     @Override
-    public boolean existsByPriorityGroupCode(String priorityGroupCode) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("""
-                    select pg.id_priority_group
-                    from priority_group pg
-                    where pg.priority_group_code=:priorityGroupCode
-                    """);
-            Query query = entityManager.createNativeQuery(sb.toString());
-            query.setParameter("priorityGroupCode", priorityGroupCode);
-            return !CollectionUtils.isEmpty(query.getResultList());
+    public boolean existsByTitlePriorityGroup(String titlePriorityGroup) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select pg.title
+                from priority_group pg
+                where pg.title=:titlePriorityGroup
+                """);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("titlePriorityGroup", titlePriorityGroup);
+        return !CollectionUtils.isEmpty(query.getResultList());
     }
 }

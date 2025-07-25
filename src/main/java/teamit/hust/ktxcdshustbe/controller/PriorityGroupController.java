@@ -58,7 +58,7 @@ public class PriorityGroupController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPriorityGroup(CreatePriorityGroupRequest request) {
+    public ResponseEntity<?> createPriorityGroup(@RequestBody CreatePriorityGroupRequest request) {
         try {
             priorityGroupService.create(request);
             return ApiResponseDto.createdWithMessage("Create priority group success", HttpStatus.OK);
@@ -75,7 +75,7 @@ public class PriorityGroupController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updatePriorityGroup(UpdatePriorityGroupRequest request) {
+    public ResponseEntity<?> updatePriorityGroup(@RequestBody UpdatePriorityGroupRequest request) {
         try{
             priorityGroupService.update(request);
             return ApiResponseDto.createdWithMessage("Update priority group success", HttpStatus.OK);
