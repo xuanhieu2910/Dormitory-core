@@ -117,9 +117,7 @@ public class YearGroupServiceImpl implements YearGroupService {
         response.setTimeCreated(dto.getTimeCreated());
         response.setTimeModified(dto.getTimeModified());
         response.setUserNameCreated(dto.getUserNameCreated());
-        response.setFullNameCreated(dto.getFullNameCreated());
         response.setUserNameModified(dto.getUserNameModified());
-        response.setFullNameModified(dto.getFullNameModified());
         return response;
     }
 

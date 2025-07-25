@@ -17,7 +17,6 @@ public class FindAllYearGroupsDto {
     private Integer idUserCreated;
     private Integer idUserModified;
     private String userNameCreated;
-    private String fullNameCreated;
     private String userNameModified;
-    private String fullNameModified;
+
 }
