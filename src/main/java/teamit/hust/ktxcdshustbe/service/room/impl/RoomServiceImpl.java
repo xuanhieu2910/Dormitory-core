@@ -37,7 +37,6 @@ import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
-import java.sql.SQLException;
 import java.util.*;
 
 @Log4j2
@@ -252,14 +251,6 @@ public class RoomServiceImpl implements RoomService {
         return responses;
     }
 
-    @Override
-    public void updateQuantityStudentRegisterRoom(String codeRoom) {
-        int rowEffect = roomRepository.updateQuantityStudentRegisterRoom(codeRoom);
-        if (rowEffect == Constants.ROW_NOT_UPDATED) {
-            log.info("Can't register room, room unavailable by room id " + codeRoom);
-            throw new ValidParametersException();
-        }
-    }
 
     @Override
     public SearchRoomResponse searchRoomToTranfer(SearchRoomToTranferRequest searchRoom){
@@ -270,22 +261,6 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException();
         }
         return response.get();
-    }
-
-    @Override
-    public void updateQuantityRegisterOriginRoom(Integer originRoomId) {
-        int rowUpdates = roomRepository.updateQuantityRegisterOriginRoom(originRoomId);
-        if (rowUpdates == Constants.ROW_NOT_UPDATED){
-            throw new ValidParametersException();
-        }
-    }
-
-    @Override
-    public void updateQuantityStudentRegisterDestinationRoom(Integer roomId) {
-        int rowUpdates = roomRepository.updateQuantityStudentRegisterDestinationRoom(roomId);
-        if (rowUpdates == Constants.ROW_NOT_UPDATED){
-            throw new ValidParametersException();
-        }
     }
 
 
@@ -328,16 +303,16 @@ public class RoomServiceImpl implements RoomService {
             response.setCodeRoom(dto.getCodeRoom());
             response.setTitleRoom(dto.getTitleRoom());
             response.setPrice(dto.getPrice());
-            response.setLimitAmountPeopleRegister(dto.getLimitAmountPeopleRegister());
-            response.setSex(dto.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
-            response.setRemainAmountRegister(dto.getRemainAmountRegister());
+            response.setLimitAmountPeopleRegister(dto.getLimitationAmountRegisterRoom());
+            response.setSex(dto.getSexRoom().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
+            response.setRemainAmountRegister(dto.getRemainAmountRegisterRoom());
             responses.add(response);
         }
         return responses;
     }
 
     private void verifyStudentSearchRoom(StudentSearchRoomRequest request) {
-        if (StringUtils.isBlank(request.getCodeDepartment()) || ObjectUtils.isEmpty(request.getGender())){
+        if (StringUtils.isBlank(request.getCodeDepartment())){
             throw new ValidParametersException();
         }
     }

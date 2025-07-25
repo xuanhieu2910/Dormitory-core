@@ -16,4 +16,8 @@ public interface BatchesRegistrationRepositoryCustom {
     Optional<BatchesRegistrationDetailDto> getDetailBatchesRegistration(String codeBatchesRegistration);
     boolean checkNotExitsBatchesRegistration (List<String> codeYearGroups, Long startDate, Long endDate);
     Optional<BatchesRegistration> findBatchesRegistrationByCodeBatchesRegistration(String codeBatchesRegistration);
+
+    Optional<BatchesRegistration> getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(Long timeCurrent,
+                                                                                               Integer idPriorityGroup,
+                                                                                               Integer idYearGroup);
 }

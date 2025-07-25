@@ -1,6 +1,7 @@
 package teamit.hust.ktxcdshustbe.response.studentRegister;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,10 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StudentRegisterRoomResponse {
+@AllArgsConstructor
+public class StudentRegisterRoomCurrentResponse {
 
-    @JsonProperty("id_student_register_room")
-    private Integer idStudentRegisterRoom;
     @JsonProperty("code_room")
     private String codeRoom;
     @JsonProperty("title_room")
@@ -21,15 +21,10 @@ public class StudentRegisterRoomResponse {
     @JsonProperty("title_department")
     private String titleDepartment;
     @JsonProperty("time_created")
-    private Long timeCreated;
-    @JsonProperty("time_hired_started")
-    private Long timeHiredStarted;
-    @JsonProperty("time_hired_ended")
-    private Long timeHiredEnded;
+    private String timeCreated;
     @JsonProperty("price")
     private String price;
     @JsonProperty("status_student_register_room")
     private Integer statusStudentRegisterRoom;
-    @JsonProperty("expires_at")
-    private Long expiresAt;
+
 }

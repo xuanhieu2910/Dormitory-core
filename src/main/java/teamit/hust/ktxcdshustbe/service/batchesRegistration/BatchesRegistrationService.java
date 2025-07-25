@@ -1,6 +1,7 @@
 package teamit.hust.ktxcdshustbe.service.batchesRegistration;
 
 import org.springframework.data.domain.Page;
+import teamit.hust.ktxcdshustbe.entity.BatchesRegistration;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.CreateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.UpdateBatchesRegistrationRequest;
@@ -15,4 +16,7 @@ public interface BatchesRegistrationService {
     void createBatchesRegistration(CreateBatchesRegistrationRequest request);
 
     void updateBatchesRegistration(UpdateBatchesRegistrationRequest request);
+
+    BatchesRegistration getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(Long timeCurrent, Integer idYearGroup,
+                                                                                     Integer idPriorityGroup);
 }

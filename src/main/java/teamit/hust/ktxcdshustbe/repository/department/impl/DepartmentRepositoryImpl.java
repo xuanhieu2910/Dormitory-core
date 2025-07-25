@@ -8,13 +8,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentByCodeAndVisibleDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindDepartmentStatisticDetailDto;
+import teamit.hust.ktxcdshustbe.dto.department.StudentSearchDepartmentDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
+import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.repository.department.DepartmentRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
+import teamit.hust.ktxcdshustbe.request.department.StudentSearchDepartmentRequest;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentStatisticDetailResponse;
 import teamit.hust.ktxcdshustbe.utility.Constants;
@@ -22,6 +26,7 @@ import teamit.hust.ktxcdshustbe.utility.PageUtils;
 import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -370,6 +375,77 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Page<StudentSearchDepartmentDto> findAllStudentSearchDepartment(Pageable pageable, StudentSearchDepartmentRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select de.id_department, de.code_department, de.title
+                 from batches_registration br
+                     inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration 
+                     inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration
+                     inner join priority_group pg on brs.id_priority_group = pg.id_priority_group
+                     inner join batches_year_group_registration bygr on br.id_batches_registration = bygr.id_batches_registration
+                     inner join year_group yg on bygr.id_year_group = yg.id_year_group
+                     inner join room ro on brr.id_room = ro.id_room
+                     inner join department de on ro.id_department = de.id_department
+                 where :currentTime  between brs.registration_start_time and brs.registration_end_time
+                 and pg.id_priority_group = :idPriorityGroup
+                 and yg.id_year_group = :idYearGroup
+                 and ro.sex_room = :sexRoom
+                """);
+        setConditionFindAllStudentSearchDepartment(sb, request);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllStudentSearchDepartment(query, request);
+        PageUtils.buildQuery(pageable, query);
+        List<Object[]> result = query.getResultList();
+        List<StudentSearchDepartmentDto> studentSearchDepartmentDtos = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                StudentSearchDepartmentDto studentSearchDepartmentDto  = new StudentSearchDepartmentDto();
+                studentSearchDepartmentDto.setIdDepartment(ValueUtil.getIntegerByObject(obj[0]));
+                studentSearchDepartmentDto.setCodeDepartment(ValueUtil.getStringByObject(obj[1]));
+                studentSearchDepartmentDto.setTitleDepartment(ValueUtil.getStringByObject(obj[2]));
+                studentSearchDepartmentDtos.add(studentSearchDepartmentDto);
+            }
+        }
+        return new PageImpl<>(studentSearchDepartmentDtos, pageable, countFindAllStudentSearchDepartment(request));
+    }
+
+    private long countFindAllStudentSearchDepartment(StudentSearchDepartmentRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select count(0)
+                 from batches_registration br 
+                     inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration  
+                     inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration 
+                     inner join priority_group pg on brs.id_priority_group = pg.id_priority_group 
+                     inner join batches_year_group_registration bygr on br.id_batches_registration = bygr.id_batches_registration 
+                     inner join year_group yg on bygr.id_year_group = yg.id_year_group 
+                     inner join room ro on brr.id_room = ro.id_room 
+                     inner join department de on ro.id_department = de.id_department 
+                 where :currentTime  between brs.registration_start_time and brs.registration_end_time
+                 and pg.id_priority_group = :idPriorityGroup 
+                 and yg.id_year_group = :idYearGroup
+                 and ro.sex_room = :sexRoom
+                """);
+        setConditionFindAllStudentSearchDepartment(sb, request);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllStudentSearchDepartment(query, request);
+        return ValueUtil.getIntegerByObject(query.getSingleResult());
+    }
+
+    private void setParameterFindAllStudentSearchDepartment(Query query, StudentSearchDepartmentRequest request) {
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        query.setParameter("currentTime", new Date().getTime());
+        query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
+        query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
+        query.setParameter("sexRoom", ktxUser.getSex());
+    }
+
+    private void setConditionFindAllStudentSearchDepartment(StringBuilder sb, StudentSearchDepartmentRequest request) {
+        sb.append(" group by de.id_department, de.code_department, de.title ");
     }
 
     private Department writeDataDepartment(Object[] obj) {

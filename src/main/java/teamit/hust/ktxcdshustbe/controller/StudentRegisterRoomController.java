@@ -20,6 +20,7 @@ import teamit.hust.ktxcdshustbe.request.registerRoom.ChangeRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.registerRoom.DeclareInformationRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.request.studentRegister.FindAllSearchRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.user.UserRegisterRoomResponse;
@@ -39,16 +40,18 @@ public class StudentRegisterRoomController {
     StudentRegisterRoomService studentRegisterRoomService;
 
 
-//    @PostMapping("/declare-information")
-//    public ResponseEntity<?> declareInformation(@AuthenticationPrincipal OidcUser principal,
-//                                                @RequestBody DeclareInformationRequest request){
-//        try {
-//            studentRegisterRoomService.declareInformationStudent(principal, request);
-//            return ApiResponseDto.createdWithMessage("Declare information student success!", HttpStatus.OK);
-//        }catch (Exception e){
-//            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/verify-register-room")
+    public ResponseEntity<?> verifyRegisterRoom(){
+        try {
+            studentRegisterRoomService.verifyRegisterRoom();
+            return ApiResponseDto.createdWithMessage("Verify account to register room success!", HttpStatus.OK);
+        } catch (ValidParametersException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @PostMapping("/register-room")
     public ResponseEntity<?> createRegisterRoom(@RequestBody CreateRegisterRoomRequest request){
@@ -157,4 +160,13 @@ public class StudentRegisterRoomController {
         }
     }
 
+    @GetMapping("/current")
+    public ResponseEntity<?> getRegisterRoomCurrent(){
+        try {
+            return ApiResponseDto.createdWithState(studentRegisterRoomService.getRegisterRoomCurrent(),
+                    "Get register room current", HttpStatus.OK);
+        }catch (Exception e) {
+            return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

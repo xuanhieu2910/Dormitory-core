@@ -84,4 +84,16 @@ public class TimeHiredController {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/current")
+    public ResponseEntity<?> getTimeHiredCurrent(){
+        try {
+            return ApiResponseDto.createdWithState(timeHiredService.getTimeHiredCurrent(),
+                    "Get time hired current!", HttpStatus.OK);
+        } catch (NotFoundException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

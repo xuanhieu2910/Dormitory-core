@@ -4,6 +4,7 @@ import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import teamit.hust.ktxcdshustbe.dto.timeHired.FindAllTimeHiredDto;
+import teamit.hust.ktxcdshustbe.dto.timeHired.TimeHiredCurrentDto;
 import teamit.hust.ktxcdshustbe.entity.TimeHired;
 import teamit.hust.ktxcdshustbe.request.timeHired.FindAllTimeHiredRequest;
 import teamit.hust.ktxcdshustbe.response.timeHired.FindAllTimeHiredResponse;
@@ -19,4 +20,6 @@ public interface TimeHiredRepositoryCustom {
     Page<FindAllTimeHiredDto> findAllTimeHired(Pageable pageable, FindAllTimeHiredRequest request);
 
     Optional<TimeHired> findTimeHiredByCodeTimeHired(String codeTimeHired);
+
+    Optional<TimeHired> findTimeHiredCurrent();
 }

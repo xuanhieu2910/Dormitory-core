@@ -132,14 +132,18 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
     @Override
     public boolean checkNotExitsBatchesRegistration(List<String> codeYearGroups, Long startDate, Long endDate) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select case when br.id_batches_registration is null then 1 else 0 end  " +
-                "from batches_registration br  " +
-                "    inner join semester se on br.id_semester = se.id_semester  " +
-                "    inner join batches_year_group_registration bygr on br.id_batches_registration = bygr.id_batches_registration  " +
-                "    inner join year_group yg on bygr.id_year_group = yg.id_year_group  " +
-                "where yg.code_year_group in (:codeYearGroups)  " +
-                "and (((:startDate >= br.start_time and :startDate <= br.end_time) or (:endDate >= br.start_time and :endDate <= br.end_time))  " +
-                "    or (:startDate <= br.start_time and :endDate >= br.end_time)) ");
+        sb.append("select case  " +
+                "           when exists(select 1  " +
+                "                       from batches_registration br  " +
+                "                                inner join semester se on br.id_semester = se.id_semester  " +
+                "                                inner join batches_year_group_registration bygr  " +
+                "                                           on br.id_batches_registration = bygr.id_batches_registration  " +
+                "                                inner join year_group yg on bygr.id_year_group = yg.id_year_group  " +
+                "                       where yg.code_year_group in (:codeYearGroups)  " +
+                "                         and (((:startDate >= br.start_time and :startDate <= br.end_time) or  " +
+                "                               (:endDate >= br.start_time and :endDate <= br.end_time))  " +
+                "                           or (:startDate <= br.start_time and :endDate >= br.end_time))) then 1  " +
+                "           else 0 end result ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeYearGroups", codeYearGroups);
         query.setParameter("startDate", startDate);
@@ -160,6 +164,39 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
                 "where br.code_batches_registration = :codeBatchesRegistration ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeBatchesRegistration", codeBatchesRegistration);
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                return Optional.of(writeDataBatchesRegistration(obj));
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<BatchesRegistration> getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(Long timeCurrent,
+                                                                                                      Integer idPriorityGroup,
+                                                                                                      Integer idYearGroup) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select br.id_batches_registration, br.title, br.code_batches_registration,
+                       br.id_time_hired, br.id_semester, br.description, br.notes,
+                       br.time_created, br.time_modified, br.id_user_created,
+                       br.id_user_modified, br.start_time, br.end_time
+                from batches_registration br
+                    inner join batches_year_group_registration bygr
+                        on br.id_batches_registration = bygr.id_batches_registration
+                    inner join year_group yg on bygr.id_year_group = yg.id_year_group
+                    inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration
+                    inner join priority_group pg on brs.id_priority_group = pg.id_priority_group
+                where :currentTime between br.start_time and br.end_time
+                and pg.id_priority_group = :idPriorityGroup
+                and yg.id_year_group = :idYearGroup
+                """);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("currentTime", timeCurrent);
+        query.setParameter("idPriorityGroup", idPriorityGroup);
+        query.setParameter("idYearGroup", idYearGroup);
         List<Object[]> result = query.getResultList();
         if (!CollectionUtils.isEmpty(result)){
             for (Object[] obj : result){

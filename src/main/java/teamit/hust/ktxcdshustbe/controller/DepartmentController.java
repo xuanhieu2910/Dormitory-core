@@ -16,6 +16,7 @@ import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.department.CreateDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.EditDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
+import teamit.hust.ktxcdshustbe.request.department.StudentSearchDepartmentRequest;
 import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
 
 @Tag(name = "Department API", description = "The department API. Contains operations like CRUD department.")
@@ -37,7 +38,7 @@ public class DepartmentController {
             return ApiResponseDto.createdWithState(departmentService.findAllDepartment(request),
                     "Find all departments success!", HttpStatus.OK);
         } catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -65,7 +66,7 @@ public class DepartmentController {
         } catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -82,7 +83,7 @@ public class DepartmentController {
         } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -98,7 +99,7 @@ public class DepartmentController {
         } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @DeleteMapping
@@ -111,7 +112,7 @@ public class DepartmentController {
         } catch (ExitsObjectException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         }  catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping("/details")
@@ -122,7 +123,22 @@ public class DepartmentController {
         }catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping("/student-search-department")
+    public ResponseEntity<?> findAllStudentSearchDepartment(@And({
+            @Spec(path = "page", params = "page", spec = Like.class),
+            @Spec(path = "size", params = "size", spec = Like.class),
+            @Spec(path = "keyword", params = "keyword", spec = Like.class)
+    }) StudentSearchDepartmentRequest request){
+        try {
+            return ApiResponseDto.createdWithState(departmentService.findAllStudentSearchDepartment(request),
+                    "Student search department success!", HttpStatus.OK);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

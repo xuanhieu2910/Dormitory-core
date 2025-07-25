@@ -5,8 +5,10 @@ import org.springframework.data.domain.Pageable;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentByCodeAndVisibleDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindDepartmentStatisticDetailDto;
+import teamit.hust.ktxcdshustbe.dto.department.StudentSearchDepartmentDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
+import teamit.hust.ktxcdshustbe.request.department.StudentSearchDepartmentRequest;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentStatisticDetailResponse;
 
@@ -28,4 +30,6 @@ public interface DepartmentRepositoryCustom {
     boolean isExitsRoomByIdDepartment(Integer idDepartment);
 
     Optional<DepartmentDetailsResponse> findDepartmentDetailsByCode(String codeDepartment);
+
+    Page<StudentSearchDepartmentDto> findAllStudentSearchDepartment(Pageable pageable, StudentSearchDepartmentRequest request);
 }
