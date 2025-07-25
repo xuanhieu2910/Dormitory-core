@@ -120,7 +120,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
                 ") " +
                 "    select count(cte.id_department) count  " +
                 "from cte_department cte  " +
-                "where 1 = 1 and cte.status = :status ");
+                "where 1 = 1 ");
         setConditionFindAllDepartment(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartment(request, query);
