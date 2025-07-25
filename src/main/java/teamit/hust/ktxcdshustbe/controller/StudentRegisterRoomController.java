@@ -20,6 +20,7 @@ import teamit.hust.ktxcdshustbe.request.registerRoom.ChangeRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.registerRoom.DeclareInformationRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.request.studentRegister.FindAllSearchRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.user.UserRegisterRoomResponse;
@@ -39,22 +40,26 @@ public class StudentRegisterRoomController {
     StudentRegisterRoomService studentRegisterRoomService;
 
 
-//    @PostMapping("/declare-information")
-//    public ResponseEntity<?> declareInformation(@AuthenticationPrincipal OidcUser principal,
-//                                                @RequestBody DeclareInformationRequest request){
-//        try {
-//            studentRegisterRoomService.declareInformationStudent(principal, request);
-//            return ApiResponseDto.createdWithMessage("Declare information student success!", HttpStatus.OK);
-//        }catch (Exception e){
-//            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @GetMapping("/verify-register-room")
+    public ResponseEntity<?> verifyRegisterRoom(){
+        try {
+            studentRegisterRoomService.verifyRegisterRoom();
+            return ApiResponseDto.createdWithMessage("Verify account to register room success!", HttpStatus.OK);
+        } catch (ValidParametersException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @PostMapping("/register-room")
     public ResponseEntity<?> createRegisterRoom(@RequestBody CreateRegisterRoomRequest request){
         try {
-//            StudentRegisterRoom response = studentRegisterRoomService.createStudentRegisterRoom(request);
-            return ApiResponseDto.createdWithState(null,"Register room success!", HttpStatus.OK);
+            studentRegisterRoomService.createStudentRegisterRoom(request);
+            return ApiResponseDto.createdWithMessage("Register room success!", HttpStatus.OK);
+        } catch (SqlExecuteException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ExitsObjectException e){
@@ -64,22 +69,19 @@ public class StudentRegisterRoomController {
         }
     }
 
-    @PostMapping("/upload-payment")
-    public ResponseEntity<?> uploadPaymentRegisterRoom(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/change-room")
+    public ResponseEntity<?> changeRoomRegister(@RequestBody ChangeRegisterRoomRequest request){
         try {
-            String pathAvatar = fileUploadService.saveAndReturnPath(file, FileUploadService.FOLDER_PAYMENT);
-            return ApiResponseDto.createdWithState(pathAvatar, "Store upload information payment register room success!", HttpStatus.OK);
-        } catch (FileIsNullException e){
+            studentRegisterRoomService.changeRegisterRoomStudent(request);
+            return ApiResponseDto.createdWithMessage("Change student register room success!", HttpStatus.OK);
+        } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (FileExtensionException e){
-            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (FileSizeException e){
+        } catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @PostMapping("/accept-payment")
     public ResponseEntity<?> acceptPaymentRegisterRoom(@RequestBody AcceptPaymentRequest acceptPaymentRequest) {
@@ -116,18 +118,6 @@ public class StudentRegisterRoomController {
     }
 
 
-    @PostMapping("/change-room")
-    public ResponseEntity<?> changeRoomRegister(@RequestBody ChangeRegisterRoomRequest request){
-        try {
-            studentRegisterRoomService.changeRegisterRoomStudent(request);
-            return ApiResponseDto.createdWithMessage("Change student register room success!", HttpStatus.OK);
-        } catch (NotFoundException e){
-          return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping("/find-all")
     public ResponseEntity<?> findAllListUserRegisterRoom(@And({
             @Spec(path = "page", params = "page", spec = Like.class),
@@ -157,4 +147,13 @@ public class StudentRegisterRoomController {
         }
     }
 
+    @GetMapping("/current")
+    public ResponseEntity<?> getRegisterRoomCurrent(){
+        try {
+            return ApiResponseDto.createdWithState(studentRegisterRoomService.getRegisterRoomCurrent(),
+                    "Get register room current", HttpStatus.OK);
+        }catch (Exception e) {
+            return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

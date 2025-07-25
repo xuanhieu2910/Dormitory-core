@@ -37,5 +37,6 @@ public class StudentRegisterRoom {
     private Integer idOrder;
     @Column(name = "id_batches_registration")
     private Integer idBatchesRegistration;
-
+    @Column(name = "expires_at")
+    private Long expiresAt;
 }

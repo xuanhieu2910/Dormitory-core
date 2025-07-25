@@ -5,9 +5,11 @@ import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.request.department.CreateDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.EditDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
+import teamit.hust.ktxcdshustbe.request.department.StudentSearchDepartmentRequest;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentStatisticDetailResponse;
 import teamit.hust.ktxcdshustbe.response.department.FindAllDepartmentsResponse;
+import teamit.hust.ktxcdshustbe.response.department.StudentSearchDepartmentResponse;
 
 import java.util.List;
 
@@ -26,4 +28,6 @@ public interface DepartmentService {
     void deleteDepartmentByCodeDepartment(String codeDepartment);
 
     DepartmentDetailsResponse findDetailsDepartmentByCodeDepartment(String codeDepartment);
+
+    Page<StudentSearchDepartmentResponse> findAllStudentSearchDepartment(StudentSearchDepartmentRequest request);
 }

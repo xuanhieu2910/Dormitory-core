@@ -46,7 +46,14 @@ public enum HttpStatusCustom {
     /**
      *  409 Conflict
      * */
-    EXITS_OBJECT("KTX409-001", "Exits object, please check again!"),;
+    EXITS_OBJECT("KTX409-001", "Exits object, please check again!"),
+
+    /**
+     *
+     *  499 SQL
+     *
+     * */
+    UPDATE_FALSE("KTX499-001", "Execute data false!");
 
     private static final HttpStatusCustom[] VALUES = values();
     private final String value;

@@ -19,7 +19,5 @@ public class FindAllStudentsResponse {
     private String value;
     @JsonProperty("sex")
     private Integer sex;
-    @JsonProperty("status_hire_room")
-    private Integer statusHireRoom;
 
 }

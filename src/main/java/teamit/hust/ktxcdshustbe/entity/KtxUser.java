@@ -51,9 +51,6 @@ public class KtxUser implements UserDetails {
     private String value;
 
 
-    private Integer idDepartmentCurrent;
-    private List<Integer> ListDepartmentCurrent;
-
     @ManyToMany
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "id_user"),

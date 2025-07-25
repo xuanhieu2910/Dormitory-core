@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import teamit.hust.ktxcdshustbe.dto.timeHired.FindAllTimeHiredDto;
+import teamit.hust.ktxcdshustbe.dto.timeHired.TimeHiredCurrentDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.TimeHired;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
@@ -19,6 +20,7 @@ import teamit.hust.ktxcdshustbe.request.timeHired.CreateTimeHiredRequest;
 import teamit.hust.ktxcdshustbe.request.timeHired.FindAllTimeHiredRequest;
 import teamit.hust.ktxcdshustbe.request.timeHired.UpdateTimeHiredRequest;
 import teamit.hust.ktxcdshustbe.response.timeHired.FindAllTimeHiredResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredCurrentResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 import teamit.hust.ktxcdshustbe.service.timeHired.TimeHiredService;
@@ -143,6 +145,22 @@ public class TimeHiredServiceImpl implements TimeHiredService {
             throw new NotFoundException();
         }
         return convertTimeHiredDetailsResponse(timeHiredOptional.get());
+    }
+
+    @Override
+    public TimeHiredCurrentResponse getTimeHiredCurrent() {
+        Optional<TimeHired> timeHiredOptional = timeHiredRepository.findTimeHiredCurrent();
+        if (timeHiredOptional.isEmpty()){
+            throw new NotFoundException();
+        }
+        return convertToTimeHiredCurrentResponse(timeHiredOptional.get());
+    }
+
+    private TimeHiredCurrentResponse convertToTimeHiredCurrentResponse(TimeHired timeHired) {
+        TimeHiredCurrentResponse response = new TimeHiredCurrentResponse();
+        response.setTimeStarted(timeHired.getTimeStarted());
+        response.setTimeStarted(timeHired.getTimeEnded());
+        return response;
     }
 
     private TimeHiredDetailsResponse convertTimeHiredDetailsResponse(TimeHired timeHired) {

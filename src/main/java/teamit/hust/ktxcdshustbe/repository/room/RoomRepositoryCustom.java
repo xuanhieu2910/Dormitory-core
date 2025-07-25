@@ -41,11 +41,14 @@ public interface RoomRepositoryCustom {
     Optional<Room> findRoomByCodeRoom(String codeRoom);
     Page<FindAllRoomsDto> findAllRooms(FindAllRoomsRequest request, Pageable pageable);
     Optional<Room> findRoomByTitleRoomAndCodeDepartment(String title, String codeDepartment);
-
     Optional<Room> findRoomByIdRoom(Integer idRoom);
     Page<StudentSearchRoomDto> findAllRoomStudentSearch(StudentSearchRoomRequest request, Pageable pageable);
     Page<SearchInformationRegisterRoomDto> findInformationRegisterRoom(SearchInformationRegisterRoomRequest request, Pageable pageable);
     Optional<List<Room>> findAllRoomByListCodeRoom(List<String> codesRoom);
 
     Optional<List<Room>> findAllRoomByIdsRoom(List<Integer> idsRoom);
+
+    int updateRemainQuantityRoomWhenStudentRegisterHoldingRoomByIdRoom(Integer idRoom);
+
+    int updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom);
 }

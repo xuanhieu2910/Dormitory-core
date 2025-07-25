@@ -1,5 +1,7 @@
 package teamit.hust.ktxcdshustbe.service.user.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
@@ -79,12 +81,12 @@ public class KtxUserServiceImpl implements KtxUserService {
         return qldtUser.get();
     }
 
-    private void setIdsDepartment(KtxUser ktxUser) {
-        DepartmentUserRoleDto departmentUserRoleDto = userRoleService.getDepartmentCurrentUserRoleByCodeUser(ktxUser.getCodeUser());
-        List<Integer> idsDepartment = departmentService.findIdsStructureDepartment(departmentUserRoleDto.getIdDepartment());
-        ktxUser.setListDepartmentCurrent(idsDepartment);
-        ktxUser.setIdDepartmentCurrent(departmentUserRoleDto.getIdDepartment());
-    }
+//    private void setIdsDepartment(KtxUser ktxUser) {
+//        DepartmentUserRoleDto departmentUserRoleDto = userRoleService.getDepartmentCurrentUserRoleByCodeUser(ktxUser.getCodeUser());
+//        List<Integer> idsDepartment = departmentService.findIdsStructureDepartment(departmentUserRoleDto.getIdDepartment());
+//        ktxUser.setListDepartmentCurrent(idsDepartment);
+//        ktxUser.setIdDepartmentCurrent(departmentUserRoleDto.getIdDepartment());
+//    }
 
 
     @Override
@@ -249,6 +251,7 @@ public class KtxUserServiceImpl implements KtxUserService {
     }
 
     private void createUserRole(List<KtxUser> ktxUsers) {
+        KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Role role = roleService.findRoleByTitleRole(RolePattern.STUDENT.name());
         List<UserRole> userRoles = new ArrayList<>();
         Long currentDate = new Date().getTime();
@@ -258,6 +261,9 @@ public class KtxUserServiceImpl implements KtxUserService {
             userRole.setIdRole(role.getIdRole());
             userRole.setTimeCreated(currentDate);
             userRole.setTimeModified(currentDate);
+            userRole.setIdUserCreated(ktxUserCurrent.getIdKtxUser());
+            userRole.setIdUserModified(ktxUserCurrent.getIdKtxUser());
+            userRole.setPicked(Constants.ROLE_USER_PICKED);
             userRoles.add(userRole);
         }
         userRoleService.saveAllUserRole(userRoles);
@@ -267,7 +273,7 @@ public class KtxUserServiceImpl implements KtxUserService {
     private List<KtxUser> handleUploadFileAccountStudent(MultipartFile file) {
         List<KtxUser> customUserDetails = new ArrayList<>();
         int indexSheet = 0;
-        int indexRowStartToReadData = 2;
+        int indexRowStartToReadData = 3;
         try {
             XSSFWorkbook xssfWorkbook = new XSSFWorkbook(file.getInputStream());
             XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(indexSheet);
@@ -284,30 +290,96 @@ public class KtxUserServiceImpl implements KtxUserService {
         return customUserDetails;
     }
 
-    private KtxUser getCustomUserDetailsFromFile(XSSFRow row) {
+    private KtxUser getCustomUserDetailsFromFile(XSSFRow row) throws JsonProcessingException {
+        KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         KtxUser customUserDetails = new KtxUser();
-        String userName = ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(1), CellType.STRING))).toLowerCase();
-        String fullNameTmp = ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(2), CellType.STRING))).toLowerCase();
+        Map<String, Object> commonData = new HashMap<>();
+        String numberStudent = ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(1), CellType.STRING))).toLowerCase();
+        commonData.put("number_student", numberStudent);
+        String userName = ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(2), CellType.STRING))).toLowerCase();
+        commonData.put("user_name", userName);
+        String SBD = ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(3), CellType.STRING))).toLowerCase();
+        commonData.put("sbd", SBD);
+        String fullNameTmp = ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(4), CellType.STRING))).toLowerCase();
         String fullName = fullNameTmp.substring(0,1).toUpperCase() + fullNameTmp.substring(1);
-        String numberStudent = ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(3), CellType.STRING))).toLowerCase();
-        Timestamp dateOfBirth = new Timestamp(DateUtil.formatDatePattern((String) ExcelUtil.convertValue(row.getCell(4),
-                CellType.STRING),DateUtil.DDMMYYYY).getTime());
-        String cccd = (String) ExcelUtil.convertValue(row.getCell(5), CellType.STRING);
+        commonData.put("full_name", fullName);
+        String dateOfBirth = (String) ExcelUtil.convertValue(row.getCell(5), CellType.STRING);
+        commonData.put("date_of_birth", dateOfBirth);
         String sex = (String) ExcelUtil.convertValue(row.getCell(6), CellType.STRING);
-        String nation = (String) ExcelUtil.convertValue(row.getCell(7), CellType.STRING);
-        String religion = (String) ExcelUtil.convertValue(row.getCell(8), CellType.STRING);
-        String area = (String) ExcelUtil.convertValue(row.getCell(9), CellType.STRING);
-        String province = (String) ExcelUtil.convertValue(row.getCell(10), CellType.STRING);
-        String district = (String) ExcelUtil.convertValue(row.getCell(11), CellType.STRING);
-        String wards = (String) ExcelUtil.convertValue(row.getCell(12), CellType.STRING);
-        String address = (String) ExcelUtil.convertValue(row.getCell(13), CellType.STRING);
-        String school = (String) ExcelUtil.convertValue(row.getCell(14), CellType.STRING);
-        String faculty = (String) ExcelUtil.convertValue(row.getCell(15), CellType.STRING);
-        String codeMajor = (String) ExcelUtil.convertValue(row.getCell(16), CellType.STRING);
-        String titleMajor = (String) ExcelUtil.convertValue(row.getCell(17), CellType.STRING);
-        String phoneNumber = (String) ExcelUtil.convertValue(row.getCell(18), CellType.STRING);
-        String email = (String) ExcelUtil.convertValue(row.getCell(19), CellType.STRING);
-        Integer yearGrade = Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(20), CellType.STRING)));
+        commonData.put("sex",sex);
+        String admissionCode = (String) ExcelUtil.convertValue(row.getCell(7), CellType.STRING);
+        commonData.put("admission_code",admissionCode);
+        String admissionName = (String) ExcelUtil.convertValue(row.getCell(8), CellType.STRING);
+        commonData.put("admission_name",admissionName);
+        String PTXTCode = (String) ExcelUtil.convertValue(row.getCell(9), CellType.STRING);
+        commonData.put("PTXT_code",PTXTCode);
+        String admissionCombinationCode = (String) ExcelUtil.convertValue(row.getCell(10), CellType.STRING);
+        commonData.put("admission_combination_code",admissionCombinationCode);
+        String numberOrderOfOrigin = (String) ExcelUtil.convertValue(row.getCell(11), CellType.STRING);
+        commonData.put("number_order_of_origin",numberOrderOfOrigin);
+        Double graduationScore = Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(12), CellType.STRING)));
+        commonData.put("graduation_score",graduationScore);
+        Integer encourageScore = Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(13), CellType.STRING)));
+        commonData.put("encourage_score",encourageScore);
+        String firstLessonName = (String) ExcelUtil.convertValue(row.getCell(14), CellType.STRING);
+        commonData.put("first_lesson_name",firstLessonName);
+        Double firstLessonScore = Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(15), CellType.STRING)));
+        commonData.put("first_lesson_score",firstLessonScore);
+        String secondLessonName = (String) ExcelUtil.convertValue(row.getCell(16), CellType.STRING);
+        commonData.put("second_lesson_name",secondLessonName);
+        Double secondLessonScore = Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(17), CellType.STRING)));
+        commonData.put("second_lesson_score",secondLessonScore);
+        String thirdLessonName = (String) ExcelUtil.convertValue(row.getCell(18), CellType.STRING);
+        commonData.put("third_lesson_name",thirdLessonName);
+        Double thirdLessonScore =  Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(19), CellType.STRING)));
+        commonData.put("third_lesson_score",thirdLessonScore);
+        String priorityObject = (String) ExcelUtil.convertValue(row.getCell(20), CellType.STRING);
+        commonData.put("priority_object",priorityObject);
+        Integer priorityArea =  Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(21), CellType.STRING)));
+        commonData.put("priority_area",priorityArea);
+        Integer yearGrade = Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(22), CellType.STRING)));
+        commonData.put("year_grade",yearGrade);
+        String academicPerformance = (String) ExcelUtil.convertValue(row.getCell(23), CellType.STRING);
+        commonData.put("academic_performance",academicPerformance);
+        String conduct = (String) ExcelUtil.convertValue(row.getCell(24), CellType.STRING);
+        commonData.put("conduct",conduct);
+        Double scoreAverageTwelve =  Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(25), CellType.STRING)));
+        commonData.put("score_average_twelve",scoreAverageTwelve);
+        String collegeGraduate = (String) ExcelUtil.convertValue(row.getCell(26), CellType.STRING);
+        commonData.put("college_graduate",collegeGraduate);
+        String highSchoolGraduate = (String) ExcelUtil.convertValue(row.getCell(27), CellType.STRING);
+        commonData.put("high_school_graduate",highSchoolGraduate);
+        String codeProvince = (String) ExcelUtil.convertValue(row.getCell(28), CellType.STRING);
+        commonData.put("code_province",codeProvince);
+        String nameProvince = (String) ExcelUtil.convertValue(row.getCell(29), CellType.STRING);
+        commonData.put("name_province",nameProvince);
+        String codeDistrict = (String) ExcelUtil.convertValue(row.getCell(30), CellType.STRING);
+        commonData.put("code_district",codeDistrict);
+        String nameDistrict = (String) ExcelUtil.convertValue(row.getCell(31), CellType.STRING);
+        commonData.put("name_district",nameDistrict);
+        String codeWards = (String) ExcelUtil.convertValue(row.getCell(32), CellType.STRING);
+        commonData.put("code_wards",codeWards);
+        String nameWards = (String) ExcelUtil.convertValue(row.getCell(33), CellType.STRING);
+        commonData.put("name_wards",nameWards);
+        String codeProvinceTwelve = (String) ExcelUtil.convertValue(row.getCell(34), CellType.STRING);
+        commonData.put("code_province_twelve",codeProvinceTwelve);
+        String codeSchoolTwelve = (String) ExcelUtil.convertValue(row.getCell(35), CellType.STRING);
+        commonData.put("code_school_twelve",codeSchoolTwelve);
+        String numberPhone = (String) ExcelUtil.convertValue(row.getCell(36), CellType.STRING);
+        commonData.put("number_phone",numberPhone);
+        String emailOther = (String) ExcelUtil.convertValue(row.getCell(37), CellType.STRING);
+        commonData.put("email_other",emailOther);
+        String NotificationAddress = (String) ExcelUtil.convertValue(row.getCell(38), CellType.STRING);
+        commonData.put("Notification_Address",NotificationAddress);
+        String placeOfBirth = (String) ExcelUtil.convertValue(row.getCell(39), CellType.STRING);
+        commonData.put("place_of_birth",placeOfBirth);
+        Integer codeNation =  Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(40), CellType.STRING)));
+        commonData.put("code_nation",codeNation);
+        String nation = (String) ExcelUtil.convertValue(row.getCell(41), CellType.STRING);
+        commonData.put("nation",nation);
+        String cccd = (String) ExcelUtil.convertValue(row.getCell(42), CellType.STRING);
+        commonData.put("cccd",cccd);
+
         customUserDetails.setUserName(userName);
         if (Objects.nonNull(sex)) {
             customUserDetails.setSex(sex.equals(Constants.TITLE_SEX[0]) ? Constants.FEMALE : Constants.MALE);
@@ -318,8 +390,13 @@ public class KtxUserServiceImpl implements KtxUserService {
         Long timeCurrent = new Date().getTime();
         customUserDetails.setTimeCreated(timeCurrent);
         customUserDetails.setTimeModified(timeCurrent);
+        customUserDetails.setIdUserCreated(ktxUserCurrent.getIdKtxUser());
+        customUserDetails.setIdUserModified(ktxUserCurrent.getIdKtxUser());
         customUserDetails.setTypeLogin(OAuth2Factory.azure.name());
         customUserDetails.setCodeUser(String.valueOf(UUID.randomUUID()));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String valueUser = objectMapper.writeValueAsString(commonData);
+        customUserDetails.setValue(valueUser);
         return customUserDetails;
     }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentByCodeAndVisibleDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindAllDepartmentDto;
 import teamit.hust.ktxcdshustbe.dto.department.FindDepartmentStatisticDetailDto;
+import teamit.hust.ktxcdshustbe.dto.department.StudentSearchDepartmentDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
@@ -20,9 +21,11 @@ import teamit.hust.ktxcdshustbe.repository.department.DepartmentRepository;
 import teamit.hust.ktxcdshustbe.request.department.CreateDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.EditDepartmentRequest;
 import teamit.hust.ktxcdshustbe.request.department.FindAllDepartmentRequest;
+import teamit.hust.ktxcdshustbe.request.department.StudentSearchDepartmentRequest;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.department.DepartmentStatisticDetailResponse;
 import teamit.hust.ktxcdshustbe.response.department.FindAllDepartmentsResponse;
+import teamit.hust.ktxcdshustbe.response.department.StudentSearchDepartmentResponse;
 import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
@@ -201,6 +204,24 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new NotFoundException();
         }
         return departmentOptional.get();
+    }
+
+    @Override
+    public Page<StudentSearchDepartmentResponse> findAllStudentSearchDepartment(StudentSearchDepartmentRequest request) {
+        Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
+        Page<StudentSearchDepartmentDto> studentSearchDepartmentDtos = departmentRepository.findAllStudentSearchDepartment(pageable, request);
+        return new PageImpl<>(convertToFindAllStudentSearchDepartment(studentSearchDepartmentDtos.getContent()), pageable, studentSearchDepartmentDtos.getTotalElements());
+    }
+
+    private List<StudentSearchDepartmentResponse> convertToFindAllStudentSearchDepartment(List<StudentSearchDepartmentDto> content) {
+        List<StudentSearchDepartmentResponse> responses = new ArrayList<>();
+        for (StudentSearchDepartmentDto dto : content) {
+            StudentSearchDepartmentResponse response = new StudentSearchDepartmentResponse();
+            response.setCodeDepartment(dto.getCodeDepartment());
+            response.setTitleDepartment(dto.getTitleDepartment());
+            responses.add(response);
+        }
+        return responses;
     }
 
     private List<FindAllDepartmentByCodeAndVisibleDto> findAllStructureDepartmentByIdDepartment(Integer idDepartment) {

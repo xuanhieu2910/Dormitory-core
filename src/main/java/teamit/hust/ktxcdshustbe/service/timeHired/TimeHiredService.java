@@ -6,6 +6,7 @@ import teamit.hust.ktxcdshustbe.request.timeHired.CreateTimeHiredRequest;
 import teamit.hust.ktxcdshustbe.request.timeHired.FindAllTimeHiredRequest;
 import teamit.hust.ktxcdshustbe.request.timeHired.UpdateTimeHiredRequest;
 import teamit.hust.ktxcdshustbe.response.timeHired.FindAllTimeHiredResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredCurrentResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 
@@ -25,4 +26,6 @@ public interface TimeHiredService {
     void deleteTimeHiredByCode(String codeTimeHired);
 
     TimeHiredDetailsResponse findDetailsTimeHiredByCode(String codeTimeHired);
+
+    TimeHiredCurrentResponse getTimeHiredCurrent();
 }

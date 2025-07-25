@@ -95,6 +95,19 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         updateFieldBatchesRegistration(request);
     }
 
+    @Override
+    public BatchesRegistration getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(Long timeCurrent,
+                                                                                            Integer idYearGroup,
+                                                                                            Integer idPriorityGroup) {
+        Optional<BatchesRegistration> batchesRegistration =
+                batchesRegistrationRepository.getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(timeCurrent,
+                        idPriorityGroup, idYearGroup);
+        if (batchesRegistration.isEmpty()){
+            throw new NotFoundException();
+        }
+         return batchesRegistration.get();
+    }
+
     private void updateFieldBatchesRegistration(UpdateBatchesRegistrationRequest request) {
         Optional<BatchesRegistration> batchesRegistration =
                 batchesRegistrationRepository.findBatchesRegistrationByCodeBatchesRegistration(request.getCodeBatchesRegistration());

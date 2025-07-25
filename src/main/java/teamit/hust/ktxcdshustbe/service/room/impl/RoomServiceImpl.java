@@ -20,10 +20,7 @@ import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.entity.ServiceRoom;
-import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
-import teamit.hust.ktxcdshustbe.exception.IsBlankException;
-import teamit.hust.ktxcdshustbe.exception.NotFoundException;
-import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
+import teamit.hust.ktxcdshustbe.exception.*;
 import teamit.hust.ktxcdshustbe.repository.room.RoomRepository;
 import teamit.hust.ktxcdshustbe.request.room.*;
 import teamit.hust.ktxcdshustbe.request.serviceRoom.CreateNewServiceRoomRequest;
@@ -37,7 +34,6 @@ import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
-import java.sql.SQLException;
 import java.util.*;
 
 @Log4j2
@@ -252,14 +248,6 @@ public class RoomServiceImpl implements RoomService {
         return responses;
     }
 
-    @Override
-    public void updateQuantityStudentRegisterRoom(String codeRoom) {
-        int rowEffect = roomRepository.updateQuantityStudentRegisterRoom(codeRoom);
-        if (rowEffect == Constants.ROW_NOT_UPDATED) {
-            log.info("Can't register room, room unavailable by room id " + codeRoom);
-            throw new ValidParametersException();
-        }
-    }
 
     @Override
     public SearchRoomResponse searchRoomToTranfer(SearchRoomToTranferRequest searchRoom){
@@ -270,22 +258,6 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException();
         }
         return response.get();
-    }
-
-    @Override
-    public void updateQuantityRegisterOriginRoom(Integer originRoomId) {
-        int rowUpdates = roomRepository.updateQuantityRegisterOriginRoom(originRoomId);
-        if (rowUpdates == Constants.ROW_NOT_UPDATED){
-            throw new ValidParametersException();
-        }
-    }
-
-    @Override
-    public void updateQuantityStudentRegisterDestinationRoom(Integer roomId) {
-        int rowUpdates = roomRepository.updateQuantityStudentRegisterDestinationRoom(roomId);
-        if (rowUpdates == Constants.ROW_NOT_UPDATED){
-            throw new ValidParametersException();
-        }
     }
 
 
@@ -328,16 +300,16 @@ public class RoomServiceImpl implements RoomService {
             response.setCodeRoom(dto.getCodeRoom());
             response.setTitleRoom(dto.getTitleRoom());
             response.setPrice(dto.getPrice());
-            response.setLimitAmountPeopleRegister(dto.getLimitAmountPeopleRegister());
-            response.setSex(dto.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
-            response.setRemainAmountRegister(dto.getRemainAmountRegister());
+            response.setLimitAmountPeopleRegister(dto.getLimitationAmountRegisterRoom());
+            response.setSex(dto.getSexRoom().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
+            response.setRemainAmountRegister(dto.getRemainAmountRegisterRoom());
             responses.add(response);
         }
         return responses;
     }
 
     private void verifyStudentSearchRoom(StudentSearchRoomRequest request) {
-        if (StringUtils.isBlank(request.getCodeDepartment()) || ObjectUtils.isEmpty(request.getGender())){
+        if (StringUtils.isBlank(request.getCodeDepartment())){
             throw new ValidParametersException();
         }
     }
@@ -348,6 +320,22 @@ public class RoomServiceImpl implements RoomService {
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         Page<SearchInformationRegisterRoomDto> searchInformationRegisterRoomDtos = roomRepository.findInformationRegisterRoom(request, pageable);
         return new PageImpl<>(convertToSearchInformationRegisterRoomResponse(searchInformationRegisterRoomDtos.getContent()), pageable, searchInformationRegisterRoomDtos.getTotalElements());
+    }
+
+    @Override
+    public void updateRemainQuantityRegisterRoomByIdRoom(Integer idRoom) {
+        if (roomRepository.updateRemainQuantityRoomWhenStudentRegisterHoldingRoomByIdRoom(idRoom)==0){
+            throw new SqlExecuteException();
+        }
+        log.info("[UPDATE] - Component: Register room - Message: Update success!");
+    }
+
+    @Override
+    public void updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom) {
+        if (roomRepository.updateRemainQuantityRegisterRoomWhenStudentChangeRoom(idRoom)==0){
+            throw new SqlExecuteException();
+        }
+        log.info("[UPDATE] - Component: Change register room - Message: Update success!");
     }
 
     private List<SearchInformationRegisterRoomResponse> convertToSearchInformationRegisterRoomResponse(List<SearchInformationRegisterRoomDto> dtos) {
@@ -442,7 +430,7 @@ public class RoomServiceImpl implements RoomService {
         List<ServiceRoomDto> serviceRoomsDtos =
                 serviceRoomService.findServicesRoomByCodeRoomAndCodesService(room.getCodeRoom(), codesService);
         List<ServiceRoom> serviceRooms = new ArrayList<>();
-        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication();
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         for (ServiceRoomDto serviceRoomDto : serviceRoomsDtos){
             ServiceRoom serviceRoom = new ServiceRoom();
             serviceRoom.setIdServiceRoom(serviceRoomDto.getIdServiceRoom());
@@ -509,7 +497,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private Room initializeRoom(CreateNewRoomRequest request, Department department){
-        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication();
+        KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Room room = new Room();
         Long timeCurrent = new Date().getTime();
         room.setTitle(request.getTitle());
@@ -518,15 +506,15 @@ public class RoomServiceImpl implements RoomService {
         room.setPrice(request.getPrice());
         room.setTimeCreated(timeCurrent);
         room.setTimeModified(timeCurrent);
-        room.setIdUserCreated(ktxUser.getIdKtxUser());
-        room.setIdUserModified(ktxUser.getIdKtxUser());
+        room.setIdUserCreated(ktxUserCurrent.getIdKtxUser());
+        room.setIdUserModified(ktxUserCurrent.getIdKtxUser());
         room.setIsActive(request.getStatus());
         room.setLimitAmountPeople(request.getLimitAmountPeople());
         room.setQuantityHired(Constants.DEFAULT_QUANTITY_HIRED);
         room.setRemainAmount(request.getLimitAmountPeople());
-        room.setLimitAmountPeopleRegister(request.getLimitAmountPeople());
+        room.setLimitAmountPeopleRegister(request.getLimitAmountPeopleRegister());
         room.setQuantityRegistered(Constants.DEFAULT_QUANTITY_REGISTER);
-        room.setRemainAmountRegister(request.getLimitAmountPeople());
+        room.setRemainAmountRegister(request.getLimitAmountPeopleRegister());
         room.setCodeRoom(UUID.nameUUIDFromBytes(request.getTitle().getBytes()).toString());
         return room;
     }
