@@ -12,6 +12,4 @@ public class CreateRegisterRoomRequest {
 
     @JsonProperty(value = "codeRoom")
     private String codeRoom;
-    @JsonProperty(value = "hiredId")
-    private Integer hiredId;
 }

@@ -5,6 +5,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.request.registerRoom.ChangeRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
+import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
@@ -36,4 +37,6 @@ public interface StudentRegisterRoomService {
     void verifyRegisterRoom();
 
     StudentRegisterRoomResponse getRegisterRoomCurrent();
+
+    void createStudentRegisterRoom(CreateRegisterRoomRequest request);
 }

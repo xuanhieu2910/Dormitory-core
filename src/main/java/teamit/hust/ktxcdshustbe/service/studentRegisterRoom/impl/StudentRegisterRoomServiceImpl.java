@@ -21,6 +21,7 @@ import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.repository.studentRegisterRoom.StudentRegisterRoomRepository;
 import teamit.hust.ktxcdshustbe.request.registerRoom.ChangeRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
+import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
@@ -159,6 +160,14 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             return new StudentRegisterRoomResponse();
         }
         return convertToStudentRegisterRoomResponse(dto.get());
+    }
+
+    @Override
+    public void createStudentRegisterRoom(CreateRegisterRoomRequest request) {
+        verifyCreateStudentRegisterRoom(request);
+    }
+
+    private void verifyCreateStudentRegisterRoom(CreateRegisterRoomRequest request) {
     }
 
     private StudentRegisterRoomResponse convertToStudentRegisterRoomResponse(StudentRegisterRoomDto dto) {

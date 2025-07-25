@@ -56,8 +56,8 @@ public class StudentRegisterRoomController {
     @PostMapping("/register-room")
     public ResponseEntity<?> createRegisterRoom(@RequestBody CreateRegisterRoomRequest request){
         try {
-//            StudentRegisterRoom response = studentRegisterRoomService.createStudentRegisterRoom(request);
-            return ApiResponseDto.createdWithState(null,"Register room success!", HttpStatus.OK);
+            studentRegisterRoomService.createStudentRegisterRoom(request);
+            return ApiResponseDto.createdWithMessage("Register room success!", HttpStatus.OK);
         } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ExitsObjectException e){
