@@ -10,10 +10,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ChangeRegisterRoomRequest {
 
-
-    @NotNull
-    @JsonProperty("studentRegisterRoomId")
-    private Integer studentRegisterRoomId;
     @NotNull
     @JsonProperty("codeRoom")
     private String codeRoom;

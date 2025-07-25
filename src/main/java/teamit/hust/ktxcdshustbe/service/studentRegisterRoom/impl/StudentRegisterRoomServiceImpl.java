@@ -1,6 +1,7 @@
 package teamit.hust.ktxcdshustbe.service.studentRegisterRoom.impl;
 
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
+import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
@@ -33,11 +35,9 @@ import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
+import teamit.hust.ktxcdshustbe.utility.PropertiesUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -57,6 +57,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Autowired
     BatchesRegistrationService batchesRegistrationService;
 
+
     @Override
     public void saveInfoApprovedStudentRegisterRoom(StudentRegisterRoom room) {
         studentRegisterRoomRepository.save(room);
@@ -65,17 +66,55 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Transactional
     @Override
     public void changeRegisterRoomStudent(ChangeRegisterRoomRequest request) {
+        verifyChangeRegisterRoomStudent(request);
+        Optional<StudentRegisterRoomDto> dto = studentRegisterRoomRepository.getInformationRegisterRoomCurrent();
+        if (dto.isEmpty() || new Date().getTime() > dto.get().getExpiresAt()){
+            throw new ValidParametersException();
+        }
 
-        Optional<StudentRegisterRoom> studentRegisterRoom = studentRegisterRoomRepository.findStudentRegisterRoomById(request.getStudentRegisterRoomId());
+        Optional<StudentRegisterRoom> studentRegisterRoom = 
+                studentRegisterRoomRepository.findStudentRegisterRoomById(dto.get().getIdStudentRegisterRoom());
         if (studentRegisterRoom.isEmpty()){
             throw new NotFoundException();
         }
-//        validateChangeRegisterRoom(request,studentRegisterRoom.get());
-//        updateQuantityRegisterOriginRoom(studentRegisterRoom.get().getRoomId());
-//        updateQuantityRegisterDestinationRoom(request.getDestinationRoomId());
-//        studentRegisterRoom.get().setRoomId(request.getDestinationRoomId());
-//        log.debug("Student " + studentRegisterRoom.get().getUserId() + " changed room " + studentRegisterRoom.get().getRoomId() + " success!") ;
-        studentRegisterRoomRepository.save(studentRegisterRoom.get());
+        updateInformationStudentRegisterRoom(studentRegisterRoom.get(), request.getCodeRoom());
+    }
+
+    private void updateInformationStudentRegisterRoom(StudentRegisterRoom studentRegisterRoom, String codeRoom) {
+        Optional<DataStudentRegisterRoomDto> dataStudentRegisterRoomDto =
+                studentRegisterRoomRepository.getDataStudentToRegisterRoomByCodeRoom(codeRoom);
+        if (dataStudentRegisterRoomDto.isEmpty()){
+            throw new ValidParametersException();
+        }
+        roomService.updateRemainQuantityRegisterRoomByIdRoom(dataStudentRegisterRoomDto.get().getIdRoom());
+        roomService.updateRemainQuantityRegisterRoomWhenStudentChangeRoom(studentRegisterRoom.getIdRoom());
+        studentRegisterRoomRepository.save(updateFieldStudentRegisterRoom(studentRegisterRoom,
+                dataStudentRegisterRoomDto.get().getIdRoom()));
+    }
+
+    private StudentRegisterRoom updateFieldStudentRegisterRoom(StudentRegisterRoom studentRegisterRoom, Integer idRoom) {
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long timeCurrent = new Date().getTime();
+        studentRegisterRoom.setIdRoom(idRoom);
+        studentRegisterRoom.setTimeModified(new Date().getTime());
+        studentRegisterRoom.setExpiresAt(timeCurrent + Long.parseLong(PropertiesUtil.getProperty("time-holding.register-room")));
+        studentRegisterRoom.setIdUserModified(ktxUser.getIdKtxUser());
+        return studentRegisterRoom;
+    }
+
+    private void verifyChangeRegisterRoomStudent(ChangeRegisterRoomRequest request) {
+        if (StringUtils.isBlank(request.getCodeRoom())){
+            throw new ValidParametersException();
+        }
+        if (!studentRegisterRoomRepository.isAllowRegisterBatchesRegistration()){
+            throw new ValidParametersException();
+        }
+        if (studentRegisterRoomRepository.isExistsRegisteredRoomInBatchesRegistrationCurrent()){
+            throw new ValidParametersException();
+        }
+        if (!studentRegisterRoomRepository.isAllowRegisterRoomByCodeRoom(request.getCodeRoom())){
+            throw new ValidParametersException();
+        }
     }
 
 
@@ -156,18 +195,72 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Override
     public StudentRegisterRoomResponse getRegisterRoomCurrent() {
         Optional<StudentRegisterRoomDto> dto = studentRegisterRoomRepository.getInformationRegisterRoomCurrent();
-        if (dto.isEmpty()){
+        if (dto.isEmpty() || new Date().getTime() > dto.get().getExpiresAt()){
             return new StudentRegisterRoomResponse();
         }
         return convertToStudentRegisterRoomResponse(dto.get());
     }
 
+
+    @Transactional
     @Override
     public void createStudentRegisterRoom(CreateRegisterRoomRequest request) {
         verifyCreateStudentRegisterRoom(request);
+        Optional<DataStudentRegisterRoomDto> dataStudentRegisterRoomDto =
+                studentRegisterRoomRepository.getDataStudentToRegisterRoomByCodeRoom(request.getCodeRoom());
+        if (dataStudentRegisterRoomDto.isEmpty()){
+            throw new ValidParametersException();
+        }
+        initializeStudentRegisterRoom(dataStudentRegisterRoomDto.get());
+    }
+
+    private void initializeStudentRegisterRoom(DataStudentRegisterRoomDto dataStudentRegisterRoomDto) {
+        // update quantity register room
+        roomService.updateRemainQuantityRegisterRoomByIdRoom(dataStudentRegisterRoomDto.getIdRoom());
+        storeStudentRegisterRoom(constructionStudentRegisterRoom(dataStudentRegisterRoomDto));
+    }
+
+    private StudentRegisterRoom storeStudentRegisterRoom(StudentRegisterRoom studentRegisterRoom) {
+        return studentRegisterRoomRepository.save(studentRegisterRoom);
+    }
+
+    private void updateRemainQuantityRegisterRoom(Integer idRoom) {
+        Optional<Room> room = roomService.findRoomByIdRoom(idRoom);
+        if (room.isEmpty() || room.get().getRemainAmountRegister() <= Constants.QUANTITY_REMAIN_AMOUNT_REGISTER){
+            throw new ValidParametersException();
+        }
+    }
+
+    private StudentRegisterRoom constructionStudentRegisterRoom(DataStudentRegisterRoomDto dataStudentRegisterRoomDto) {
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long timeCurrent = new Date().getTime();
+        StudentRegisterRoom studentRegisterRoom = new StudentRegisterRoom();
+        studentRegisterRoom.setIdUser(ktxUser.getIdKtxUser());
+        studentRegisterRoom.setIdRoom(dataStudentRegisterRoomDto.getIdRoom());
+        studentRegisterRoom.setIdTimeHired(dataStudentRegisterRoomDto.getIdTimeHired());
+        studentRegisterRoom.setStatus(Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        studentRegisterRoom.setTimeCreated(timeCurrent);
+        studentRegisterRoom.setTimeModified(timeCurrent);
+        studentRegisterRoom.setIdUserModified(ktxUser.getIdKtxUser());
+        studentRegisterRoom.setIdUserCreated(ktxUser.getIdUserCreated());
+        studentRegisterRoom.setIdBatchesRegistration(dataStudentRegisterRoomDto.getIdBatchesRegister());
+        studentRegisterRoom.setExpiresAt(timeCurrent + Long.parseLong(PropertiesUtil.getProperty("time-holding.register-room")));
+        return studentRegisterRoom;
     }
 
     private void verifyCreateStudentRegisterRoom(CreateRegisterRoomRequest request) {
+        if (StringUtils.isBlank(request.getCodeRoom())){
+            throw new ValidParametersException();
+        }
+        if (!studentRegisterRoomRepository.isAllowRegisterBatchesRegistration()){
+            throw new ValidParametersException();
+        }
+        if (studentRegisterRoomRepository.isExistsRegisteredRoomInBatchesRegistrationCurrent()){
+            throw new ValidParametersException();
+        }
+        if (!studentRegisterRoomRepository.isAllowRegisterRoomByCodeRoom(request.getCodeRoom())){
+            throw new ValidParametersException();
+        }
     }
 
     private StudentRegisterRoomResponse convertToStudentRegisterRoomResponse(StudentRegisterRoomDto dto) {

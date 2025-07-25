@@ -19,7 +19,6 @@ public interface StudentRegisterRoomService {
 
     void changeRegisterRoomStudent(ChangeRegisterRoomRequest request) throws Exception;
 
-
     void acceptPaymentRegisterRoom(AcceptPaymentRequest request);
 
     int getBadgeRegisterRoom(OidcUser principal);

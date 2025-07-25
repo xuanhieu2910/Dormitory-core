@@ -611,6 +611,43 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return Optional.empty();
     }
 
+    @Transactional
+    @Modifying
+    @Override
+    public int updateRemainQuantityRoomWhenStudentRegisterHoldingRoomByIdRoom(Integer idRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" update room set remain_amount_register = remain_amount_register - :quantity,  " +
+                "                quantity_registered = quantity_registered + :quantity,  " +
+                "                time_modified = :timeModified  " +
+                "where id_room = :idRoom  " +
+                "and remain_amount_register > 0  " +
+                "and quantity_registered < limit_amount_people_register ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idRoom", idRoom);
+        query.setParameter("quantity", Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        query.setParameter("timeModified", new Date().getTime());
+        return query.executeUpdate();
+    }
+
+    @Transactional
+    @Modifying
+    @Override
+    public int updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" update room   " +
+                "set remain_amount_register = remain_amount_register + :quantity,   " +
+                "    quantity_registered = quantity_registered - :quantity,   " +
+                "     time_modified = :timeModified   " +
+                "where id_room = :idRoom   " +
+                "and remain_amount_register >= 0   " +
+                "and quantity_registered <= limit_amount_people_register  ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idRoom", idRoom);
+        query.setParameter("quantity", Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        query.setParameter("timeModified", new Date().getTime());
+        return query.executeUpdate();
+    }
+
 
     private void setParameterFindAllRoom(FindAllRoomsRequest request, Query query) {
         query.setParameter("codeDepartment", request.getCodeDepartment());

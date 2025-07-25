@@ -58,6 +58,8 @@ public class StudentRegisterRoomController {
         try {
             studentRegisterRoomService.createStudentRegisterRoom(request);
             return ApiResponseDto.createdWithMessage("Register room success!", HttpStatus.OK);
+        } catch (SqlExecuteException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ExitsObjectException e){
@@ -67,22 +69,19 @@ public class StudentRegisterRoomController {
         }
     }
 
-    @PostMapping("/upload-payment")
-    public ResponseEntity<?> uploadPaymentRegisterRoom(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/change-room")
+    public ResponseEntity<?> changeRoomRegister(@RequestBody ChangeRegisterRoomRequest request){
         try {
-            String pathAvatar = fileUploadService.saveAndReturnPath(file, FileUploadService.FOLDER_PAYMENT);
-            return ApiResponseDto.createdWithState(pathAvatar, "Store upload information payment register room success!", HttpStatus.OK);
-        } catch (FileIsNullException e){
+            studentRegisterRoomService.changeRegisterRoomStudent(request);
+            return ApiResponseDto.createdWithMessage("Change student register room success!", HttpStatus.OK);
+        } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (FileExtensionException e){
-            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (FileSizeException e){
+        } catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @PostMapping("/accept-payment")
     public ResponseEntity<?> acceptPaymentRegisterRoom(@RequestBody AcceptPaymentRequest acceptPaymentRequest) {
@@ -118,18 +117,6 @@ public class StudentRegisterRoomController {
         }
     }
 
-
-    @PostMapping("/change-room")
-    public ResponseEntity<?> changeRoomRegister(@RequestBody ChangeRegisterRoomRequest request){
-        try {
-            studentRegisterRoomService.changeRegisterRoomStudent(request);
-            return ApiResponseDto.createdWithMessage("Change student register room success!", HttpStatus.OK);
-        } catch (NotFoundException e){
-          return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     @GetMapping("/find-all")
     public ResponseEntity<?> findAllListUserRegisterRoom(@And({

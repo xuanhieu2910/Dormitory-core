@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
+import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
@@ -404,6 +405,78 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 dto.setStatusStudentRegisterRoom(ValueUtil.getIntegerByObject(obj[10]));
                 dto.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
                 return Optional.of(dto);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean isAllowRegisterRoomByCodeRoom(String codeRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select  " +
+                "case when ( " +
+                "select 1 " +
+                "from batches_registration br  " +
+                "         inner join batches_year_group_registration bygr  " +
+                "                on br.id_batches_registration = bygr.id_batches_registration  " +
+                "         inner join year_group yg on bygr.id_year_group = yg.id_year_group  " +
+                "         inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration  " +
+                "         inner join priority_group pg on brs.id_priority_group = pg.id_priority_group  " +
+                "         inner join batches_registration_room brr  " +
+                "                on br.id_batches_registration = brr.id_batches_registration  " +
+                "         inner join room ro on brr.id_room = ro.id_room  " +
+                "         inner join department de on ro.id_department = de.id_department  " +
+                "where :currentTime between brs.registration_start_time and brs.registration_end_time  " +
+                "  and pg.id_priority_group = :idPriorityGroup  " +
+                "  and yg.id_year_group = :idYearGroup  " +
+                "  and ro.code_room = :codeRoom " +
+                "  and ro.remain_amount_register > 0) then 1 else 0 end ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
+        query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
+        query.setParameter("currentTime", new Date().getTime());
+        query.setParameter("codeRoom", codeRoom);
+        return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
+    }
+
+    @Override
+    public Optional<DataStudentRegisterRoomDto> getDataStudentToRegisterRoomByCodeRoom(String codeRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select br.id_batches_registration,  " +
+                "       brs.id_batches_registration_schedule,  " +
+                "       ro.id_room,  " +
+                "       br.id_time_hired  " +
+                "from batches_registration br   " +
+                "         inner join batches_year_group_registration bygr   " +
+                "                on br.id_batches_registration = bygr.id_batches_registration  " +
+                "         inner join year_group yg on bygr.id_year_group = yg.id_year_group   " +
+                "         inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration   " +
+                "         inner join priority_group pg on brs.id_priority_group = pg.id_priority_group  " +
+                "         inner join batches_registration_room brr  " +
+                "                on br.id_batches_registration = brr.id_batches_registration  " +
+                "         inner join room ro on brr.id_room = ro.id_room  " +
+                "         inner join department de on ro.id_department = de.id_department  " +
+                "where :currentTime between brs.registration_start_time and brs.registration_end_time   " +
+                "  and pg.id_priority_group = :idPriorityGroup   " +
+                "  and yg.id_year_group = :idYearGroup  " +
+                "  and ro.code_room = :codeRoom  " +
+                "  and ro.remain_amount_register > 0   ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
+        query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
+        query.setParameter("currentTime", new Date().getTime());
+        query.setParameter("codeRoom", codeRoom);
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                DataStudentRegisterRoomDto dataStudentRegisterRoomDto = new DataStudentRegisterRoomDto();
+                dataStudentRegisterRoomDto.setIdBatchesRegister(ValueUtil.getIntegerByObject(obj[0]));
+                dataStudentRegisterRoomDto.setIdBatchesRegisterSchedule(ValueUtil.getIntegerByObject(obj[1]));
+                dataStudentRegisterRoomDto.setIdRoom(ValueUtil.getIntegerByObject(obj[2]));
+                dataStudentRegisterRoomDto.setIdTimeHired(ValueUtil.getIntegerByObject(obj[3]));
+                return Optional.of(dataStudentRegisterRoomDto);
             }
         }
         return Optional.empty();

@@ -47,4 +47,8 @@ public interface RoomRepositoryCustom {
     Optional<List<Room>> findAllRoomByListCodeRoom(List<String> codesRoom);
 
     Optional<List<Room>> findAllRoomByIdsRoom(List<Integer> idsRoom);
+
+    int updateRemainQuantityRoomWhenStudentRegisterHoldingRoomByIdRoom(Integer idRoom);
+
+    int updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom);
 }

@@ -20,10 +20,7 @@ import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.entity.ServiceRoom;
-import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
-import teamit.hust.ktxcdshustbe.exception.IsBlankException;
-import teamit.hust.ktxcdshustbe.exception.NotFoundException;
-import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
+import teamit.hust.ktxcdshustbe.exception.*;
 import teamit.hust.ktxcdshustbe.repository.room.RoomRepository;
 import teamit.hust.ktxcdshustbe.request.room.*;
 import teamit.hust.ktxcdshustbe.request.serviceRoom.CreateNewServiceRoomRequest;
@@ -323,6 +320,22 @@ public class RoomServiceImpl implements RoomService {
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         Page<SearchInformationRegisterRoomDto> searchInformationRegisterRoomDtos = roomRepository.findInformationRegisterRoom(request, pageable);
         return new PageImpl<>(convertToSearchInformationRegisterRoomResponse(searchInformationRegisterRoomDtos.getContent()), pageable, searchInformationRegisterRoomDtos.getTotalElements());
+    }
+
+    @Override
+    public void updateRemainQuantityRegisterRoomByIdRoom(Integer idRoom) {
+        if (roomRepository.updateRemainQuantityRoomWhenStudentRegisterHoldingRoomByIdRoom(idRoom)==0){
+            throw new SqlExecuteException();
+        }
+        log.info("[UPDATE] - Component: Register room - Message: Update success!");
+    }
+
+    @Override
+    public void updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom) {
+        if (roomRepository.updateRemainQuantityRegisterRoomWhenStudentChangeRoom(idRoom)==0){
+            throw new SqlExecuteException();
+        }
+        log.info("[UPDATE] - Component: Change register room - Message: Update success!");
     }
 
     private List<SearchInformationRegisterRoomResponse> convertToSearchInformationRegisterRoomResponse(List<SearchInformationRegisterRoomDto> dtos) {

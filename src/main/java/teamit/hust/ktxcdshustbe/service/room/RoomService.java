@@ -36,4 +36,8 @@ public interface RoomService {
     List<Room> findAllRoomByListIdsRoom(List<Integer> idsRoom);
 
     Page<SearchInformationRegisterRoomResponse> SearchInformationRegisterRoom(SearchInformationRegisterRoomRequest request);
+
+    void updateRemainQuantityRegisterRoomByIdRoom(Integer idRoom);
+
+    void updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom);
 }

@@ -3,6 +3,7 @@ package teamit.hust.ktxcdshustbe.repository.studentRegisterRoom;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
+import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.request.studentRegister.FindAllSearchRoomRequest;
@@ -22,4 +23,6 @@ public interface StudentRegisterRoomRepositoryCustom {
     boolean isAllowRegisterBatchesRegistration();
     boolean isExistsRegisteredRoomInBatchesRegistrationCurrent();
     Optional<StudentRegisterRoomDto> getInformationRegisterRoomCurrent();
+    boolean isAllowRegisterRoomByCodeRoom(String codeRoom);
+    Optional<DataStudentRegisterRoomDto> getDataStudentToRegisterRoomByCodeRoom(String codeRoom);
 }
