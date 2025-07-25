@@ -329,9 +329,9 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 roomDto.setTitleDepartment(ValueUtil.getStringByObject(obj[17]));
                 roomDto.setCodeDepartment(ValueUtil.getStringByObject(obj[18]));
                 roomDto.setUserNameCreated(ValueUtil.getStringByObject(obj[19]));
-                roomDto.setValueCreated(ValueUtil.getStringByObject(obj[20]));
-                roomDto.setUserNameModified(ValueUtil.getStringByObject(obj[21]));
-                roomDto.setValueModified(ValueUtil.getStringByObject(obj[22]));
+//                roomDto.setValueCreated(ValueUtil.getStringByObject(obj[20]));
+                roomDto.setUserNameModified(ValueUtil.getStringByObject(obj[20]));
+//                roomDto.setValueModified(ValueUtil.getStringByObject(obj[22]));
                 findAllRoomsDtos.add(roomDto);
             }
         }
@@ -475,8 +475,86 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
     }
 
     @Override
-    public Page<SearchInformationRegisterRoomDto> findInformationRegisterRoom(SearchInformationRegisterRoomRequest request, Pageable pageable) {
-        return null;
+    public Page<SearchInformationRegisterRoomDto> findInformationRegisterRoom(SearchInformationRegisterRoomRequest request, Pageable pageable){
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select ku.code_user, ku.user_name,
+                       d.code_department, r.title,
+                       br.start_time, se.title
+                from room r
+                         inner join department d on d.id_department = r.id_department
+                         inner join student_room sr on r.id_room = sr.id_room
+                         inner join ktx_user ku on ku.id_ktx_user = sr.id_user
+                         inner join time_hired ti on sr.id_time_hired = ti.id_time_hired
+                         inner join batches_registration br on ti.id_time_hired = br.id_time_hired
+                         inner join semester se on br.id_semester = se.id_semester
+                where d.code_department = :codeDepartment and
+                    r.title = :titleRoom and
+                    se.title = :titleSemester
+                """);
+        setConditionFindInformationResgisterRoom(request, sb);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindInformationResgisterRoom(request, query);
+        PageUtils.buildQuery(pageable, query);
+        List<SearchInformationRegisterRoomDto> searchInformationRegisterRoomDtos = new ArrayList<>();
+        List<Object[]> results = query.getResultList();
+        if (!CollectionUtils.isEmpty(results)) {
+            for (Object[] obj : results) {
+                SearchInformationRegisterRoomDto dto = new SearchInformationRegisterRoomDto();
+                dto.setCodeUser(ValueUtil.getIntegerByObject(obj[0]));
+                dto.setUserName(ValueUtil.getStringByObject(obj[1]));
+                dto.setCodeDepartment(ValueUtil.getStringByObject(obj[2]));
+                dto.setTitleRoom(ValueUtil.getStringByObject(obj[3]));
+                dto.setTimeStarted(ValueUtil.getTimestampByObject(obj[4]));
+                dto.setTitleSemester(ValueUtil.getStringByObject(obj[5]));
+                searchInformationRegisterRoomDtos.add(dto);
+            }
+        }
+        return new PageImpl<>(searchInformationRegisterRoomDtos, pageable, countFindInformationRegisterRoom(request));
+    }
+
+    private Long countFindInformationRegisterRoom(SearchInformationRegisterRoomRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("""
+                select count(0)
+                from room r
+                         inner join department d on d.id_department = r.id_department
+                         inner join student_room sr on r.id_room = sr.id_room
+                         inner join ktx_user ku on ku.id_ktx_user = sr.id_user
+                         inner join time_hired ti on sr.id_time_hired = ti.id_time_hired
+                         inner join batches_registration br on ti.id_time_hired = br.id_time_hired
+                         inner join semester se on br.id_semester = se.id_semester
+                where d.code_department = :codeDepartment and
+                    r.title = :titleRoom and
+                    se.title = :titleSemester
+                """);
+        setConditionFindInformationResgisterRoom(request, sb);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindInformationResgisterRoom(request, query);
+        return ValueUtil.getLongByObject(query.getSingleResult());
+    }
+    private void setParameterFindInformationResgisterRoom(SearchInformationRegisterRoomRequest request, Query query) {
+        if (StringUtils.isNotBlank(request.getCodeDepartment())) {
+            query.setParameter("codeDepartment", request.getCodeDepartment());
+        }
+        if (StringUtils.isNotBlank(request.getTitleRoom())){
+            query.setParameter("titleRoom", request.getTitleRoom());
+        }
+        if (StringUtils.isNotBlank(request.getTitleSemester())) {
+            query.setParameter("titleSemester", request.getTitleSemester());
+        }
+    }
+    private void setConditionFindInformationResgisterRoom(SearchInformationRegisterRoomRequest request, StringBuilder sb) {
+        if (StringUtils.isNotBlank(request.getTitleRoom())){
+            sb.append(" and r.title REGEXP :titleRoom ");
+        }
+        if (StringUtils.isNotBlank(request.getTitleSemester())){
+            sb.append(" and se.title REGEXP :titleSemester ");
+        }
+        if (StringUtils.isNotBlank(request.getCodeDepartment())){
+            sb.append(" and d.code_department = :codeDepartment ");
+        }
+        sb.append(" order by se.title desc");
     }
 
     @Override

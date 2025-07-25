@@ -417,7 +417,7 @@ public class RoomServiceImpl implements RoomService {
         List<ServiceRoomDto> serviceRoomsDtos =
                 serviceRoomService.findServicesRoomByCodeRoomAndCodesService(room.getCodeRoom(), codesService);
         List<ServiceRoom> serviceRooms = new ArrayList<>();
-        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication();
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         for (ServiceRoomDto serviceRoomDto : serviceRoomsDtos){
             ServiceRoom serviceRoom = new ServiceRoom();
             serviceRoom.setIdServiceRoom(serviceRoomDto.getIdServiceRoom());
@@ -499,9 +499,9 @@ public class RoomServiceImpl implements RoomService {
         room.setLimitAmountPeople(request.getLimitAmountPeople());
         room.setQuantityHired(Constants.DEFAULT_QUANTITY_HIRED);
         room.setRemainAmount(request.getLimitAmountPeople());
-        room.setLimitAmountPeopleRegister(request.getLimitAmountPeople());
+        room.setLimitAmountPeopleRegister(request.getLimitAmountPeopleRegister());
         room.setQuantityRegistered(Constants.DEFAULT_QUANTITY_REGISTER);
-        room.setRemainAmountRegister(request.getLimitAmountPeople());
+        room.setRemainAmountRegister(request.getLimitAmountPeopleRegister());
         room.setCodeRoom(UUID.nameUUIDFromBytes(request.getTitle().getBytes()).toString());
         return room;
     }
