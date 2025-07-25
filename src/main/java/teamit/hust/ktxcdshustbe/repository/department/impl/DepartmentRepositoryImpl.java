@@ -66,7 +66,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
                 "        cte.time_created, cte.time_modified,  " +
                 "       cte.depth, cte.status, cte.path , cte.short_name,cte.code_parent_department " +
                 "from cte_department cte  " +
-                "where 1 = 1 and cte.status = :status ");
+                "where 1 = 1  ");
         setConditionFindAllDepartment(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartment(request, query);
@@ -128,7 +128,6 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
     }
 
     private void setParameterFindAllDepartment(FindAllDepartmentRequest request, Query query) {
-        query.setParameter("status", Constants.DEPARTMENT_ACTIVE_STATUS);
         if (StringUtils.isNotBlank(request.getTitleDepartment())){
             query.setParameter("titleDepartment", request.getTitleDepartment());
         }
@@ -142,7 +141,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
             sb.append(" and dep.title REGEXP :titleDepartment ");
         }
         if (ObjectUtils.isNotEmpty(request.getStatus())){
-            sb.append(" and dep.status = :status ");
+            sb.append(" and cte.status = :status ");
         }
         sb.append(" order by path  ");
     }
