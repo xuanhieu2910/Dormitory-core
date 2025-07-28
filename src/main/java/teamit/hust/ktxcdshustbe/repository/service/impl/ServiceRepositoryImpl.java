@@ -73,6 +73,7 @@ public class ServiceRepositoryImpl implements ServiceRepositoryCustom {
             for (Object[] obj : result){
                 services.add(writeDataService(obj));
             }
+            return services;
         }
         return null;
     }
