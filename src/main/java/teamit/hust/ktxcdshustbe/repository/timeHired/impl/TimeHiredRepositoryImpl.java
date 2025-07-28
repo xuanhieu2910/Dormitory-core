@@ -84,7 +84,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
 
         if (StringUtils.isNotBlank(request.getKeyword())){
             sb.append("   and (time_hired.time_started REGEXP '[' + :keyword + ']') OR " +
-                    "       (time_hired.time_ended REGEXP '[' + :keyword + ']')) ");
+                    "       (time_hired.time_ended REGEXP '[' + :keyword + ']') ");
         }
         Query query = entityManager.createNativeQuery(sb.toString());
         if (StringUtils.isNotBlank(request.getKeyword())) {
@@ -98,7 +98,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
                 FindAllTimeHiredDto hired = new FindAllTimeHiredDto();
                 String timeHiredStart = ValueUtil.getStringByObject(obj[1]);
                 String timeHiredEnd = ValueUtil.getStringByObject(obj[2]);
-                hired.setTimeHired(timeHiredStart + "-" + timeHiredEnd);
+                hired.setTimeHired(timeHiredStart + " - " + timeHiredEnd);
                 hired.setIdTimeHired(ValueUtil.getIntegerByObject(obj[0]));
                 hired.setTimeStarted(timeHiredStart);
                 hired.setTimeEnd(timeHiredEnd);
@@ -178,7 +178,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         sb.append("select count(0) from time_hired where 1=1 ");
         if (StringUtils.isNotBlank(request.getKeyword())){
             sb.append("   and (time_hired.time_started REGEXP '[' + :keyword + ']') OR " +
-                    "       (time_hired.time_ended REGEXP '[' + :keyword + ']')) ");
+                    "       (time_hired.time_ended REGEXP '[' + :keyword + ']') ");
         }
         Query query = entityManager.createNativeQuery(sb.toString());
         if (StringUtils.isNotBlank(request.getKeyword())) {

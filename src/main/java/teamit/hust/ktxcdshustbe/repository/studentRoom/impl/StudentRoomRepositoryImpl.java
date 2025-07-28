@@ -451,7 +451,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
     private void setConditionListStudentHiredRoomResponse(ListStudentHiredRoomRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             sb.append(" and ( (ktxUser.value REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (userModified.value REGEXP '[' + :keyword + ']' ) ) ");
+                    "      (userModified.value REGEXP '[' + :keyword + ']' ) ");
         }
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");
