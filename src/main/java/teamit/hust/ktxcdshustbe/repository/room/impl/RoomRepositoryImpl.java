@@ -40,11 +40,13 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         sb.append("update room ro " +
                 "set ro.remain_amount_register = ro.remain_amount_register + if (ro.quantity_registered > ro.limit_amount_people_register,0,:quantity), " +
                 "    ro.quantity_registered    = ro.quantity_registered - :quantity, " +
-                "    ro.time_modified          = CURRENT_TIMESTAMP(), " +
+                "    ro.time_modified          = :timeModified, " +
                 "    ro.id_user_modified       = :userIdModified " +
                 "where ro.id_room = :roomId " +
                 "  and (ro.quantity_registered > 0) ");
         Query query = entityManager.createNativeQuery(sb.toString());
+        Long timeCurrent = new Date().getTime();
+        query.setParameter("timeModified",timeCurrent);
         query.setParameter("quantity",quantity);
         query.setParameter("roomId",idRoom);
         query.setParameter("userIdModified",userIdModified);
@@ -62,12 +64,14 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.limit_amount_people_register = ro.limit_amount_people_register - :quantity,  " +
                 "    ro.quantity_registered          = ro.quantity_registered - :quantity,  " +
                 "    ro.remain_amount_register          = ro.remain_amount_register - :quantity,  " +
-                "    ro.time_modified                = CURRENT_TIMESTAMP(),  " +
+                "    ro.time_modified                = :timeModified,  " +
                 "    ro.id_user_modified             = :userIdModified  " +
                 "where ro.id_room = :roomId  " +
                 "  and ro.remain_amount > 0  " +
                 "  and (ro.quantity_hired < ro.limit_amount_people) ");
         Query query = entityManager.createNativeQuery(sb.toString());
+        Long timeCurrent = new Date().getTime();
+        query.setParameter("timeModified",timeCurrent);
         query.setParameter("quantity", quantity);
         query.setParameter("userIdModified",userIdModified);
         query.setParameter("roomId",idRoom);
@@ -84,12 +88,14 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.remain_amount                = ro.remain_amount - :quantity, " +
                 "    ro.limit_amount_people_register = ro.limit_amount_people_register - :quantity, " +
                 "    ro.remain_amount_register       = ro.remain_amount_register - :quantity, " +
-                "    ro.time_modified                = CURRENT_TIMESTAMP(), " +
+                "    ro.time_modified                = :timeModified, " +
                 "    ro.id_user_modified             = :userIdModified " +
                 "where ro.id_room = :roomId " +
                 "  and ro.remain_amount > 0 " +
                 "  and (ro.quantity_hired < ro.limit_amount_people)  ");
         Query query = entityManager.createNativeQuery(sb.toString());
+        Long timeCurrent = new Date().getTime();
+        query.setParameter("timeModified",timeCurrent);
         query.setParameter("quantity", Constants.QUANTITY_UPDATE_HIRED_ROOM);
         query.setParameter("userIdModified",userIdModified);
         query.setParameter("roomId",idRoom);
@@ -224,11 +230,14 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.remain_amount = ro.remain_amount + 1, " +
                 "    ro.limit_amount_people_register = ro.limit_amount_people_register + 1, " +
                 "    ro.remain_amount_register = ro.remain_amount_register + 1, " +
-                "    ro.time_modified          = CURRENT_TIMESTAMP(), " +
+                "    ro.quantity_hired = ro.quantity_hired - 1, " +
+                "    ro.time_modified          = :timeModified, " +
                 "    ro.user_id_modified       = :userIdModified " +
                 "where ro.code_room = :codeRoom " +
                 "  and (ro.quantity_hired > 0 and ro.remain_amount < ro.limit_amount_people) ");
         Query query = entityManager.createNativeQuery(sb.toString());
+        Long timeCurrent = new Date().getTime();
+        query.setParameter("timeModified",timeCurrent);
         query.setParameter("userIdModified", idUserModified);
         query.setParameter("codeRoom", codeRoom);
         return query.executeUpdate();

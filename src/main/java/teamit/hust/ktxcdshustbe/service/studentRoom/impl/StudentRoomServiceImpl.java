@@ -323,9 +323,9 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateOriginalRoom(Room originalRoom, Integer userIdModified) {
         originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmount(originalRoom.getLimitAmountPeople() - originalRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setLimitAmountPeopleRegister(originalRoom.getLimitAmountPeopleRegister() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmountRegister(originalRoom.getLimitAmountPeopleRegister() - originalRoom.getQuantityRegistered() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmountRegister(originalRoom.getRemainAmountRegister()  + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setTimeModified(new Date().getTime());
         originalRoom.setIdUserModified(userIdModified);
         roomRepository.save(originalRoom);
