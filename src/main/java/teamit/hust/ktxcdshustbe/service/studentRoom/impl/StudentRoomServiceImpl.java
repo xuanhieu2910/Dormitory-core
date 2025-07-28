@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -236,6 +237,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         }
     }
 
+    @Lazy
     @Override
     public void transferRoom(TransferRoomRequest request) {
         validateDataTransferRoomRequest(request);
