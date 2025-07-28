@@ -33,4 +33,10 @@ public class RoomDetailResponse {
     private String titleDepartment;
     @JsonProperty("services_room")
     private List<ServiceRoomResponse> serviceRoomResponses;
+    @JsonProperty("limit_amount_people_register")
+    private Integer limitAmountPeopleRegister;
+    @JsonProperty("quantity_register")
+    private Integer quantityRegister;
+    @JsonProperty("remain_amount_register")
+    private Integer remainAmountRegister;
 }

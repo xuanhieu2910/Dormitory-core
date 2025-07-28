@@ -535,6 +535,9 @@ public class RoomServiceImpl implements RoomService {
         roomDetailResponse.setCodeDepartment(department.getCodeDepartment());
         roomDetailResponse.setTitleDepartment(department.getTitle());
         roomDetailResponse.setServiceRoomResponses(serviceRoomResponses);
+        roomDetailResponse.setLimitAmountPeopleRegister(room.getLimitAmountPeopleRegister());
+        roomDetailResponse.setQuantityRegister(room.getQuantityRegistered());
+        roomDetailResponse.setRemainAmountRegister(room.getRemainAmountRegister());
         return   roomDetailResponse;
     }
 
