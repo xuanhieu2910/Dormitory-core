@@ -86,7 +86,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.remain_amount_register       = ro.remain_amount_register - :quantity, " +
                 "    ro.time_modified                = CURRENT_TIMESTAMP(), " +
                 "    ro.id_user_modified             = :userIdModified " +
-                "where ro.id = :roomId " +
+                "where ro.id_room = :roomId " +
                 "  and ro.remain_amount > 0 " +
                 "  and (ro.quantity_hired < ro.limit_amount_people)  ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -191,7 +191,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         sb.append(" update room ro " +
                 "set ro.quantity_registered    = ro.quantity_registered - 1, " +
                 "    ro.remain_amount_register = ro.remain_amount_register + 1 " +
-                "where ro.id = :roomId " +
+                "where ro.id_room = :roomId " +
                 "  and (ro.remain_amount_register < ro.limit_amount_people_register) " +
                 "  and (ro.quantity_registered > 0 and ro.quantity_registered <= ro.limit_amount_people_register) ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -205,7 +205,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         sb.append("update room ro " +
                 "set ro.quantity_registered    = ro.quantity_registered + 1, " +
                 "    ro.remain_amount_register = ro.remain_amount_register - 1 " +
-                "where ro.id = :roomId " +
+                "where ro.id_room = :roomId " +
                 "  and (ro.remain_amount_register > 0 and ro.remain_amount_register <= ro.limit_amount_people_register) " +
                 "  and (ro.quantity_registered < ro.limit_amount_people_register) ");
         Query query = entityManager.createNativeQuery(sb.toString());
