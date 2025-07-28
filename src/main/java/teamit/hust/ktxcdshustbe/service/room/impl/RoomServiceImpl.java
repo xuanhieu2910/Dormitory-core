@@ -189,7 +189,7 @@ public class RoomServiceImpl implements RoomService {
         }
         Department departmentUpdate = departmentService.findDepartmentByCodeDepartment(request.getCodeDepartment());
         updateEditRoom(request, room.get(), departmentUpdate);
-        updateEditServiceRoom(request.getEditServiceRoomRequest(), room.get());
+        updateEditServiceRoom(request.getServicesRoom(), room.get());
     }
 
     private void verifyEditRoom(EditRoomRequest request) {
@@ -197,13 +197,13 @@ public class RoomServiceImpl implements RoomService {
                 || StringUtils.isBlank(request.getPrice()) || Objects.isNull(request.getSexRoom())
                 || Objects.isNull(request.getLimitAmountPeople())
                 || Objects.isNull(request.getStatus())
-                || CollectionUtils.isEmpty(request.getEditServiceRoomRequest())) {
+                || CollectionUtils.isEmpty(request.getServicesRoom())) {
             throw new ValidParametersException();
         }
-        if (!request.getSexRoom().equals(Constants.FEMALE) && request.getSexRoom().equals(Constants.MALE)){
+        if (!request.getSexRoom().equals(Constants.FEMALE) && !request.getSexRoom().equals(Constants.MALE)){
             throw new ValidParametersException();
         }
-        for (EditServiceRoomRequest serviceRoomRequest : request.getEditServiceRoomRequest()){
+        for (EditServiceRoomRequest serviceRoomRequest : request.getServicesRoom()){
             if (StringUtils.isBlank(serviceRoomRequest.getCodeService()) || ObjectUtils.isEmpty(serviceRoomRequest.getStatus())){
                 throw new ValidParametersException();
             }

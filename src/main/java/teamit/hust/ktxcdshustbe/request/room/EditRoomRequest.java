@@ -20,5 +20,5 @@ public class EditRoomRequest {
     private Integer limitAmountPeople;
     private Integer limitAmountPeopleRegister;
     private Integer status;
-    private List<EditServiceRoomRequest> editServiceRoomRequest;
+    private List<EditServiceRoomRequest> servicesRoom;
 }
