@@ -321,9 +321,8 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         if (StringUtils.isNotBlank(request.getKeyword())){
             query.setParameter("keyword", request.getKeyword());
         }
-        if(request.isStatusHired()){
-            query.setParameter("statusStudent", Constants.STATUS_STUDENT_HIRING_ROOM);
-        }
+        query.setParameter("statusStudent", Constants.STATUS_STUDENT_HIRING_ROOM);
+
     }
 
     private void setConditionFindAllStudents(FindAllStudentsRequest request, StringBuilder sb) {
@@ -333,6 +332,12 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         }
         if(request.isStatusHired()){
             sb.append("  AND NOT EXISTS  (  " +
+                    "  SELECT 1 FROM student_room sr  " +
+                    "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
+                    "  AND sr.status = :statusStudent )  ");
+        }
+        if(!request.isStatusHired()){
+            sb.append("  AND EXISTS  (  " +
                     "  SELECT 1 FROM student_room sr  " +
                     "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
                     "  AND sr.status = :statusStudent )  ");
