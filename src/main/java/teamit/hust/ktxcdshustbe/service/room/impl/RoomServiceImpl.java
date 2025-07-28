@@ -132,7 +132,7 @@ public class RoomServiceImpl implements RoomService {
         || CollectionUtils.isEmpty(request.getServicesRoom())){
             throw new ValidParametersException();
         }
-        if (!request.getSexRoom().equals(Constants.FEMALE) && request.getSexRoom().equals(Constants.MALE)){
+        if (!request.getSexRoom().equals(Constants.FEMALE) && !request.getSexRoom().equals(Constants.MALE)){
             throw new ValidParametersException();
         }
         for (CreateNewServiceRoomRequest serviceRoomRequest : request.getServicesRoom()){
@@ -448,23 +448,24 @@ public class RoomServiceImpl implements RoomService {
 
     private void updateEditRoom(EditRoomRequest request, Room room, Department department){
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!request.getLimitAmountPeople().equals(room.getLimitAmountPeople())){
-            room.setRemainAmount(request.getLimitAmountPeople() - room.getQuantityHired());
-            /**
-             *
-             * Update after
-             *
-             * */
+        if((request.getLimitAmountPeople() < room.getQuantityHired()) || (request.getLimitAmountPeopleRegister() < room.getQuantityRegistered()) ){
+            throw new ValidParametersException();
         }
-        room.setIdDepartment(department.getIdDepartment());
-        room.setSexRoom(request.getSexRoom());
-        room.setPrice(request.getPrice());
-        room.setTitle(request.getTitle());
-        room.setLimitAmountPeople(request.getLimitAmountPeople());
-        room.setIsActive(request.getStatus());
-        room.setTimeModified(new Date().getTime());
-        room.setIdUserModified(ktxUser.getIdKtxUser());
-        room.setLimitAmountPeopleRegister(request.getLimitAmountPeople());
+        else {
+            Long timeCurrent = new Date().getTime();
+            room.setRemainAmount(request.getLimitAmountPeople() - room.getQuantityHired());
+            room.setRemainAmountRegister(request.getLimitAmountPeopleRegister() - room.getQuantityRegistered());
+            room.setIdDepartment(department.getIdDepartment());
+            room.setSexRoom(request.getSexRoom());
+            room.setPrice(request.getPrice());
+            room.setTitle(request.getTitle());
+            room.setLimitAmountPeople(request.getLimitAmountPeople());
+            room.setIsActive(request.getStatus());
+            room.setTimeModified(timeCurrent);
+            room.setIdUserModified(ktxUser.getIdKtxUser());
+            room.setLimitAmountPeopleRegister(request.getLimitAmountPeople());
+        }
+
         roomRepository.save(room);
     }
 

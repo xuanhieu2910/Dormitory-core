@@ -18,6 +18,7 @@ public class EditRoomRequest {
     private String price;
     private String title;
     private Integer limitAmountPeople;
+    private Integer limitAmountPeopleRegister;
     private Integer status;
     private List<EditServiceRoomRequest> editServiceRoomRequest;
 }
