@@ -2,27 +2,18 @@ package teamit.hust.ktxcdshustbe.service.paymentService.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.hash.Hashing;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import teamit.hust.ktxcdshustbe.dto.bankingService.*;
-import teamit.hust.ktxcdshustbe.entity.*;
-import teamit.hust.ktxcdshustbe.exception.*;
+import teamit.hust.ktxcdshustbe.entity.Orders;
+import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
+import teamit.hust.ktxcdshustbe.entity.TransactionPayment;
+import teamit.hust.ktxcdshustbe.exception.ChecksumException;
+import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.transactionPayment.CallBackPaymentRequest;
-import teamit.hust.ktxcdshustbe.response.payment.PaymentGetBillQrResponse;
-import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.service.orderItems.OrderItemsService;
 import teamit.hust.ktxcdshustbe.service.orders.OrdersService;
 import teamit.hust.ktxcdshustbe.service.paymentService.PaymentService;
@@ -30,11 +21,10 @@ import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomS
 import teamit.hust.ktxcdshustbe.service.transactionPayment.TransactionPaymentService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.DateUtil;
-import teamit.hust.ktxcdshustbe.utility.PropertiesUtil;
 
-import java.nio.charset.StandardCharsets;
-
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.UUID;
 
 @Log4j2
 @Service
