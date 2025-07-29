@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreatePriorityGroupRequest {
 
-    private String priorityGroupCode;
     private String titlePriorityGroup;
     private String description;
 }
