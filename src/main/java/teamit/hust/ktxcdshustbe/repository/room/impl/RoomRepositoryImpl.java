@@ -231,7 +231,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.limit_amount_people_register = ro.limit_amount_people_register + 1, " +
                 "    ro.remain_amount_register = ro.remain_amount_register + 1, " +
                 "    ro.time_modified          = :timeModified, " +
-                "    ro.user_id_modified       = :userIdModified " +
+                "    ro.id_user_modified       = :userIdModified " +
                 "where ro.code_room = :codeRoom " +
                 "  and (ro.quantity_hired > 0 and ro.remain_amount < ro.limit_amount_people) ");
         Query query = entityManager.createNativeQuery(sb.toString());
