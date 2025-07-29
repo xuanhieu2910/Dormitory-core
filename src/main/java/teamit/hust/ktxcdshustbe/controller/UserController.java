@@ -71,15 +71,13 @@ public class UserController {
 
 
     @GetMapping("/details/information")
-    public ResponseEntity<?> getDetailsInformationStudentByUserId(@AuthenticationPrincipal OidcUser principal){
+    public ResponseEntity<?> getDetailsInformationStudentByUserId(){
         try {
-            DetailInformationUserResponse response = ktxUserService.getDetailInformationUser(principal);
+            DetailInformationUserResponse response = ktxUserService.getDetailInformationUser();
             return ApiResponseDto.createdWithState(response,"Get detail information success!", HttpStatus.OK);
         } catch (NotFoundException e){
-            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
-            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
