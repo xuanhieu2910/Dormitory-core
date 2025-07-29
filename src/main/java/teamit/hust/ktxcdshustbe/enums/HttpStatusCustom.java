@@ -21,6 +21,7 @@ public enum HttpStatusCustom {
     VALID_EXTENSION_FILE_UPLOAD("KTX400-009","Valid extension file, please check again!"),
     STRONG_PASSWORD("KTX400-010","Valid strong password, please check again!"),
     FILE_IS_NULL("KTX400-011","File is null, please chose another!"),
+    VALID_FIELD("KTX400-012","Valid field, please check again!"),
 
     /**
      *  401 Unauthorized
