@@ -1,10 +1,12 @@
 package teamit.hust.ktxcdshustbe.service.studentRoom.impl;
 
 
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -83,8 +85,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public Page<ListHiredRoomStudentResponse> getListHiredRoomStudentResponse(OidcUser principal, StudentListRoomHiredRequest request) {
-        KtxUser ktxUser = ktxUserService.findKtxUserByUserName(principal.getPreferredUsername().trim().toLowerCase());
-        request.setUserId(ktxUser.getIdKtxUser());
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         return studentRoomRepository.getListHiredRoomStudentResponse(request,pageable);
     }
@@ -151,6 +151,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     }
 
 
+    @Transactional
     @Override
     public void removeStudentRoom(RemoveStudentInRoomRequest request) throws Exception {
         validateRemoveStudentRoom(request);
@@ -232,6 +233,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         }
     }
 
+    @Lazy
     @Override
     public void transferRoom(TransferRoomRequest request) {
         validateDataTransferRoomRequest(request);
@@ -319,9 +321,9 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateOriginalRoom(Room originalRoom, Integer userIdModified) {
         originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmount(originalRoom.getLimitAmountPeople() - originalRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setLimitAmountPeopleRegister(originalRoom.getLimitAmountPeopleRegister() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmountRegister(originalRoom.getLimitAmountPeopleRegister() - originalRoom.getQuantityRegistered() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmountRegister(originalRoom.getRemainAmountRegister()  + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setTimeModified(new Date().getTime());
         originalRoom.setIdUserModified(userIdModified);
         roomRepository.save(originalRoom);
@@ -352,7 +354,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 //            File outputFilePath = FileUtil.createFileSampleAsset(fileFinal);
 //            String fileReturn = fileFinal.replace(PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.csvcbe")
 //                    , PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
-
 
             String outputFilePathStr = "C:\\Users\\ADMIN\\Downloads\\test excel\\DanhSachSinhVienThuePhong_output.xlsx";
             Path outputFilePath = Paths.get(outputFilePathStr);

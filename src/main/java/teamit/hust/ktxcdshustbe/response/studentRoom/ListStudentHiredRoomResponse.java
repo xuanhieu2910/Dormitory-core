@@ -25,7 +25,7 @@ public class ListStudentHiredRoomResponse {
     private String titleDepartment;
     @JsonProperty("code_room")
     private String codeRoom;
-    @JsonProperty("title_Room")
+    @JsonProperty("title_room")
     private String titleRoom;
     @JsonProperty("code_user_modified")
     private String codeUserModified;

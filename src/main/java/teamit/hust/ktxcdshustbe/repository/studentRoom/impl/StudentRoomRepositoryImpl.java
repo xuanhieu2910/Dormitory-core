@@ -104,10 +104,10 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join batches_registration_room brr on brr.id_room = ro.id_room  " +
                 "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration   " +
                 "    inner join semester se on se.id_semester = br.id_semester  " +
-                "where studentRoom.id_user = :userId  ");
+                "where ktxUser.code_user = :codeUser  ");
         setConditionListHiredRoomStudentResponse(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("userId", request.getUserId());
+        query.setParameter("codeUser", request.getCodeUser());
         setParametersListHiredRoomStudentResponse(query, request);
         PageUtils.buildQuery(pageable, query);
         List<Object[]> result = query.getResultList();
@@ -451,7 +451,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
     private void setConditionListStudentHiredRoomResponse(ListStudentHiredRoomRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             sb.append(" and ( (ktxUser.value REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (userModified.value REGEXP '[' + :keyword + ']' ) ) ");
+                    "      (userModified.value REGEXP '[' + :keyword + ']' ) ");
         }
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");
@@ -492,10 +492,10 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join batches_registration_room brr on brr.id_room = ro.id_room  " +
                 "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration   " +
                 "    inner join semester se on se.id_semester = br.id_semester  " +
-                "where studentRoom.id_user = :userId  ");
+                "where ktxUser.code_user = :codeUser  ");
         setConditionListHiredRoomStudentResponse(sb,request);
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("userId", request.getUserId());
+        query.setParameter("codeUser", request.getCodeUser());
         setParametersListHiredRoomStudentResponse(query,request);
         return ValueUtil.getLongByObject(query.getSingleResult()).longValue();
     }

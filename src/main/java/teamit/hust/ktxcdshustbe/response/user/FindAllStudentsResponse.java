@@ -19,5 +19,9 @@ public class FindAllStudentsResponse {
     private String value;
     @JsonProperty("sex")
     private Integer sex;
+    @JsonProperty("code_room")
+    private String codeRoom;
+    @JsonProperty("title_room")
+    private String titleRoom;
 
 }

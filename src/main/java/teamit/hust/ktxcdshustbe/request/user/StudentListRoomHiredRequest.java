@@ -10,7 +10,7 @@ import teamit.hust.ktxcdshustbe.request.RequestPageBase;
 @NoArgsConstructor
 public class StudentListRoomHiredRequest extends RequestPageBase {
 
-    private Integer userId;
+    private String codeUser;
     private String timeStarted;
     private String timeEnded;
     private Integer departmentId;

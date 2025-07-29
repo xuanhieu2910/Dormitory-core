@@ -132,7 +132,7 @@ public class RoomServiceImpl implements RoomService {
         || CollectionUtils.isEmpty(request.getServicesRoom())){
             throw new ValidParametersException();
         }
-        if (!request.getSexRoom().equals(Constants.FEMALE) && request.getSexRoom().equals(Constants.MALE)){
+        if (!request.getSexRoom().equals(Constants.FEMALE) && !request.getSexRoom().equals(Constants.MALE)){
             throw new ValidParametersException();
         }
         for (CreateNewServiceRoomRequest serviceRoomRequest : request.getServicesRoom()){
@@ -189,7 +189,7 @@ public class RoomServiceImpl implements RoomService {
         }
         Department departmentUpdate = departmentService.findDepartmentByCodeDepartment(request.getCodeDepartment());
         updateEditRoom(request, room.get(), departmentUpdate);
-        updateEditServiceRoom(request.getEditServiceRoomRequest(), room.get());
+        updateEditServiceRoom(request.getServicesRoom(), room.get());
     }
 
     private void verifyEditRoom(EditRoomRequest request) {
@@ -197,13 +197,13 @@ public class RoomServiceImpl implements RoomService {
                 || StringUtils.isBlank(request.getPrice()) || Objects.isNull(request.getSexRoom())
                 || Objects.isNull(request.getLimitAmountPeople())
                 || Objects.isNull(request.getStatus())
-                || CollectionUtils.isEmpty(request.getEditServiceRoomRequest())) {
+                || CollectionUtils.isEmpty(request.getServicesRoom())) {
             throw new ValidParametersException();
         }
-        if (!request.getSexRoom().equals(Constants.FEMALE) && request.getSexRoom().equals(Constants.MALE)){
+        if (!request.getSexRoom().equals(Constants.FEMALE) && !request.getSexRoom().equals(Constants.MALE)){
             throw new ValidParametersException();
         }
-        for (EditServiceRoomRequest serviceRoomRequest : request.getEditServiceRoomRequest()){
+        for (EditServiceRoomRequest serviceRoomRequest : request.getServicesRoom()){
             if (StringUtils.isBlank(serviceRoomRequest.getCodeService()) || ObjectUtils.isEmpty(serviceRoomRequest.getStatus())){
                 throw new ValidParametersException();
             }
@@ -426,6 +426,7 @@ public class RoomServiceImpl implements RoomService {
 
     private void updateEditServiceRoom(List<EditServiceRoomRequest> serviceRoomRequests, Room room){
         List<String> codesService = new ArrayList<>();
+        Long timeCurrent = new Date().getTime();
         serviceRoomRequests.forEach(x->codesService.add(x.getCodeService()));
         List<ServiceRoomDto> serviceRoomsDtos =
                 serviceRoomService.findServicesRoomByCodeRoomAndCodesService(room.getCodeRoom(), codesService);
@@ -437,7 +438,7 @@ public class RoomServiceImpl implements RoomService {
             serviceRoom.setIdService(serviceRoomDto.getIdService());
             serviceRoom.setIdRoom(serviceRoomDto.getIdRoom());
             serviceRoom.setTimeCreated(serviceRoomDto.getTimeCreated());
-            serviceRoom.setTimeModified(new Date().getTime());
+            serviceRoom.setTimeModified(timeCurrent);
             serviceRoom.setStatus(serviceRoomRequests.stream().filter(x->x.getCodeService().equals(serviceRoomDto.getCodeService())).findFirst().get().getStatus());
             serviceRoom.setIdUserCreated(serviceRoomDto.getIdUserCreated());
             serviceRoom.setIdUserModified(ktxUser.getIdKtxUser());
@@ -448,23 +449,24 @@ public class RoomServiceImpl implements RoomService {
 
     private void updateEditRoom(EditRoomRequest request, Room room, Department department){
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!request.getLimitAmountPeople().equals(room.getLimitAmountPeople())){
-            room.setRemainAmount(request.getLimitAmountPeople() - room.getQuantityHired());
-            /**
-             *
-             * Update after
-             *
-             * */
+        if((request.getLimitAmountPeople() < room.getQuantityHired()) || (request.getLimitAmountPeopleRegister() < room.getQuantityRegistered()) ){
+            throw new ValidParametersException();
         }
-        room.setIdDepartment(department.getIdDepartment());
-        room.setSexRoom(request.getSexRoom());
-        room.setPrice(request.getPrice());
-        room.setTitle(request.getTitle());
-        room.setLimitAmountPeople(request.getLimitAmountPeople());
-        room.setIsActive(request.getStatus());
-        room.setTimeModified(new Date().getTime());
-        room.setIdUserModified(ktxUser.getIdKtxUser());
-        room.setLimitAmountPeopleRegister(request.getLimitAmountPeople());
+        else {
+            Long timeCurrent = new Date().getTime();
+            room.setRemainAmount(request.getLimitAmountPeople() - room.getQuantityHired());
+            room.setRemainAmountRegister(request.getLimitAmountPeopleRegister() - room.getQuantityRegistered());
+            room.setIdDepartment(department.getIdDepartment());
+            room.setSexRoom(request.getSexRoom());
+            room.setPrice(request.getPrice());
+            room.setTitle(request.getTitle());
+            room.setLimitAmountPeople(request.getLimitAmountPeople());
+            room.setIsActive(request.getStatus());
+            room.setTimeModified(timeCurrent);
+            room.setIdUserModified(ktxUser.getIdKtxUser());
+            room.setLimitAmountPeopleRegister(request.getLimitAmountPeople());
+        }
+
         roomRepository.save(room);
     }
 
@@ -535,6 +537,9 @@ public class RoomServiceImpl implements RoomService {
         roomDetailResponse.setCodeDepartment(department.getCodeDepartment());
         roomDetailResponse.setTitleDepartment(department.getTitle());
         roomDetailResponse.setServiceRoomResponses(serviceRoomResponses);
+        roomDetailResponse.setLimitAmountPeopleRegister(room.getLimitAmountPeopleRegister());
+        roomDetailResponse.setQuantityRegister(room.getQuantityRegistered());
+        roomDetailResponse.setRemainAmountRegister(room.getRemainAmountRegister());
         return   roomDetailResponse;
     }
 
