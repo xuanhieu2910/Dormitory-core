@@ -426,6 +426,7 @@ public class RoomServiceImpl implements RoomService {
 
     private void updateEditServiceRoom(List<EditServiceRoomRequest> serviceRoomRequests, Room room){
         List<String> codesService = new ArrayList<>();
+        Long timeCurrent = new Date().getTime();
         serviceRoomRequests.forEach(x->codesService.add(x.getCodeService()));
         List<ServiceRoomDto> serviceRoomsDtos =
                 serviceRoomService.findServicesRoomByCodeRoomAndCodesService(room.getCodeRoom(), codesService);
@@ -437,7 +438,7 @@ public class RoomServiceImpl implements RoomService {
             serviceRoom.setIdService(serviceRoomDto.getIdService());
             serviceRoom.setIdRoom(serviceRoomDto.getIdRoom());
             serviceRoom.setTimeCreated(serviceRoomDto.getTimeCreated());
-            serviceRoom.setTimeModified(new Date().getTime());
+            serviceRoom.setTimeModified(timeCurrent);
             serviceRoom.setStatus(serviceRoomRequests.stream().filter(x->x.getCodeService().equals(serviceRoomDto.getCodeService())).findFirst().get().getStatus());
             serviceRoom.setIdUserCreated(serviceRoomDto.getIdUserCreated());
             serviceRoom.setIdUserModified(ktxUser.getIdKtxUser());
