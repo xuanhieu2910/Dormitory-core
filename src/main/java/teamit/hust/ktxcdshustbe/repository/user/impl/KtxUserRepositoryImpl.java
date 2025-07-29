@@ -203,6 +203,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "    ktxUser.code_user,   " +
                 "    ktxUser.value,   " +
                 "    ktxUser.sex    " +
+
                 "FROM   " +
                 "    ktx_user ktxUser    " +
                 "    INNER JOIN user_role userRole ON ktxUser.id_ktx_user = userRole.id_user    " +
@@ -331,13 +332,13 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                     "       (ktxUser.user_name REGEXP '[' + :keyword + ']') ");
         }
         if(request.isStatusHired()){
-            sb.append("  AND NOT EXISTS  (  " +
+            sb.append("  AND  EXISTS  (  " +
                     "  SELECT 1 FROM student_room sr  " +
                     "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
                     "  AND sr.status = :statusStudent )  ");
         }
         if(!request.isStatusHired()){
-            sb.append("  AND EXISTS  (  " +
+            sb.append("  AND NOT EXISTS  (  " +
                     "  SELECT 1 FROM student_room sr  " +
                     "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
                     "  AND sr.status = :statusStudent )  ");
