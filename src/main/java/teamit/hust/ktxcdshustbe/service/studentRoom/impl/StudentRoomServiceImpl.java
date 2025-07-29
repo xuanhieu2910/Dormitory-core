@@ -85,7 +85,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     @Override
     public Page<ListHiredRoomStudentResponse> getListHiredRoomStudentResponse(OidcUser principal, StudentListRoomHiredRequest request) {
         KtxUser ktxUser = ktxUserService.findKtxUserByUserName(principal.getPreferredUsername().trim().toLowerCase());
-        request.setUserId(ktxUser.getIdKtxUser());
+        request.setCodeUser(ktxUser.getCodeUser());
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         return studentRoomRepository.getListHiredRoomStudentResponse(request,pageable);
     }
@@ -358,7 +358,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 //            File outputFilePath = FileUtil.createFileSampleAsset(fileFinal);
 //            String fileReturn = fileFinal.replace(PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.csvcbe")
 //                    , PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
-
 
             String outputFilePathStr = "C:\\Users\\ADMIN\\Downloads\\test excel\\DanhSachSinhVienThuePhong_output.xlsx";
             Path outputFilePath = Paths.get(outputFilePathStr);
