@@ -230,7 +230,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "    ro.remain_amount = ro.remain_amount + 1, " +
                 "    ro.limit_amount_people_register = ro.limit_amount_people_register + 1, " +
                 "    ro.remain_amount_register = ro.remain_amount_register + 1, " +
-                "    ro.quantity_hired = ro.quantity_hired - 1, " +
                 "    ro.time_modified          = :timeModified, " +
                 "    ro.user_id_modified       = :userIdModified " +
                 "where ro.code_room = :codeRoom " +

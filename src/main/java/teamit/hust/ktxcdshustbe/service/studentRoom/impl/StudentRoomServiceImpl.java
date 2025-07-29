@@ -1,6 +1,7 @@
 package teamit.hust.ktxcdshustbe.service.studentRoom.impl;
 
 
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -84,8 +85,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public Page<ListHiredRoomStudentResponse> getListHiredRoomStudentResponse(OidcUser principal, StudentListRoomHiredRequest request) {
-        KtxUser ktxUser = ktxUserService.findKtxUserByUserName(principal.getPreferredUsername().trim().toLowerCase());
-        request.setCodeUser(ktxUser.getCodeUser());
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         return studentRoomRepository.getListHiredRoomStudentResponse(request,pageable);
     }
@@ -156,6 +155,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 //        ktxUserService.save(student);
 //    }
 
+    @Transactional
     @Override
     public void removeStudentRoom(RemoveStudentInRoomRequest request) throws Exception {
         validateRemoveStudentRoom(request);

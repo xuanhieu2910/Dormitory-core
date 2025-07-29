@@ -279,7 +279,6 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         return response;
     }
 
-    @Lazy
     @Transactional
     @Override
     public void approvedStudentRegisterHiredRoom(ApprovedUserRegisterRoomRequest request){

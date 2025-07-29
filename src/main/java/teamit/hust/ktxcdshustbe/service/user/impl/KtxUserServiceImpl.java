@@ -128,7 +128,7 @@ public class KtxUserServiceImpl implements KtxUserService {
         return ktxUserRepository.updateStatusRegisterRoom(userId, statusUserRegisterRoom);
     }
 
-    @Lazy
+    @Transactional
     @Override
     public void updateUserProfile(UpdateProfileUserRequest request) {
         Optional<KtxUser> ktxUserOptional = ktxUserRepository.findByKtxUserCode(request.getCodeUser());
