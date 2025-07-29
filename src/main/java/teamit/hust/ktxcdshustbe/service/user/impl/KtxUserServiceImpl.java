@@ -182,7 +182,7 @@ public class KtxUserServiceImpl implements KtxUserService {
     @Override
     public DetailInformationUserResponse getDetailInformationUser(OidcUser principal) {
         // SỬA ĐỔI: Gọi đến chính hàm loadUserByUsername của class này
-        KtxUser userDetails = (KtxUser) this.loadUserByUsername(principal.getPreferredUsername().trim().toLowerCase());
+        KtxUser userDetails = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return convertToDetailInformationUserResponse(userDetails);
     }
 
@@ -197,9 +197,17 @@ public class KtxUserServiceImpl implements KtxUserService {
     }
 
     private DetailInformationUserResponse convertToDetailInformationUserResponse(KtxUser userDetails) {
+        YearGroup yearGroup = yearGroupService.findYearGroupByIdYearGroup(userDetails.getIdYearGroup());
+        PriorityGroup priorityGroup =  priorityGroupService.findPriorGroupByIdPriorGroup(userDetails.getIdPriorityGroup());
         DetailInformationUserResponse response = new DetailInformationUserResponse();
         response.setCodeUser(userDetails.getCodeUser());
         response.setValue(userDetails.getValue());
+        response.setPassword(userDetails.getPassword());
+        response.setSex(userDetails.getSex());
+        response.setIsActive(userDetails.getIsActived());
+        response.setTypeLogin(userDetails.getTypeLogin());
+        response.setTitleYearGroup(yearGroup.getTitle());
+        response.setTitlePriorityGroup(priorityGroup.getTitle());
 //        response.setSex(userDetails.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
         return response;
     }
