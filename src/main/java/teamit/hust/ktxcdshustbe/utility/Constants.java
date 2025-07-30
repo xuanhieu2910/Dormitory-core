@@ -3,6 +3,8 @@ package teamit.hust.ktxcdshustbe.utility;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Constants {
 
@@ -54,7 +56,9 @@ public class Constants {
     // Register room
     public final static Integer STUDENT_REGISTER_ROOM_STATUS_ACCEPT = 1;
     public final static Integer STATUS_HOLD_STUDENT_ROOM_REGISTER = 2;
-    public final static Integer STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER = 3;
+    public final static Integer STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER = 3;
+    public final static Integer STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER = 4;
+    public final static Integer STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER = 5;
 
     /****************************************************************/
 
@@ -181,6 +185,48 @@ public class Constants {
      * */
     public static final Integer STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE = -1;
     public static final Integer STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE = 1;
+    /*----------------------------------------------------*/
+    /**
+     * Constant Orders
+     * */
+    public static final Integer STATUS_ORDER_CANCEL = -1;
+    public static final Integer STATUS_ORDER_INIT = 1;
+    public static final Integer STATUS_ORDER_CONFIRM_PAYMENT = 2;
+    public static final Integer STATUS_ORDER_COMPLETE_PAYMENT = 3;
+    public static final Integer STATUS_ORDER_PAYMENT_FALSE = 4;
+    public static final Integer TYPE_ORDER_HIRED_ROOM = 1;
+    /*----------------------------------------------------*/
+    /**
+     * Constant Orders
+     * */
+    public static final Integer QUANTITY_DEFAULT_ORDER_ITEM = 1;
+    public static final Integer STATUS_ORDER_ITEM_ACTIVE = 1;
+    public static final Integer STATUS_ORDER_ITEM_IN_ACTIVE = -1;
+    /*----------------------------------------------------*/
+
+    /**
+     * Constant TRANSACTION PAYMENT
+     * */
+    public static final Integer STATUS_INIT_TRANSACTION_PAYMENT = 1;
+    public static final Integer STATUS_COMPLETE_TRANSACTION_PAYMENT = 2;
+    public static final Integer STATUS_COMPLETE_TRANSACTION_CANCEL = 3;
+    public static final Integer STATUS_COMPLETE_TRANSACTION_FALSE = 4;
+    public static final Integer TYPE_REQ_TRANSACTION_PAYMENT = 1;
+    public static final Integer TYPE_RES_TRANSACTION_PAYMENT = 2;
+    /*----------------------------------------------------*/
+    /**
+     * Constant ORDER_SESSIONS
+     * */
+    public static final Integer ORDER_SESSION_RETRY = 1;
+    public static final Integer ORDER_SESSION_STATUS_ACTIVE = 1;
+    public static final Integer ORDER_SESSION_STATUS_IN_ACTIVE = -1;
+    /*----------------------------------------------------*/
+    /**
+     * Constant TYPE_PAYMENT
+     * */
+    public static final String TYPE_PAYMENT_VIET_QR = "VIETQR";
+    public static final String TYPE_PAYMENT_INTERNATIONAL = "INTERNATIONAL";
+    public static final String TYPE_PAYMENT_DOMESTIC = "DOMESTIC";
     /*----------------------------------------------------*/
 
 }

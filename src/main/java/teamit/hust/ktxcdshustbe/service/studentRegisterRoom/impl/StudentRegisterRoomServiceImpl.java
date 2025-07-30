@@ -201,6 +201,16 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         return convertToStudentRegisterRoomResponse(dto.get());
     }
 
+    @Override
+    public StudentRegisterRoom findStudentRegisterRoomById(Integer idStudentRegisterRoom) {
+        Optional<StudentRegisterRoom> studentRegisterRoom =
+                studentRegisterRoomRepository.findStudentRegisterRoomByIdStudentRegisterRoom(idStudentRegisterRoom);
+        if (studentRegisterRoom.isEmpty()){
+            throw new NotFoundException();
+        }
+        return studentRegisterRoom.get();
+    }
+
 
     @Transactional
     @Override
@@ -212,6 +222,20 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             throw new ValidParametersException();
         }
         initializeStudentRegisterRoom(dataStudentRegisterRoomDto.get());
+    }
+
+    @Override
+    public StudentRegisterRoom saveStudentRoomRegisterRoom(StudentRegisterRoom studentRegisterRoom) {
+        return studentRegisterRoomRepository.save(studentRegisterRoom);
+    }
+
+    @Override
+    public StudentRegisterRoom getStudentRegisterRoomByIdOrder(Integer idOrder) {
+        Optional<StudentRegisterRoom> studentRegisterRoomOptional = studentRegisterRoomRepository.findStudentRegisterRoomByIdOrder(idOrder);
+        if (studentRegisterRoomOptional.isEmpty()){
+            throw new NotFoundException();
+        }
+        return studentRegisterRoomOptional.get();
     }
 
     private void initializeStudentRegisterRoom(DataStudentRegisterRoomDto dataStudentRegisterRoomDto) {
@@ -279,7 +303,6 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         return response;
     }
 
-    @Lazy
     @Transactional
     @Override
     public void approvedStudentRegisterHiredRoom(ApprovedUserRegisterRoomRequest request){

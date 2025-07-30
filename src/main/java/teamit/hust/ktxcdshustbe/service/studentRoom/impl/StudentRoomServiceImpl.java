@@ -1,13 +1,12 @@
 package teamit.hust.ktxcdshustbe.service.studentRoom.impl;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -86,8 +85,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public Page<ListHiredRoomStudentResponse> getListHiredRoomStudentResponse(OidcUser principal, StudentListRoomHiredRequest request) {
-        KtxUser ktxUser = ktxUserService.findKtxUserByUserName(principal.getPreferredUsername().trim().toLowerCase());
-        request.setUserId(ktxUser.getIdKtxUser());
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         return studentRoomRepository.getListHiredRoomStudentResponse(request,pageable);
     }
@@ -136,7 +133,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         if (response.isEmpty()) {
             throw new NotFoundException();
         } else if (!response.get().getStatusRegisterRoom().equals(Constants.STATUS_USER_REGISTER_ROOM)){
-            throw new ValidateFiledException("Student must declare information parents!");
+            throw new ValidateFiledException();
         }
         validateStudentHiringRoom(response.get().getCodeUser());
         validateStudentRegisterRoom(response.get().getCodeUser());
@@ -151,13 +148,10 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         KtxUser ktxUserOptional = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
         studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
         updateQuantityRoom(roomOptional.get().getIdRoom(), ktxUser.getIdKtxUser());
-//        updateStatusStudentAddToRoom(student);
     }
 
-//    private void updateStatusStudentAddToRoom(KtxUser student){
-//        ktxUserService.save(student);
-//    }
 
+    @Transactional
     @Override
     public void removeStudentRoom(RemoveStudentInRoomRequest request) throws Exception {
         validateRemoveStudentRoom(request);
@@ -239,6 +233,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         }
     }
 
+    @Lazy
     @Override
     public void transferRoom(TransferRoomRequest request) {
         validateDataTransferRoomRequest(request);
@@ -326,9 +321,9 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateOriginalRoom(Room originalRoom, Integer userIdModified) {
         originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmount(originalRoom.getLimitAmountPeople() - originalRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setLimitAmountPeopleRegister(originalRoom.getLimitAmountPeopleRegister() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmountRegister(originalRoom.getLimitAmountPeopleRegister() - originalRoom.getQuantityRegistered() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmountRegister(originalRoom.getRemainAmountRegister()  + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setTimeModified(new Date().getTime());
         originalRoom.setIdUserModified(userIdModified);
         roomRepository.save(originalRoom);
@@ -360,7 +355,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 //            String fileReturn = fileFinal.replace(PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.csvcbe")
 //                    , PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
 
-
             String outputFilePathStr = "C:\\Users\\ADMIN\\Downloads\\test excel\\DanhSachSinhVienThuePhong_output.xlsx";
             Path outputFilePath = Paths.get(outputFilePathStr);
 
@@ -386,7 +380,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         writeValueCell(sheet, 1, 0, dateExport, styles.get("normal"));
     }
 
-    private void writeDataToStudentHiredRoomReport(Sheet sheet, List<FindAllStudentHiredRoomDto> studentList, Map<String, CellStyle> styles) throws JsonProcessingException {
+    private void writeDataToStudentHiredRoomReport(Sheet sheet, List<FindAllStudentHiredRoomDto> studentList, Map<String, CellStyle> styles) {
         int rowStart = 4;
         if (studentList.isEmpty()) {
             return;
@@ -395,26 +389,19 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 //        if (sheet.getLastRowNum() >= rowStart) {
 //            sheet.shiftRows(rowStart, sheet.getLastRowNum(), shiftSize, true, true);
 //        }
-        ObjectMapper objectMapper = new ObjectMapper();
         int stt = 1;
         for (FindAllStudentHiredRoomDto student : studentList) {
             Row row = sheet.createRow(rowStart);
             writeValueCell(row, 0, String.valueOf(stt), styles.get("normal"));
-            HashMap<String, Object> dataStudent = objectMapper.readValue(
-                    student.getValueUser() == null ? "{}" : student.getValueUser(),
-                    new TypeReference<>() {}
-            );
-
-            writeValueCell(row, 1, ValueUtil.getStringByObject(dataStudent.get("full_name")), null);
-            writeValueCell(row, 2, ValueUtil.getStringByObject(dataStudent.get("number_student")), null);
-            writeValueCell(row, 3, ValueUtil.getStringByObject(dataStudent.get("number_phone")), null);
-            writeValueCell(row, 4, ValueUtil.getStringByObject(student.getTimeHired()), styles.get("normal"));
-            writeValueCell(row, 5, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
-            writeValueCell(row, 6, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
+            writeValueCell(row, 1, ValueUtil.getStringByObject(student.getCodeUser()), styles.get("normal"));
+            writeValueCell(row, 2, ValueUtil.getStringByObject(student.getValueUser()), styles.get("normal"));
+            writeValueCell(row, 3, ValueUtil.getStringByObject(student.getTimeHired()), styles.get("normal"));
+            writeValueCell(row, 4, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
+            writeValueCell(row, 5, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
 
             Integer status = student.getStatus();
             String statusText = (status != null && status == 1) ? "Đang thuê" : "Đã trả phòng";
-            writeValueCell(row, 7, statusText, styles.get("normal"));
+            writeValueCell(row, 6, statusText, styles.get("normal"));
 
             rowStart++;
             stt++;

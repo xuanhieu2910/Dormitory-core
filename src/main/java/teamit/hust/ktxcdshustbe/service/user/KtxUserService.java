@@ -19,7 +19,7 @@ public interface KtxUserService extends UserDetailsService {
     Boolean exitsByUserName(String userName);
     KtxUser save(KtxUser ktxUser);
     KtxUser findKtxUserByKtxUserId(Integer idUser);
-    DetailInformationUserResponse getDetailInformationUser(OidcUser principal);
+    DetailInformationUserResponse getDetailInformationUser();
     DetailInformationUserResponse getDetailInformationUserHiredRoomIdByHiredRoomId(Integer studentRoomId);
     InformationStudentHiredResponse searchInformationStudentByNumberStudent(String numberStudent);
 
