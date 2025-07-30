@@ -131,6 +131,19 @@ public class StudentRegisterRoomController {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @GetMapping("/find-all-details-register")
+    public ResponseEntity<?> findAllInfoAnUserRegisterRoomByCode(@And({
+            @Spec(path = "page", params = "page", spec = Like.class),
+            @Spec(path = "size", params = "size", spec = Like.class),
+            @Spec(path = "keyword", params = "keyword", spec = Like.class)
+    }) UserRegisterRoomRequest request){
+        try {
+            Page<UserRegisterRoomResponse> userRegisterRoomResponses = studentRegisterRoomService.findAllInfoAnUserRegisterRoomByCode(request);
+            return ApiResponseDto.createdWithState(userRegisterRoomResponses, "Find all user register room success!", HttpStatus.OK);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
     @PostMapping("/approve")

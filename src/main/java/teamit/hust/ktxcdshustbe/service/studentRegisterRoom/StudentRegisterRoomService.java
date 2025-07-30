@@ -11,6 +11,7 @@ import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.response.user.UserRegisterRoomResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StudentRegisterRoomService {
@@ -42,4 +43,7 @@ public interface StudentRegisterRoomService {
     StudentRegisterRoom saveStudentRoomRegisterRoom(StudentRegisterRoom studentRegisterRoom);
 
     StudentRegisterRoom getStudentRegisterRoomByIdOrder(Integer idOrder);
+
+    List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer statusSuccessPaymentStudentRoomRegister);
+    Page<UserRegisterRoomResponse> findAllInfoAnUserRegisterRoomByCode(UserRegisterRoomRequest request);
 }
