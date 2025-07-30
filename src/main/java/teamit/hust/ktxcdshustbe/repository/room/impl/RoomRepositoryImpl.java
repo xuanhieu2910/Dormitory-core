@@ -731,12 +731,12 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "       de.title, de.code_department,  " +
                 "       kuCreated.user_name,  " +
                 "       kuModified.user_name, " +
-                "       brr.status" +
+                "       brr.status " +
                 "from room ro  " +
                 "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
                 "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +
                 "    inner join department de on ro.id_department = de.id_department " +
-                "    inner join  batches_registration_room brr on brr.id_room = ro.id_room " +
+                "    left join  batches_registration_room brr on brr.id_room = ro.id_room " +
                 "where de.code_department = :codeDepartment ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeDepartment",codeDepartment);

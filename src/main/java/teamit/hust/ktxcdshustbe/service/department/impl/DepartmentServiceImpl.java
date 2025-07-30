@@ -207,15 +207,60 @@ public class DepartmentServiceImpl implements DepartmentService {
         if (departmentOptional.isEmpty()){
             throw new NotFoundException();
         }
-        Optional<Department> departmentParentOptional = departmentRepository.findDepartmentById(departmentOptional.get().getParent());
-        if (departmentParentOptional.isEmpty()){
-            throw new NotFoundException();
-        }
         List<FindAllRoomsDto> findAllRoomsDtoList= roomService.findAllListRoomByCodeDepartment(codeDepartment);
-        return convertDataDepartmentDetails(departmentParentOptional.get(),departmentOptional.get(),findAllRoomsDtoList);
+        if(departmentOptional.get().getParent() != null){
+            Optional<Department> departmentParentOptional = departmentRepository.findDepartmentById(departmentOptional.get().getParent());
+            if (departmentParentOptional.isEmpty()){
+                throw new NotFoundException();
+            }
+            return convertDataDepartmentDetailsWithParent(departmentParentOptional.get(),departmentOptional.get(),findAllRoomsDtoList);
+        }
+
+
+        return convertDataDepartmentDetails(departmentOptional.get(),findAllRoomsDtoList);
     }
 
-    private DepartmentDetailsResponse convertDataDepartmentDetails(Department departmentParent,Department department, List<FindAllRoomsDto> findAllRoomsDtoList) {
+    private DepartmentDetailsResponse convertDataDepartmentDetails(Department department, List<FindAllRoomsDto> findAllRoomsDtoList) {
+        DepartmentDetailsResponse response = new DepartmentDetailsResponse();
+        int totalRoom =0,totalRoomOpen=0,totalRoomClose=0,totalStudentHiring = 0,totalStudentRegister=0;
+        response.setIdDepartment(department.getIdDepartment());
+        response.setCodeDepartment(department.getCodeDepartment());
+        response.setTitle(department.getTitle());
+        response.setShortname(department.getShortName());
+        response.setDescription(department.getDescription());
+        response.setTimeCreated(String.valueOf(department.getTimeCreated()));
+        response.setTimeModified(String.valueOf(department.getTimeModified()));
+        response.setIdUserCreated(department.getIdUserCreated());
+        response.setIdUserModified(department.getIdUserModified());
+        response.setStatus(department.getStatus());
+        for(FindAllRoomsDto findAllRoomsDto : findAllRoomsDtoList){
+            if(findAllRoomsDto.getStatusRegister() ==null){
+                totalRoomClose += 0;
+                totalRoomOpen += 0;
+            }
+            else {
+                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE)) {
+                    totalRoomClose++;
+                }
+                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE)) {
+                    totalRoomOpen++;
+                }
+            }
+
+            totalRoom++;
+            totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
+            totalStudentRegister = totalStudentRegister + findAllRoomsDto.getQuantityRegistered();
+        }
+        response.setTotalRoomOpen(totalRoomOpen);
+        response.setTotalRoomClose(totalRoomClose);
+
+        response.setTotalRoom(totalRoom);
+        response.setTotalStudentRegister(totalStudentRegister);
+        return response;
+
+    }
+
+    private DepartmentDetailsResponse convertDataDepartmentDetailsWithParent(Department departmentParent,Department department, List<FindAllRoomsDto> findAllRoomsDtoList) {
         DepartmentDetailsResponse response = new DepartmentDetailsResponse();
         int totalRoom =0,totalRoomOpen=0,totalRoomClose=0,totalStudentHiring = 0,totalStudentRegister=0;
         response.setIdDepartment(department.getIdDepartment());
@@ -232,17 +277,24 @@ public class DepartmentServiceImpl implements DepartmentService {
         response.setIdParent(departmentParent.getIdDepartment());
         response.setStatus(department.getStatus());
         for(FindAllRoomsDto findAllRoomsDto : findAllRoomsDtoList){
-            if(findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE)){
-                totalRoomClose++;
+            if(findAllRoomsDto.getStatusRegister() ==null){
+                totalRoomClose += 0;
+                totalRoomOpen += 0;
             }
-            if(findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE)){
-                totalRoomOpen++;
+            else {
+                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE)) {
+                    totalRoomClose++;
+                }
+                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE)) {
+                    totalRoomOpen++;
+                }
             }
             totalRoom++;
             totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
             totalStudentRegister = totalStudentRegister + findAllRoomsDto.getQuantityRegistered();
         }
         response.setTotalRoom(totalRoom);
+        response.setTotalStudentHired(totalStudentHiring);
         response.setTotalRoomOpen(totalRoomOpen);
         response.setTotalRoomClose(totalRoomClose);
         response.setTotalStudentRegister(totalStudentRegister);
