@@ -36,4 +36,5 @@ public class FindAllRoomsDto {
     private String userNameModified;
     private String valueCreated;
     private String valueModified;
+    private Integer statusRegister;
 }

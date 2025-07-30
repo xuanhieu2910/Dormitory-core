@@ -656,6 +656,140 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return query.executeUpdate();
     }
 
+    @Override
+    public Page<FindAllRoomsDto> findAllRoomsRegister(FindAllRoomsRequest request, Pageable pageable) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select ro.id_room, ro.title, ro.id_department,  " +
+                "       ro.sex_room, ro.price, ro.time_created,  " +
+                "       ro.time_modified, ro.id_user_created,  " +
+                "       ro.id_user_modified, ro.is_active,  " +
+                "       ro.limit_amount_people, ro.quantity_hired,  " +
+                "       ro.remain_amount, ro.limit_amount_people_register,  " +
+                "       ro.quantity_registered, ro.remain_amount_register,  " +
+                "       ro.code_room,  " +
+                "       de.title, de.code_department,  " +
+                "       kuCreated.user_name,  " +
+                "       kuCreated.value,  " +
+                "       kuModified.user_name, " +
+                "       kuModified.value " +
+                "from room ro  " +
+                "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
+                "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +
+                "    inner join department de on ro.id_department = de.id_department " +
+                "    inner join  batches_registration_room brr on brr.id_room = ro.id_room " +
+                "where de.code_department = :codeDepartment and brr.status = :statusBatchesRegistration ");
+        setConditionFindAllRoom(request, sb);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("statusBatchesRegistration",Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE);
+        setParameterFindAllRoom(request, query);
+        PageUtils.buildQuery(pageable, query);
+        List<FindAllRoomsDto> findAllRoomsDtos = new ArrayList<>();
+        List<Object[]> result = query.getResultList();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                FindAllRoomsDto roomDto = new FindAllRoomsDto();
+                roomDto.setIdRoom(ValueUtil.getIntegerByObject(obj[0]));
+                roomDto.setTitle(ValueUtil.getStringByObject(obj[1]));
+                roomDto.setIdDepartment(ValueUtil.getIntegerByObject(obj[2]));
+                roomDto.setSexRoom(ValueUtil.getIntegerByObject(obj[3]));
+                roomDto.setPrice(ValueUtil.getStringByObject(obj[4]));
+                roomDto.setTimeCreated(ValueUtil.getLongByObject(obj[5]));
+                roomDto.setTimeModified(ValueUtil.getLongByObject(obj[6]));
+                roomDto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[7]));
+                roomDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[8]));
+                roomDto.setIsActive(ValueUtil.getIntegerByObject(obj[9]));
+                roomDto.setLimitAmountPeople(ValueUtil.getIntegerByObject(obj[10]));
+                roomDto.setQuantityHired(ValueUtil.getIntegerByObject(obj[11]));
+                roomDto.setRemainAmount(ValueUtil.getIntegerByObject(obj[12]));
+                roomDto.setLimitAmountPeopleRegister(ValueUtil.getIntegerByObject(obj[13]));
+                roomDto.setQuantityRegistered(ValueUtil.getIntegerByObject(obj[14]));
+                roomDto.setRemainAmountRegister(ValueUtil.getIntegerByObject(obj[15]));
+                roomDto.setCodeRoom(ValueUtil.getStringByObject(obj[16]));
+                roomDto.setTitleDepartment(ValueUtil.getStringByObject(obj[17]));
+                roomDto.setCodeDepartment(ValueUtil.getStringByObject(obj[18]));
+                roomDto.setUserNameCreated(ValueUtil.getStringByObject(obj[19]));
+//                roomDto.setValueCreated(ValueUtil.getStringByObject(obj[20]));
+                roomDto.setUserNameModified(ValueUtil.getStringByObject(obj[20]));
+//                roomDto.setValueModified(ValueUtil.getStringByObject(obj[22]));
+                findAllRoomsDtos.add(roomDto);
+            }
+        }
+        return new PageImpl<>(findAllRoomsDtos, pageable, countFindAllRoomsRegister(request));
+    }
+
+    @Override
+    public List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select ro.id_room, ro.title, ro.id_department,  " +
+                "       ro.sex_room, ro.price, ro.time_created,  " +
+                "       ro.time_modified, ro.id_user_created,  " +
+                "       ro.id_user_modified, ro.is_active,  " +
+                "       ro.limit_amount_people, ro.quantity_hired,  " +
+                "       ro.remain_amount, ro.limit_amount_people_register,  " +
+                "       ro.quantity_registered, ro.remain_amount_register,  " +
+                "       ro.code_room,  " +
+                "       de.title, de.code_department,  " +
+                "       kuCreated.user_name,  " +
+                "       kuModified.user_name, " +
+                "       brr.status" +
+                "from room ro  " +
+                "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
+                "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +
+                "    inner join department de on ro.id_department = de.id_department " +
+                "    inner join  batches_registration_room brr on brr.id_room = ro.id_room " +
+                "where de.code_department = :codeDepartment ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("codeDepartment",codeDepartment);
+        List<Object[]> result = query.getResultList();
+        List<FindAllRoomsDto> findAllRoomsDtos = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                FindAllRoomsDto roomDto = new FindAllRoomsDto();
+                roomDto.setIdRoom(ValueUtil.getIntegerByObject(obj[0]));
+                roomDto.setTitle(ValueUtil.getStringByObject(obj[1]));
+                roomDto.setIdDepartment(ValueUtil.getIntegerByObject(obj[2]));
+                roomDto.setSexRoom(ValueUtil.getIntegerByObject(obj[3]));
+                roomDto.setPrice(ValueUtil.getStringByObject(obj[4]));
+                roomDto.setTimeCreated(ValueUtil.getLongByObject(obj[5]));
+                roomDto.setTimeModified(ValueUtil.getLongByObject(obj[6]));
+                roomDto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[7]));
+                roomDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[8]));
+                roomDto.setIsActive(ValueUtil.getIntegerByObject(obj[9]));
+                roomDto.setLimitAmountPeople(ValueUtil.getIntegerByObject(obj[10]));
+                roomDto.setQuantityHired(ValueUtil.getIntegerByObject(obj[11]));
+                roomDto.setRemainAmount(ValueUtil.getIntegerByObject(obj[12]));
+                roomDto.setLimitAmountPeopleRegister(ValueUtil.getIntegerByObject(obj[13]));
+                roomDto.setQuantityRegistered(ValueUtil.getIntegerByObject(obj[14]));
+                roomDto.setRemainAmountRegister(ValueUtil.getIntegerByObject(obj[15]));
+                roomDto.setCodeRoom(ValueUtil.getStringByObject(obj[16]));
+                roomDto.setTitleDepartment(ValueUtil.getStringByObject(obj[17]));
+                roomDto.setCodeDepartment(ValueUtil.getStringByObject(obj[18]));
+                roomDto.setUserNameCreated(ValueUtil.getStringByObject(obj[19]));
+                roomDto.setUserNameModified(ValueUtil.getStringByObject(obj[20]));
+                roomDto.setStatusRegister(ValueUtil.getIntegerByObject(obj[21]));
+                findAllRoomsDtos.add(roomDto);
+            }
+        }
+
+        return findAllRoomsDtos;
+    }
+
+    private long countFindAllRoomsRegister(FindAllRoomsRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select count(0)  " +
+                "from room ro  " +
+                "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
+                "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +
+                "    inner join department de on ro.id_department = de.id_department  " +
+                "    inner join  batches_registration_room brr on brr.id_room = ro.id_room " +
+                "where de.code_department = :codeDepartment and brr.status = :statusBatchesRegistration ");
+        setConditionFindAllRoom(request, sb);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("statusBatchesRegistration",Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE);
+        setParameterFindAllRoom(request, query);
+        return  ValueUtil.getLongByObject(query.getSingleResult());
+    }
+
 
     private void setParameterFindAllRoom(FindAllRoomsRequest request, Query query) {
         query.setParameter("codeDepartment", request.getCodeDepartment());
