@@ -36,6 +36,10 @@ public interface StudentRegisterRoomService {
     void verifyRegisterRoom();
 
     StudentRegisterRoomResponse getRegisterRoomCurrent();
+    StudentRegisterRoom findStudentRegisterRoomById(Integer idStudentRegisterRoom);
 
     void createStudentRegisterRoom(CreateRegisterRoomRequest request);
+    StudentRegisterRoom saveStudentRoomRegisterRoom(StudentRegisterRoom studentRegisterRoom);
+
+    StudentRegisterRoom getStudentRegisterRoomByIdOrder(Integer idOrder);
 }

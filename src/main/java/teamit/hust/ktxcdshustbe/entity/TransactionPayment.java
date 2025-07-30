@@ -29,4 +29,17 @@ public class TransactionPayment {
     private Long timeModified;
     @Column(name = "json_data")
     private String jsonData;
+    @Column(name = "check_sum")
+    private String checkSum;
+    @Column(name = "return_url")
+    private String returnUrl;
+    @Column(name = "cancel_url")
+    private String cancelUrl;
+    @Column(name = "method_payment")
+    private String methodPayment;
+    @Column(name = "merchant_id")
+    private String merchantId;
+    @Column(name = "terminal_id")
+    private String terminalId;
+
 }

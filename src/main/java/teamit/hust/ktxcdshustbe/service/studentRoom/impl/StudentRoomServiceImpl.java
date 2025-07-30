@@ -133,7 +133,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         if (response.isEmpty()) {
             throw new NotFoundException();
         } else if (!response.get().getStatusRegisterRoom().equals(Constants.STATUS_USER_REGISTER_ROOM)){
-            throw new ValidateFiledException("Student must declare information parents!");
+            throw new ValidateFiledException();
         }
         validateStudentHiringRoom(response.get().getCodeUser());
         validateStudentRegisterRoom(response.get().getCodeUser());
@@ -148,12 +148,8 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         KtxUser ktxUserOptional = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
         studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
         updateQuantityRoom(roomOptional.get().getIdRoom(), ktxUser.getIdKtxUser());
-//        updateStatusStudentAddToRoom(student);
     }
 
-//    private void updateStatusStudentAddToRoom(KtxUser student){
-//        ktxUserService.save(student);
-//    }
 
     @Transactional
     @Override

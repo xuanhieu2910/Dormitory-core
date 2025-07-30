@@ -121,9 +121,12 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
         if(StringUtils.isBlank(request.getTitlePriorityGroup())) {
             throw new IsBlankException();
         }
-        if(priorityGroupRepository.existsByPriorityGroupCode(request.getPriorityGroupCode())){
+        if(priorityGroupRepository.existsByTitlePriorityGroup(request.getTitlePriorityGroup())) {
             throw new ExitsObjectException();
         }
+//        if(priorityGroupRepository.existsByPriorityGroupCode(request.getPriorityGroupCode())){
+//            throw new ExitsObjectException();
+//        }
     }
     private PriorityGroup initializePriorityGroup(CreatePriorityGroupRequest request, KtxUser ktxUser){
         PriorityGroup priorityGroup = new PriorityGroup();

@@ -25,4 +25,8 @@ public interface StudentRegisterRoomRepositoryCustom {
     Optional<StudentRegisterRoomDto> getInformationRegisterRoomCurrent();
     boolean isAllowRegisterRoomByCodeRoom(String codeRoom);
     Optional<DataStudentRegisterRoomDto> getDataStudentToRegisterRoomByCodeRoom(String codeRoom);
+
+    Optional<StudentRegisterRoom> findStudentRegisterRoomByIdStudentRegisterRoom(Integer idStudentRegisterRoom);
+
+    Optional<StudentRegisterRoom> findStudentRegisterRoomByIdOrder(Integer idOrder);
 }
