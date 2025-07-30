@@ -57,8 +57,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Autowired
     InterceptLog logInterceptor;
     public final static String INFORMATION_USER = "informationUser";
-    public final static String DOMAIN_FE = "http://localhost:3000";
-    public final static String DOMAIN_BE = "https://ktx-be.hust.edu.vn/ktx-be";
+    public final static String DOMAIN_FE = "https://ktx-staging.hust.edu.vn";
+    public final static String DOMAIN_BE = "https://ktx-staging-be.hust.edu.vn/ktx-be";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
