@@ -338,6 +338,23 @@ public class RoomServiceImpl implements RoomService {
         log.info("[UPDATE] - Component: Change register room - Message: Update success!");
     }
 
+    @Override
+    public Page<FindAllRoomsResponse> findAllRoomRegister(FindAllRoomsRequest request) {
+        verifyFindAllRoom(request);
+        Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
+        Page<FindAllRoomsDto> findAllRoomsDtos = roomRepository.findAllRoomsRegister(request, pageable);
+        return new PageImpl<>(convertToFindAllRoomsResponse(findAllRoomsDtos.getContent()), pageable, findAllRoomsDtos.getTotalElements());
+    }
+
+    @Override
+    public List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment) {
+        List<FindAllRoomsDto> roomsDtos = roomRepository.findAllListRoomByCodeDepartment(codeDepartment);
+        if (roomsDtos.isEmpty()){
+            throw new NotFoundException();
+        }
+        return roomsDtos;
+    }
+
     private List<SearchInformationRegisterRoomResponse> convertToSearchInformationRegisterRoomResponse(List<SearchInformationRegisterRoomDto> dtos) {
         List<SearchInformationRegisterRoomResponse> responses = new ArrayList<>();
         for (SearchInformationRegisterRoomDto dto : dtos){

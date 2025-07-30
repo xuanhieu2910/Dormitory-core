@@ -33,4 +33,18 @@ public class DepartmentDetailsResponse {
     private Integer idParent;
     @JsonProperty(value = "status")
     private Integer status;
+    @JsonProperty("total_room")
+    private Integer totalRoom;
+    @JsonProperty("total_room_open")
+    private Integer totalRoomOpen;
+    @JsonProperty("total_room_close")
+    private Integer totalRoomClose;
+    @JsonProperty("total_student_hired")
+    private Integer totalStudentHired;
+    @JsonProperty("total_student_register")
+    private Integer totalStudentRegister;
+    @JsonProperty("total_student_paid")
+    private Integer totalStudentPaid;
+    @JsonProperty("total_student_not_yet_paid")
+    private Integer totalStudentNotYetPaid;
 }

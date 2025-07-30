@@ -1,6 +1,7 @@
 package teamit.hust.ktxcdshustbe.service.room;
 
 import org.springframework.data.domain.Page;
+import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.exception.ValidateFiledException;
 import teamit.hust.ktxcdshustbe.request.room.*;
@@ -40,4 +41,8 @@ public interface RoomService {
     void updateRemainQuantityRegisterRoomByIdRoom(Integer idRoom);
 
     void updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom);
+
+    Page<FindAllRoomsResponse> findAllRoomRegister(FindAllRoomsRequest request);
+
+    List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment);
 }
