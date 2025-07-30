@@ -122,8 +122,8 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 res.setCodeRoom(ValueUtil.getStringByObject(obj[4]));
                 res.setTitleRoom(ValueUtil.getStringByObject(obj[5]));
                 res.setHiredRoom(ValueUtil.getStringByObject(obj[6] + " - "
-                        + DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[7]),DateUtil.DATE_FORMAT_HH_MM) + " - "
-                        + DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[8]),DateUtil.DATE_FORMAT_HH_MM)));
+                        + ValueUtil.getStringByObject(obj[7]) + " - "
+                        + ValueUtil.getStringByObject(obj[8])));
                 res.setStatus(ValueUtil.getIntegerByObject(obj[9]));
                 responses.add(res);
             }

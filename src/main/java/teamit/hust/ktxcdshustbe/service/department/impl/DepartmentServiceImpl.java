@@ -15,6 +15,7 @@ import teamit.hust.ktxcdshustbe.dto.department.StudentSearchDepartmentDto;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
+import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
@@ -29,6 +30,7 @@ import teamit.hust.ktxcdshustbe.response.department.FindAllDepartmentsResponse;
 import teamit.hust.ktxcdshustbe.response.department.StudentSearchDepartmentResponse;
 import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
 import teamit.hust.ktxcdshustbe.service.room.RoomService;
+import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
@@ -44,6 +46,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     DepartmentRepository departmentRepository;
     @Autowired
     private RoomService roomService;
+    @Autowired
+    private StudentRegisterRoomService studentRegisterRoomService;
 
 
     @Override
@@ -208,6 +212,7 @@ public class DepartmentServiceImpl implements DepartmentService {
             throw new NotFoundException();
         }
         List<FindAllRoomsDto> findAllRoomsDtoList= roomService.findAllListRoomByCodeDepartment(codeDepartment);
+
         if(departmentOptional.get().getParent() != null){
             Optional<Department> departmentParentOptional = departmentRepository.findDepartmentById(departmentOptional.get().getParent());
             if (departmentParentOptional.isEmpty()){
@@ -222,7 +227,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private DepartmentDetailsResponse convertDataDepartmentDetails(Department department, List<FindAllRoomsDto> findAllRoomsDtoList) {
         DepartmentDetailsResponse response = new DepartmentDetailsResponse();
-        int totalRoom =0,totalRoomOpen=0,totalRoomClose=0,totalStudentHiring = 0,totalStudentRegister=0;
+        int totalRoom =0,totalRoomOpen=0,totalRoomClose=0,totalStudentHiring = 0,totalStudentRegister=0,totalStudentRegisterNotYetPaid=0,totalStudentRegisterPaid=0;
         response.setIdDepartment(department.getIdDepartment());
         response.setCodeDepartment(department.getCodeDepartment());
         response.setTitle(department.getTitle());
@@ -250,19 +255,27 @@ public class DepartmentServiceImpl implements DepartmentService {
             totalRoom++;
             totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
             totalStudentRegister = totalStudentRegister + findAllRoomsDto.getQuantityRegistered();
+            List<StudentRegisterRoom> studentRegisterRoomsPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
+                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+            List<StudentRegisterRoom> studentRegisterRoomsNotYetPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
+                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+            totalStudentRegisterNotYetPaid = totalStudentRegisterNotYetPaid + studentRegisterRoomsNotYetPaid.size();
+            totalStudentRegisterPaid = totalStudentRegisterPaid + studentRegisterRoomsPaid.size();
         }
         response.setTotalRoomOpen(totalRoomOpen);
         response.setTotalRoomClose(totalRoomClose);
         response.setTotalStudentHired(totalStudentHiring);
         response.setTotalRoom(totalRoom);
         response.setTotalStudentRegister(totalStudentRegister);
+        response.setTotalStudentNotYetPaid(totalStudentRegisterNotYetPaid);
+        response.setTotalStudentPaid(totalStudentRegisterPaid);
         return response;
 
     }
 
     private DepartmentDetailsResponse convertDataDepartmentDetailsWithParent(Department departmentParent,Department department, List<FindAllRoomsDto> findAllRoomsDtoList) {
         DepartmentDetailsResponse response = new DepartmentDetailsResponse();
-        int totalRoom =0,totalRoomOpen=0,totalRoomClose=0,totalStudentHiring = 0,totalStudentRegister=0;
+        int totalRoom =0,totalRoomOpen=0,totalRoomClose=0,totalStudentHiring = 0,totalStudentRegister=0,totalStudentRegisterNotYetPaid=0,totalStudentRegisterPaid=0;
         response.setIdDepartment(department.getIdDepartment());
         response.setCodeDepartment(department.getCodeDepartment());
         response.setTitle(department.getTitle());
@@ -292,12 +305,20 @@ public class DepartmentServiceImpl implements DepartmentService {
             totalRoom++;
             totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
             totalStudentRegister = totalStudentRegister + findAllRoomsDto.getQuantityRegistered();
+            List<StudentRegisterRoom> studentRegisterRoomsPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
+                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+            List<StudentRegisterRoom> studentRegisterRoomsNotYetPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
+                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+            totalStudentRegisterNotYetPaid = totalStudentRegisterNotYetPaid + studentRegisterRoomsNotYetPaid.size();
+            totalStudentRegisterPaid = totalStudentRegisterPaid + studentRegisterRoomsPaid.size();
         }
         response.setTotalRoom(totalRoom);
         response.setTotalStudentHired(totalStudentHiring);
         response.setTotalRoomOpen(totalRoomOpen);
         response.setTotalRoomClose(totalRoomClose);
         response.setTotalStudentRegister(totalStudentRegister);
+        response.setTotalStudentNotYetPaid(totalStudentRegisterNotYetPaid);
+        response.setTotalStudentPaid(totalStudentRegisterPaid);
         return response;
 
 
