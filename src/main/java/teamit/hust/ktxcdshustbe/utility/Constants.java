@@ -3,6 +3,8 @@ package teamit.hust.ktxcdshustbe.utility;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Constants {
 
@@ -226,8 +228,5 @@ public class Constants {
     public static final String TYPE_PAYMENT_INTERNATIONAL = "INTERNATIONAL";
     public static final String TYPE_PAYMENT_DOMESTIC = "DOMESTIC";
     /*----------------------------------------------------*/
-    /**
-     * Constant CALL_BACK
-     * */
-    public static final String CALL_BACK_SUCCESS = "200";
+
 }

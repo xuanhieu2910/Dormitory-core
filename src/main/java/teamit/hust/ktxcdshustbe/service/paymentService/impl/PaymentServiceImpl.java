@@ -22,13 +22,90 @@ import teamit.hust.ktxcdshustbe.service.transactionPayment.TransactionPaymentSer
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.DateUtil;
 
-import java.util.Base64;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 @Service
 public class PaymentServiceImpl implements PaymentService {
+
+    private static final Map<String, String> CANCEL_PAYMENT;
+    private static final Map<String, String> PENDING_PAYMENT;
+    private static final Map<String, String> SUCCESS_PAYMENT;
+    private static final Map<String, String> FAILURE_PAYMENT;
+
+    static {
+        CANCEL_PAYMENT = new HashMap<>();
+        CANCEL_PAYMENT.put("-61", "PAYMENT_EXPIRED");
+        CANCEL_PAYMENT.put("-62", "PAYMENT_CANCELED");
+        CANCEL_PAYMENT.put("102", "PENDING_FOR_OTP");
+        CANCEL_PAYMENT.put("107", "PENDING_FOR_PAYMENT");
+    }
+
+    static {
+        PENDING_PAYMENT = new HashMap<>();
+        PENDING_PAYMENT.put("4", "PAYMENT_PROCESSOR_TIMEOUT");
+        PENDING_PAYMENT.put("11", "PENDING_FOR_SETTLEMENT");
+        PENDING_PAYMENT.put("13", "PARTIAL_APPROVAL");
+        PENDING_PAYMENT.put("100", "PENDING_TRANSACTION");
+    }
+
+    static {
+        SUCCESS_PAYMENT = new HashMap<>();
+        SUCCESS_PAYMENT.put("200", "SUCCESS");
+    }
+
+    static {
+        FAILURE_PAYMENT = new HashMap<>();
+        FAILURE_PAYMENT.put("500", "INTERNAL_SERVER_ERROR");
+        FAILURE_PAYMENT.put("502", "INTEGRATION_ERROR");
+        FAILURE_PAYMENT.put("9", "PENDING_FOR_PURCHASE");
+        FAILURE_PAYMENT.put("-1", "PROCESS_FAILURE");
+        FAILURE_PAYMENT.put("-13", "LOCKED_CARD");
+        FAILURE_PAYMENT.put("-25", "INVALID_CARD_INFO");
+        FAILURE_PAYMENT.put("-6", "ISSUING_BANK_TIMEOUT");
+        FAILURE_PAYMENT.put("-9", "ISSUING_BANK_ERROR");
+        FAILURE_PAYMENT.put("-31", "LIMIT_VIOLATED");
+        FAILURE_PAYMENT.put("-28", "UNREGISTERED_CARD");
+        FAILURE_PAYMENT.put("-8", "BANK_ERROR");
+        FAILURE_PAYMENT.put("-80", "INVALID_ACCOUNT_INFO");
+        FAILURE_PAYMENT.put("-81", "INVALID_ACC_NAME");
+        FAILURE_PAYMENT.put("-82", "ACCOUNT_NOT_ALLOWED_1");
+        FAILURE_PAYMENT.put("-2", "UNIDENTIFIED_FAILURE");
+        FAILURE_PAYMENT.put("-3", "PAYMENT_PROCESSOR_FAILURE");
+        FAILURE_PAYMENT.put("-4", "PAYMENT_PROCESSOR_TIMEOUT");
+        FAILURE_PAYMENT.put("-10", "REJECTED_BY_AVS");
+        FAILURE_PAYMENT.put("-11", "CARD_EXPIRED");
+        FAILURE_PAYMENT.put("-12", "CARD_REJECTED");
+        FAILURE_PAYMENT.put("-14", "STOLEN_LOST_CARD");
+        FAILURE_PAYMENT.put("-15", "INSUFFICIENT_FUNDS");
+        FAILURE_PAYMENT.put("-5", "ISSUING_BANK_UNAVAILABLE");
+        FAILURE_PAYMENT.put("-7", "AUTHENTICATION_FAILED");
+        FAILURE_PAYMENT.put("-17", "INVALID_CARD");
+        FAILURE_PAYMENT.put("-18", "INVALID_CARD_CVN");
+        FAILURE_PAYMENT.put("-32", "CREDIT_LIMIT_EXCEEDED");
+        FAILURE_PAYMENT.put("-39", "INVALID_EXP_DATE");
+        FAILURE_PAYMENT.put("-40", "REJECTED_BY_PAYMENT_PROCESSOR");
+        FAILURE_PAYMENT.put("-23", "ACCOUNT_NOT_ALLOWED");
+        FAILURE_PAYMENT.put("-26", "INVALID_CARD_NAME");
+        FAILURE_PAYMENT.put("-19", "INVALID_CARD_NO");
+        FAILURE_PAYMENT.put("-20", "INVALID_CARD_TYPE");
+        FAILURE_PAYMENT.put("-21", "INVALID_OTP");
+        FAILURE_PAYMENT.put("-22", "OTP_TIMEOUT");
+        FAILURE_PAYMENT.put("-24", "INVALID_ISSUE_DATE");
+        FAILURE_PAYMENT.put("-33", "DEBIT_LIMIT_EXCEEDED");
+        FAILURE_PAYMENT.put("-41", "FRAUD_DETECTED");
+        FAILURE_PAYMENT.put("-107", "AUTHENTICATION_FAILED_2");
+        FAILURE_PAYMENT.put("-43", "ORDER_MARKED_FOR_REVIEW");
+        FAILURE_PAYMENT.put("-42", "ORDER_REJECTED");
+        FAILURE_PAYMENT.put("-44", "TRANSACTION_REJECTED");
+        FAILURE_PAYMENT.put("-84", "NOT_GET_STATUS_RISK");
+        FAILURE_PAYMENT.put("-83", "DETECTED_INTERNAL_RISK");
+        FAILURE_PAYMENT.put("-2014", "CBS14");
+        FAILURE_PAYMENT.put("-2015", "CBS15");
+        FAILURE_PAYMENT.put("-87", "FAILED_BIOMETRIC_AUTH ");
+        FAILURE_PAYMENT.put("-88", "BIOMETRIC_UNCOMPLETED");
+    }
+
 
     @Autowired
     RestTemplate restTemplate;
@@ -60,9 +137,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void updateStudentRegisterRoomCallBack(Orders orders, CallBackPaymentRequest request) {
         StudentRegisterRoom studentRegisterRoom = studentRegisterRoomService.getStudentRegisterRoomByIdOrder(orders.getIdOrder());
-        if (request.getResult_code().equals(Constants.CALL_BACK_SUCCESS)) {
+        if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             studentRegisterRoom.setStatus(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
-        } else {
+        } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
+            studentRegisterRoom.setStatus(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+        }
+        else {
             studentRegisterRoom.setStatus(Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER);
         }
         studentRegisterRoom.setTimeModified(new Date().getTime());
@@ -92,9 +172,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private void updateTransactionPaymentCallBack(TransactionPayment transactionPayment, CallBackPaymentRequest request) {
-        if (request.getResult_code().equals(Constants.CALL_BACK_SUCCESS)) {
+        if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             transactionPayment.setStatus(Constants.STATUS_COMPLETE_TRANSACTION_PAYMENT);
-        } else {
+        }else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())){
+            transactionPayment.setStatus(Constants.STATUS_COMPLETE_TRANSACTION_CANCEL);
+        }else {
             transactionPayment.setStatus(Constants.STATUS_COMPLETE_TRANSACTION_FALSE);
         }
         transactionPayment.setTimeModified(new Date().getTime());
@@ -102,9 +184,11 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private Orders updateOrdersCallBack(Orders orders, CallBackPaymentRequest request) {
-        if (request.getResult_code().equals(Constants.CALL_BACK_SUCCESS)) {
+        if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             orders.setStatusOrder(Constants.STATUS_ORDER_COMPLETE_PAYMENT);
-        } else {
+        } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
+            orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_FALSE);
+        }else {
             orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_FALSE);
         }
         orders.setTimeModified(new Date().getTime());
