@@ -140,9 +140,8 @@ public class PaymentServiceImpl implements PaymentService {
         if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             studentRegisterRoom.setStatus(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
         } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
-            studentRegisterRoom.setStatus(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
-        }
-        else {
+            studentRegisterRoom.setStatus(Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER);
+        } else {
             studentRegisterRoom.setStatus(Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER);
         }
         studentRegisterRoom.setTimeModified(new Date().getTime());

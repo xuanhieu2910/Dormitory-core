@@ -361,28 +361,30 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public Optional<StudentRegisterRoomDto> getInformationRegisterRoomCurrent() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select srr.id_student_register_room, " +
-                "       ro.code_room, ro.title, " +
-                "       de.code_department, de.title, " +
-                "       srr.time_created, th.time_started, " +
-                "       th.time_ended, ro.price, " +
-                "       srr.status, srr.expires_at " +
-                "from batches_registration br " +
-                "         inner join batches_year_group_registration bygr " +
-                "                    on br.id_batches_registration = bygr.id_batches_registration " +
-                "         inner join year_group yg on bygr.id_year_group = yg.id_year_group " +
-                "         inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration " +
-                "         inner join priority_group pg on brs.id_priority_group = pg.id_priority_group " +
-                "         inner join student_register_room srr " +
-                "                    on brs.id_batches_registration_schedule = srr.id_batches_registration_schedule " +
-                "         inner join room ro on srr.id_room = ro.id_room " +
-                "         inner join department de on ro.id_department = de.id_department " +
-                "         inner join ktx_user ktu on srr.id_user = ktu.id_ktx_user " +
-                "         inner join time_hired th on srr.id_time_hired = th.id_time_hired " +
-                "where :currentTime between brs.registration_start_time and brs.registration_end_time " +
-                "  and pg.id_priority_group = :idPriorityGroup " +
-                "  and yg.id_year_group = :idYearGroup " +
-                "  and ktu.id_ktx_user = :idKtxUser ");
+        sb.append(" select srr.id_student_register_room,  " +
+                "        ro.code_room, ro.title,  " +
+                "        de.code_department, de.title,  " +
+                "        srr.time_created, th.time_started,  " +
+                "        th.time_ended, ro.price,  " +
+                "        srr.status, srr.expires_at, " +
+                "        ord.code_order" +
+                " from batches_registration br  " +
+                "          inner join batches_year_group_registration bygr  " +
+                "                on br.id_batches_registration = bygr.id_batches_registration " +
+                "          inner join year_group yg on bygr.id_year_group = yg.id_year_group  " +
+                "          inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration  " +
+                "          inner join priority_group pg on brs.id_priority_group = pg.id_priority_group  " +
+                "          inner join student_register_room srr  " +
+                "                on brs.id_batches_registration_schedule = srr.id_batches_registration_schedule" +
+                "          inner join room ro on srr.id_room = ro.id_room  " +
+                "          inner join department de on ro.id_department = de.id_department  " +
+                "          inner join ktx_user ktu on srr.id_user = ktu.id_ktx_user  " +
+                "          inner join time_hired th on srr.id_time_hired = th.id_time_hired" +
+                "          left join orders ord on srr.id_order = ord.id_order " +
+                " where :currentTime between brs.registration_start_time and brs.registration_end_time  " +
+                "   and pg.id_priority_group = :idPriorityGroup  " +
+                "   and yg.id_year_group = :idYearGroup  " +
+                "   and ktu.id_ktx_user = :idKtxUser  ");
         Query query = entityManager.createNativeQuery(sb.toString());
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
@@ -404,6 +406,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 dto.setPrice(ValueUtil.getStringByObject(obj[8]));
                 dto.setStatusStudentRegisterRoom(ValueUtil.getIntegerByObject(obj[10]));
                 dto.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
+                dto.setCodeOrders(ValueUtil.getStringByObject(obj[12]));
                 return Optional.of(dto);
             }
         }

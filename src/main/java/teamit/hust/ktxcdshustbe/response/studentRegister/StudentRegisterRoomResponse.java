@@ -32,4 +32,6 @@ public class StudentRegisterRoomResponse {
     private Integer statusStudentRegisterRoom;
     @JsonProperty("expires_at")
     private Long expiresAt;
+    @JsonProperty("code_orders")
+    private String codeOrders;
 }
