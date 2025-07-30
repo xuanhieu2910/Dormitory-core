@@ -18,12 +18,16 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import teamit.hust.ktxcdshustbe.dto.bankingService.*;
+import teamit.hust.ktxcdshustbe.dto.orderItems.DetailOrderItemsDto;
+import teamit.hust.ktxcdshustbe.dto.orders.DetailOrderDto;
 import teamit.hust.ktxcdshustbe.entity.*;
 import teamit.hust.ktxcdshustbe.exception.*;
 import teamit.hust.ktxcdshustbe.repository.orders.OrdersRepository;
 import teamit.hust.ktxcdshustbe.request.orders.ConfirmOrderRequest;
 import teamit.hust.ktxcdshustbe.request.orders.CreateOrdersRequest;
+import teamit.hust.ktxcdshustbe.response.orderItems.DetailOrderItemsResponse;
 import teamit.hust.ktxcdshustbe.response.orders.ConfirmOrdersResponse;
+import teamit.hust.ktxcdshustbe.response.orders.DetailOrderResponse;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomCurrentResponse;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.service.orderItems.OrderItemsService;
@@ -101,7 +105,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     @Transactional
     @Override
-    public ConfirmOrdersResponse confirmOrder(ConfirmOrderRequest request) {
+    public ConfirmOrdersResponse confirmOrder(ConfirmOrderRequest request) throws JsonProcessingException {
         verifyConfirmOrder(request);
         log.info("[GET BILL] : {} - {}", request.toString(), DateUtil.formatToPattern(new Date(), DateUtil.DATE_FORMAT));
         Orders orders = findOrdersByCodeOrder(request.getCodeOrder());
@@ -111,10 +115,42 @@ public class OrdersServiceImpl implements OrdersService {
         List<OrderItems> orderItems = orderItemsService.findOrderItemsByIdOrder(orders.getIdOrder());
         Map<String, Object> dataBody = initializeDataBody(request.getTypePayment(), orders, orderItems);
         ConfirmOrdersResponse response = fetchToConfirmOrder(dataBody);
+        String dataJsonFetch = new ObjectMapper().writeValueAsString(response);
         TransactionPayment transactionPayment =
-                transactionPaymentService.saveTransactionPayment(initializeTransactionPaymentConfirmOrder(orders, dataBody));
-        updateOrdersToConfirmOrders(orders,transactionPayment);
+                transactionPaymentService.saveTransactionPayment(initializeTransactionPaymentConfirmOrder(orders, dataBody, dataJsonFetch));
+        updateOrdersToConfirmOrders(orders,transactionPayment, dataJsonFetch);
         updateStudentRegisterRoom(orders);
+        return response;
+    }
+
+    @Override
+    public DetailOrderResponse findOrdersDetailByCodeOrders(String codeOrders) {
+        Optional<DetailOrderDto> detailOrderDto = ordersRepository.findOrdersDetailByCodeOrders(codeOrders);
+        if (detailOrderDto.isEmpty()){
+            throw new NotFoundException();
+        }
+        return convertToFindOrdersDetailByCodeOrders(detailOrderDto.get());
+    }
+
+    private DetailOrderResponse convertToFindOrdersDetailByCodeOrders(DetailOrderDto detailOrderDto) {
+        DetailOrderResponse response = new DetailOrderResponse();
+        response.setTitleOrder(detailOrderDto.getTitleOrder());
+        response.setCodeOrder(detailOrderDto.getCodeOrder());
+        response.setStatus(detailOrderDto.getStatus());
+        response.setTotalMoney(detailOrderDto.getTotalMoney());
+        response.setTimeCreated(detailOrderDto.getTimeCreated());
+        response.setTimeModified(detailOrderDto.getTimeModified());
+        List<DetailOrderItemsResponse> items = new ArrayList<>();
+        for (DetailOrderItemsDto detailOrderItemsDto : detailOrderDto.getItems()){
+            DetailOrderItemsResponse item = new DetailOrderItemsResponse();
+            item.setCodeOrderItem(detailOrderItemsDto.getCodeOrderItem());
+            item.setCodeRoom(detailOrderItemsDto.getCodeRoom());
+            item.setTitleRoom(detailOrderItemsDto.getTitleRoom());
+            item.setQuantity(detailOrderItemsDto.getQuantity());
+            item.setTotalMoney(detailOrderDto.getTotalMoney());
+            items.add(item);
+        }
+        response.setItems(items);
         return response;
     }
 
@@ -129,7 +165,8 @@ public class OrdersServiceImpl implements OrdersService {
         studentRegisterRoomService.saveStudentRoomRegisterRoom(studentRegisterRoom);
     }
 
-    private TransactionPayment initializeTransactionPaymentConfirmOrder(Orders orders, Map<String, Object> dataBody) {
+    private TransactionPayment initializeTransactionPaymentConfirmOrder(Orders orders, Map<String, Object> dataBody,
+                                                                        String dataJsonFetch) {
         Long timeCurrent = new Date().getTime();
         TransactionPayment transactionPayment = new TransactionPayment();
         transactionPayment.setIdOrder(orders.getIdOrder());
@@ -138,7 +175,7 @@ public class OrdersServiceImpl implements OrdersService {
         transactionPayment.setType(Constants.TYPE_REQ_TRANSACTION_PAYMENT);
         transactionPayment.setTimeCreated(timeCurrent);
         transactionPayment.setTimeModified(timeCurrent);
-        transactionPayment.setJsonData("");
+        transactionPayment.setJsonData(dataJsonFetch);
         transactionPayment.setCheckSum(String.valueOf(dataBody.get("signature")));
         transactionPayment.setReturnUrl(String.valueOf(dataBody.get("return_url")));
         transactionPayment.setCancelUrl(String.valueOf(dataBody.get("cancel_url")));
@@ -149,11 +186,12 @@ public class OrdersServiceImpl implements OrdersService {
         return transactionPayment;
     }
 
-    private void updateOrdersToConfirmOrders(Orders orders, TransactionPayment transactionPayment) {
+    private void updateOrdersToConfirmOrders(Orders orders, TransactionPayment transactionPayment, String dataJsonFetch) {
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         orders.setStatusOrder(Constants.STATUS_ORDER_CONFIRM_PAYMENT);
         orders.setTimeModified(new Date().getTime());
         orders.setIdUserModified(ktxUser.getIdKtxUser());
+        orders.setValue(dataJsonFetch);
         orders.setIdTransactionPayment(transactionPayment.getIdTransactionPayment());
         saveOrder(orders);
     }

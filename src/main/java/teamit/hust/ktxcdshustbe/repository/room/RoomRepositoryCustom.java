@@ -51,4 +51,8 @@ public interface RoomRepositoryCustom {
     int updateRemainQuantityRoomWhenStudentRegisterHoldingRoomByIdRoom(Integer idRoom);
 
     int updateRemainQuantityRegisterRoomWhenStudentChangeRoom(Integer idRoom);
+
+    Page<FindAllRoomsDto> findAllRoomsRegister(FindAllRoomsRequest request, Pageable pageable);
+
+    List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment);
 }

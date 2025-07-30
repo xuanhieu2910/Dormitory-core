@@ -58,7 +58,8 @@ public class Constants {
     public final static Integer STATUS_HOLD_STUDENT_ROOM_REGISTER = 2;
     public final static Integer STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER = 3;
     public final static Integer STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER = 4;
-    public final static Integer STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER = 5;
+    public final static Integer STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER = 5;
+    public final static Integer STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER = 6;
 
     /****************************************************************/
 

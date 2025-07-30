@@ -37,5 +37,7 @@ public class Orders {
     private String totalMoney;
     @Column(name = "type_order")
     private Integer typeOrder;
+    @Column(name = "value")
+    private String value;
 
 }

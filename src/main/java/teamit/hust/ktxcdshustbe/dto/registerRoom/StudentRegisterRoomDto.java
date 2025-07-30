@@ -19,4 +19,5 @@ public class StudentRegisterRoomDto {
     private String price;
     private Integer statusStudentRegisterRoom;
     private Long expiresAt;
+    private String codeOrders;
 }

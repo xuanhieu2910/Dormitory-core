@@ -44,20 +44,20 @@ public class RoomController {
         }
     }
 
-    // dung lai cua find-all GET
-    @PostMapping("/find-all")
-    public ResponseEntity<?> searchRoomAndFindAll(@RequestBody FindAllRoomsRequest request) {
+    @GetMapping("/find-all-register")
+    public ResponseEntity<?> findAllRoomRegister( @And({
+            @Spec(path = "page", params = "page", spec = Like.class),
+            @Spec(path = "size", params = "size", spec = Like.class),
+            @Spec(path = "keyword", params = "keyword", spec = Like.class)
+    }) FindAllRoomsRequest request) {
         try {
-            Page<FindAllRoomsResponse> roomsResponsePage = roomService.findAllRoom(request);
-            return ApiResponseDto.createdWithState(roomsResponsePage, "Find all rooms success!", HttpStatus.OK);
-        }
-        catch (ValidParametersException e) {
+            Page<FindAllRoomsResponse> roomsResponsePage = roomService.findAllRoomRegister(request);
+            return ApiResponseDto.createdWithState(roomsResponsePage, "Find all rooms register success!", HttpStatus.OK);
+        } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @GetMapping("/room-details")
