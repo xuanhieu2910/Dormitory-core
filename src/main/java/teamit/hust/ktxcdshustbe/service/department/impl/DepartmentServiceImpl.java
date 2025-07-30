@@ -253,7 +253,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         response.setTotalRoomOpen(totalRoomOpen);
         response.setTotalRoomClose(totalRoomClose);
-
+        response.setTotalStudentHired(totalStudentHiring);
         response.setTotalRoom(totalRoom);
         response.setTotalStudentRegister(totalStudentRegister);
         return response;
