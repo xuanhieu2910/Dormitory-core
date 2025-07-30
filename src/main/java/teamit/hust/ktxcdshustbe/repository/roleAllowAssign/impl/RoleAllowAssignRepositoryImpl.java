@@ -176,7 +176,7 @@ public class RoleAllowAssignRepositoryImpl implements RoleAllowAssignRepositoryC
         setConditionFindRestRoleAssign(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindRestRoleAssign(request, query, idRoleCurrent);
-        return ValueUtil.getLongByObject(query.getSingleResult());
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     private void setParameterFindRestRoleAssign(FindRestRoleRequest request, Query query, Integer idRoleCurrent) {

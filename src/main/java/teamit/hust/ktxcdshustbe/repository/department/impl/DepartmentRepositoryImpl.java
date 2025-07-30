@@ -124,7 +124,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         setConditionFindAllDepartment(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartment(request, query);
-        return ValueUtil.getIntegerByObject(query.getSingleResult());
+        return ValueUtil.getIntegerByObject(query.getFirstResult());
     }
 
     private void setParameterFindAllDepartment(FindAllDepartmentRequest request, Query query) {
@@ -432,7 +432,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         setConditionFindAllStudentSearchDepartment(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudentSearchDepartment(query, request);
-        return ValueUtil.getIntegerByObject(query.getSingleResult());
+        return ValueUtil.getIntegerByObject(query.getFirstResult());
     }
 
     private void setParameterFindAllStudentSearchDepartment(Query query, StudentSearchDepartmentRequest request) {

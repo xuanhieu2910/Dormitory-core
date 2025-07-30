@@ -358,7 +358,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         setConditionFindAllStudents(request,sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudents(query, request);
-        return ValueUtil.getLongByObject(query.getSingleResult()).longValue();
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
 

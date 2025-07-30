@@ -235,7 +235,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
         setConditionalFindAllBatchesRegistration(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllBatchesRegistration(query, request);
-        return ValueUtil.getIntegerByObject(query.getSingleResult());
+        return ValueUtil.getIntegerByObject(query.getFirstResult());
     }
 
     private void setParameterFindAllBatchesRegistration(Query query, FindAllBatchesRegistrationRequest request) {

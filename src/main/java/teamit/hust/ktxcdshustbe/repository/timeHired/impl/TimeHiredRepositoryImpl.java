@@ -184,7 +184,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             query.setParameter("keyword", request.getKeyword());
         }
-        return  ValueUtil.getLongByObject(query.getSingleResult());
+        return  ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     private TimeHired writeTimeHired(Object[] obj){

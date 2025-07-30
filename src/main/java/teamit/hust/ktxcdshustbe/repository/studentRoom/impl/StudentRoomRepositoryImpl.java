@@ -414,7 +414,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         setConditionListStudentHiredRoomResponse(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParametersListStudentHiredRoomResponse(request,query);
-        return ValueUtil.getLongByObject(query.getSingleResult()).longValue();
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
 
@@ -497,7 +497,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeUser", request.getCodeUser());
         setParametersListHiredRoomStudentResponse(query,request);
-        return ValueUtil.getLongByObject(query.getSingleResult()).longValue();
+        return ValueUtil.getLongByObject(query.getFirstResult()).longValue();
     }
 
     private void setParametersListHiredRoomStudentResponse(Query query, StudentListRoomHiredRequest request) {

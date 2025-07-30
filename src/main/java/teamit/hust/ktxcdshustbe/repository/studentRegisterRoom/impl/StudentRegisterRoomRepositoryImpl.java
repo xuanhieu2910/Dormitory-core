@@ -44,7 +44,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "and (st.status = 2 or st.status = 3) ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("userId", userId);
-        return ValueUtil.getIntegerByObject(query.getSingleResult());
+        return ValueUtil.getIntegerByObject(query.getFirstResult());
     }
 
     @Override
@@ -243,7 +243,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         setConditionFindAllUserRegisterRoom(sb,request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllUserRegisterRoom(query,request);
-        return ValueUtil.getLongByObject(query.getSingleResult());
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     @Override

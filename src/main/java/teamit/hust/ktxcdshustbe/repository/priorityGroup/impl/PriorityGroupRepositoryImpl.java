@@ -129,7 +129,7 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
         setConditionFindAllPriorityGroupDto(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllPriorityGroupDto(request, query);
-        return ValueUtil.getLongByObject(query.getSingleResult());
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     private  void setParameterFindAllPriorityGroupDto(FindAllPriorityGroupRequest request, Query query) {
