@@ -556,7 +556,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
                                                                                   CreateBatchesRegistrationRequest request) {
         List<YearGroup> yearGroups = yearGroupService.findYearGroupsByListCode(request.getYearGroups());
         List<BatchesYearGroupRegistration> yearGroupRegistrations = new ArrayList<>();
-        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication();
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long timeCurrent = new Date().getTime();
         for (YearGroup yearGroup : yearGroups){
             BatchesYearGroupRegistration batchesYearGroupRegistration = new BatchesYearGroupRegistration();

@@ -150,7 +150,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
         query.setParameter("codeYearGroups", codeYearGroups);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
+        return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(0);
     }
 
     @Override
