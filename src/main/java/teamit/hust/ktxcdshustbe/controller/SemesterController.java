@@ -39,7 +39,6 @@ public class SemesterController {
             return ApiResponseDto.createdWithState(semesterService.findAllSemester(request), "Find all semester success", HttpStatus.OK);
         }
         catch (Exception e) {
-            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
