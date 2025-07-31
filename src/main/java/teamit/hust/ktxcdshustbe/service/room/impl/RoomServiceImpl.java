@@ -481,7 +481,7 @@ public class RoomServiceImpl implements RoomService {
             room.setIsActive(request.getStatus());
             room.setTimeModified(timeCurrent);
             room.setIdUserModified(ktxUser.getIdKtxUser());
-            room.setLimitAmountPeopleRegister(request.getLimitAmountPeople());
+            room.setLimitAmountPeopleRegister(request.getLimitAmountPeopleRegister());
         }
 
         roomRepository.save(room);
