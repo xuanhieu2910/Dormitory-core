@@ -325,11 +325,12 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "where :currentTime  between brs.registration_start_time and brs.registration_end_time " +
                 "and pg.id_priority_group = :idPriorityGroup " +
                 "and yg.id_year_group = :idYearGroup) then 1 else 0 end result ");
+        Long timeCurrent =new Date().getTime();
         Query query = entityManager.createNativeQuery(sb.toString());
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
         query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
-        query.setParameter("currentTime", new Date().getTime());
+        query.setParameter("currentTime", timeCurrent);
         return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
     }
 

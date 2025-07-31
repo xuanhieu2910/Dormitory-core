@@ -159,7 +159,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
     private TimeHiredCurrentResponse convertToTimeHiredCurrentResponse(TimeHired timeHired) {
         TimeHiredCurrentResponse response = new TimeHiredCurrentResponse();
         response.setTimeStarted(timeHired.getTimeStarted());
-        response.setTimeStarted(timeHired.getTimeEnded());
+        response.setTimeEnded(timeHired.getTimeEnded());
         return response;
     }
 

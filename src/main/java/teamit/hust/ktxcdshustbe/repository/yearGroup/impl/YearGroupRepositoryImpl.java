@@ -123,8 +123,8 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT yg.id_year_group, yg.code_year_group, yg.title, yg.description, ")
                 .append("        yg.time_created, yg.time_modified, yg.id_user_created, yg.id_user_modified, ")
-                .append("        kuCreated.user_name, kuCreated.full_name, ")
-                .append("        kuModified.user_name, kuModified.full_name ")
+                .append("        kuCreated.user_name, kuCreated.value, ")
+                .append("        kuModified.user_name, kuModified.value ")
                 .append(" FROM year_group yg ")
                 .append("      INNER JOIN ktx_user kuCreated ON yg.id_user_created = kuCreated.id_ktx_user ")
                 .append("      INNER JOIN ktx_user kuModified ON yg.id_user_modified = kuModified.id_ktx_user ")
@@ -151,9 +151,9 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
                 dto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[6]));
                 dto.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 dto.setUserNameCreated(ValueUtil.getStringByObject(obj[8]));
-                dto.setFullNameCreated(ValueUtil.getStringByObject(obj[9]));
+                dto.setValueCreated(ValueUtil.getStringByObject(obj[9]));
                 dto.setUserNameModified(ValueUtil.getStringByObject(obj[10]));
-                dto.setFullNameModified(ValueUtil.getStringByObject(obj[11]));
+                dto.setValueModified(ValueUtil.getStringByObject(obj[11]));
                 dtos.add(dto);
             }
         }
@@ -173,14 +173,8 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         if (StringUtils.isNotBlank(request.getDescription())) {
             sb.append(" AND yg.description LIKE :description ");
         }
-        if (request.getIdUserCreated() != null) {
-            sb.append(" AND yg.id_user_created = :idUserCreated ");
-        }
         if (StringUtils.isNotBlank(request.getUserNameCreated())) {
             sb.append(" AND kuCreated.user_name LIKE :userNameCreated ");
-        }
-        if (StringUtils.isNotBlank(request.getFullNameCreated())) {
-            sb.append(" AND kuCreated.full_name LIKE :fullNameCreated ");
         }
     }
 
@@ -198,14 +192,8 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         if (StringUtils.isNotBlank(request.getDescription())) {
             query.setParameter("description", "%" + request.getDescription() + "%");
         }
-        if (request.getIdUserCreated() != null) {
-            query.setParameter("idUserCreated", request.getIdUserCreated());
-        }
         if (StringUtils.isNotBlank(request.getUserNameCreated())) {
             query.setParameter("userNameCreated", "%" + request.getUserNameCreated() + "%");
-        }
-        if (StringUtils.isNotBlank(request.getFullNameCreated())) {
-            query.setParameter("fullNameCreated", "%" + request.getFullNameCreated() + "%");
         }
     }
 
@@ -245,8 +233,8 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" SELECT yg.id_year_group, yg.code_year_group, yg.title, yg.description, ")
                 .append("        yg.time_created, yg.time_modified, yg.id_user_created, yg.id_user_modified, ")
-                .append("        kuCreated.user_name, kuCreated.full_name, ")
-                .append("        kuModified.user_name, kuModified.full_name ")
+                .append("        kuCreated.user_name, kuCreated.value, ")
+                .append("        kuModified.user_name, kuModified.value ")
                 .append(" FROM year_group yg ")
                 .append("      INNER JOIN ktx_user kuCreated ON yg.id_user_created = kuCreated.id_ktx_user ")
                 .append("      INNER JOIN ktx_user kuModified ON yg.id_user_modified = kuModified.id_ktx_user ")
@@ -271,9 +259,9 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         dto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[6]));
         dto.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
         dto.setUserNameCreated(ValueUtil.getStringByObject(obj[8]));
-        dto.setFullNameCreated(ValueUtil.getStringByObject(obj[9]));
+        dto.setValueCreated(ValueUtil.getStringByObject(obj[9]));
         dto.setUserNameModified(ValueUtil.getStringByObject(obj[10]));
-        dto.setFullNameModified(ValueUtil.getStringByObject(obj[11]));
+        dto.setValueModified(ValueUtil.getStringByObject(obj[11]));
 
         return Optional.of(dto);
     }
