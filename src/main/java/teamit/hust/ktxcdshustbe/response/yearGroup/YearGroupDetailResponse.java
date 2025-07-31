@@ -9,7 +9,7 @@ public class YearGroupDetailResponse {
     private Long timeCreated;
     private Long timeModified;
     private String userNameCreated;
-    private String fullNameCreated;
+    private String valueCreated;
     private String userNameModified;
-    private String fullNameModified;
+    private String valueModified;
 }

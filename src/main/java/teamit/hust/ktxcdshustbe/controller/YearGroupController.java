@@ -22,7 +22,7 @@ import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
 
 @Tag(name = "Year Group API", description = "The Year Group API. Contains CRUD operations for year groups.")
 @RestController
-@RequestMapping("/api/v1/grade")
+@RequestMapping("/api/v1/year-group")
 public class YearGroupController {
 
     @Autowired
