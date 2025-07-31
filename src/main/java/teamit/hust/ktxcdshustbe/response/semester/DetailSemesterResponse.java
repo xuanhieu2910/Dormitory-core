@@ -30,5 +30,6 @@ public class DetailSemesterResponse {
     private String codeUserCreated;
     @JsonProperty("code_user_modified")
     private String codeUserModified;
-
+    @JsonProperty("note")
+    private String note;
 }

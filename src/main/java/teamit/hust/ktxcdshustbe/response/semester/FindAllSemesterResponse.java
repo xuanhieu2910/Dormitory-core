@@ -16,6 +16,8 @@ public class FindAllSemesterResponse {
     private String titleSemester;
     @JsonProperty("code_semester")
     private String codeSemester;
+    @JsonProperty("note")
+    private String note;
     @JsonProperty("status")
     private Integer status;
 

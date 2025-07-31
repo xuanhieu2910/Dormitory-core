@@ -33,13 +33,10 @@ public class SemesterController {
             @Spec(path = "page", params = "page", spec = Like.class),
             @Spec(path = "size", params = "size", spec = Like.class),
             @Spec(path = "keyword", params = "keyword", spec = Like.class)
-    })
-            FindAllSemesterRequest request) {
+        }) FindAllSemesterRequest request) {
         try {
             return ApiResponseDto.createdWithState(semesterService.findAllSemester(request), "Find all semester success", HttpStatus.OK);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

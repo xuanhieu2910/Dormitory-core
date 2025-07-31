@@ -13,6 +13,7 @@ import teamit.hust.ktxcdshustbe.dto.ApiResponseDto;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.IsBlankException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
+import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.priorityGroup.CreatePriorityGroupRequest;
 import teamit.hust.ktxcdshustbe.request.priorityGroup.FindAllPriorityGroupRequest;
 import teamit.hust.ktxcdshustbe.request.priorityGroup.UpdatePriorityGroupRequest;
@@ -81,6 +82,9 @@ public class PriorityGroupController {
             return ApiResponseDto.createdWithMessage("Update priority group success", HttpStatus.OK);
         }
         catch(IsBlankException e) {
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }
+        catch(ValidParametersException e) {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         }
         catch(NotFoundException e ) {

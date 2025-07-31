@@ -82,12 +82,10 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
                 select pg.id_priority_group, pg.priority_group_code,
                 pg.title, pg.description, pg.time_created, pg.time_modified,
                 pg.id_user_created, pg.id_user_modified,
-                ku_created.user_name, ku_modified.user_name,
-                brs.registration_start_time, brs.registration_end_time
+                ku_created.user_name, ku_modified.user_name
                 from priority_group pg
                     inner join ktx_user ku_created on pg.id_user_created = ku_created.id_ktx_user
                     inner join ktx_user ku_modified on pg.id_user_modified = ku_modified.id_ktx_user
-                    inner join batches_registration_schedule brs on pg.id_priority_group = brs.id_priority_group 
                 where 1 =1
                 """);
         setConditionFindAllPriorityGroupDto(request, sb);
@@ -109,8 +107,6 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
                 findAllPriorityGroupDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 findAllPriorityGroupDto.setUserNameCreated(ValueUtil.getStringByObject(obj[8]));
                 findAllPriorityGroupDto.setUserNameModified(ValueUtil.getStringByObject(obj[9]));
-                findAllPriorityGroupDto.setRegistrationStartTime(ValueUtil.getLongByObject(obj[10]));
-                findAllPriorityGroupDto.setRegistrationEndTime(ValueUtil.getLongByObject(obj[11]));
                 priorityGroupDtos.add(findAllPriorityGroupDto);
             }
         }
@@ -123,7 +119,6 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
                 from priority_group pg
                     inner join ktx_user ku_created on pg.id_user_created = ku_created.id_ktx_user
                     inner join ktx_user ku_modified on pg.id_user_modified = ku_modified.id_ktx_user
-                    inner join batches_registration_schedule brs on pg.id_priority_group = brs.id_priority_group
                 where 1 = 1    
                 """);
         setConditionFindAllPriorityGroupDto(request, sb);

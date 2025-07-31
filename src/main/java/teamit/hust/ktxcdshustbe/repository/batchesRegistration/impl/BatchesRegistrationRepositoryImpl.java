@@ -10,10 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.BatchesRegistrationDetailDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllBatchesRegistrationDto;
+import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllDepartmentBatchesRegistrationDto;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
 import teamit.hust.ktxcdshustbe.entity.BatchesRegistration;
 import teamit.hust.ktxcdshustbe.repository.batchesRegistration.BatchesRegistrationRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
+import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllDepartmentInBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
@@ -148,7 +150,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
         query.setParameter("codeYearGroups", codeYearGroups);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
+        return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(0);
     }
 
     @Override
@@ -204,6 +206,65 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Page<FindAllDepartmentBatchesRegistrationDto>
+    findAllDepartmentBatchesRegistration(FindAllDepartmentInBatchesRegistrationRequest request, Pageable pageable) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select de.id_department, de.code_department, " +
+                "       de.title, br.code_batches_registration " +
+                "from batches_registration br " +
+                "    inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration " +
+                "    inner join room ro on brr.id_room = ro.id_room " +
+                "    inner join department de on ro.id_department = de.id_department " +
+                "where br.code_batches_registration = :codeBatchesRegistration " +
+                "group by de.id_department, de.code_department, de.title, br.code_batches_registration ");
+        setConditionalFindAllDepartmentBatchesRegistration(sb, request);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllDepartmentBatchesRegistration(query, request);
+        PageUtils.buildQuery(pageable, query);
+        List<Object[]> result = query.getResultList();
+        List<FindAllDepartmentBatchesRegistrationDto> dtos = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                dtos.add(writeDataFindAllDepartmentBatchesRegistration(obj));
+            }
+        }
+        return new PageImpl<>(dtos, pageable, countFindAllDepartmentBatchesRegistration(request));
+    }
+
+    private long countFindAllDepartmentBatchesRegistration(FindAllDepartmentInBatchesRegistrationRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select count(de.id_department) " +
+                "from batches_registration br " +
+                "    inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration " +
+                "    inner join room ro on brr.id_room = ro.id_room " +
+                "    inner join department de on ro.id_department = de.id_department " +
+                "where br.code_batches_registration = :codeBatchesRegistration " +
+                "group by de.id_department, de.code_department, de.title, br.code_batches_registration ");
+        setConditionalFindAllDepartmentBatchesRegistration(sb, request);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllDepartmentBatchesRegistration(query, request);
+        return ValueUtil.getLongByObject(query.getFirstResult());
+    }
+
+    private FindAllDepartmentBatchesRegistrationDto writeDataFindAllDepartmentBatchesRegistration(Object[] obj) {
+        FindAllDepartmentBatchesRegistrationDto dto = new FindAllDepartmentBatchesRegistrationDto();
+        dto.setIdDepartment(ValueUtil.getIntegerByObject(obj[0]));
+        dto.setCodeDepartment(ValueUtil.getStringByObject(obj[1]));
+        dto.setTitleDepartment(ValueUtil.getStringByObject(obj[2]));
+        dto.setCodeBatchesRegistration(ValueUtil.getStringByObject(obj[3]));
+        return dto;
+    }
+
+    private void setParameterFindAllDepartmentBatchesRegistration(Query query, FindAllDepartmentInBatchesRegistrationRequest request) {
+        query.setParameter("codeBatchesRegistration", request.getCodeBatchesRegistration());
+    }
+
+    private void setConditionalFindAllDepartmentBatchesRegistration(StringBuilder sb,
+                                                                    FindAllDepartmentInBatchesRegistrationRequest request) {
+        sb.append(" order by de.id_department desc  ");
     }
 
     private BatchesRegistration writeDataBatchesRegistration(Object[] obj) {

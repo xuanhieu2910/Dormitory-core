@@ -14,6 +14,7 @@ import teamit.hust.ktxcdshustbe.entity.PriorityGroup;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.IsBlankException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
+import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.repository.batchesRegistrationSchedule.BatchesRegistrationScheduleRepository;
 import teamit.hust.ktxcdshustbe.repository.priorityGroup.PriorityGroupRepository;
 import teamit.hust.ktxcdshustbe.repository.user.KtxUserRepository;
@@ -148,6 +149,9 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
         return priorityGroupRepository.save(priorityGroup);
     }
     private void verifyUpdatePriorityGroupRequest(UpdatePriorityGroupRequest request){
+        if(StringUtils.isBlank(request.getPriorityGroupCode())){
+            throw new ValidParametersException();
+        }
         if(StringUtils.isBlank(request.getTitlePriorityGroup())) {
             throw new IsBlankException();
         }

@@ -14,6 +14,7 @@ import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.CreateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
+import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllDepartmentInBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.UpdateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
 
@@ -86,4 +87,20 @@ public class BatchesRegistrationController {
         }
     }
 
+
+    @GetMapping("/find-all-department")
+    public ResponseEntity<?> findAllDepartmentBatchesRegistration(@And({
+            @Spec(path = "page", params = "page", spec = Like.class),
+            @Spec(path = "size", params = "size", spec = Like.class),
+            @Spec(path = "keyword", params = "keyword", spec = Like.class)
+    }) FindAllDepartmentInBatchesRegistrationRequest request){
+        try {
+            return ApiResponseDto.createdWithState(batchesRegistrationService.findAllDepartmentBatchesRegistration(request),
+                    "Find all department batches registration!", HttpStatus.OK);
+        } catch (ValidParametersException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

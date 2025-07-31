@@ -76,8 +76,8 @@ public class TimeHiredServiceImpl implements TimeHiredService {
         TimeHired timeHired = new TimeHired();
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long timeCurrent = new Date().getTime();
-        timeHired.setTimeStarted(Long.valueOf(request.getTimeStart()));
-        timeHired.setTimeEnded(Long.valueOf(request.getTimeEnd()));
+        timeHired.setTimeStarted(request.getTimeStart());
+        timeHired.setTimeEnded(request.getTimeEnd());
         if(ObjectUtils.isNotEmpty(request.getStatus())){
             timeHired.setStatus(request.getStatus());
         }
@@ -93,7 +93,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
     }
 
     private void validateDataCreateTimeHired(CreateTimeHiredRequest request) {
-        if (StringUtils.isBlank(request.getTimeStart()) || StringUtils.isBlank(request.getTimeEnd())) {
+        if (ObjectUtils.isNotEmpty(request.getTimeStart()) || ObjectUtils.isNotEmpty(request.getTimeEnd())) {
             throw new ValidParametersException();
         }
     }
@@ -105,11 +105,11 @@ public class TimeHiredServiceImpl implements TimeHiredService {
     }
 
     private TimeHired editTimeHired(TimeHired timeHired, UpdateTimeHiredRequest request) {
-        if(StringUtils.isNotBlank(request.getTimeStart())){
-            timeHired.setTimeStarted(Long.valueOf(request.getTimeStart()));
+        if(ObjectUtils.isNotEmpty(request.getTimeStart())){
+            timeHired.setTimeStarted(request.getTimeStart());
         }
-        if(StringUtils.isNotBlank(request.getTimeEnd())){
-            timeHired.setTimeEnded(Long.valueOf(request.getTimeEnd()));
+        if(ObjectUtils.isNotEmpty(request.getTimeEnd())){
+            timeHired.setTimeEnded(request.getTimeEnd());
         }
         if (ObjectUtils.isNotEmpty(request.getStatus())) {
             timeHired.setStatus(request.getStatus());
@@ -159,7 +159,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
     private TimeHiredCurrentResponse convertToTimeHiredCurrentResponse(TimeHired timeHired) {
         TimeHiredCurrentResponse response = new TimeHiredCurrentResponse();
         response.setTimeStarted(timeHired.getTimeStarted());
-        response.setTimeStarted(timeHired.getTimeEnded());
+        response.setTimeEnded(timeHired.getTimeEnded());
         return response;
     }
 
@@ -182,6 +182,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
         List<FindAllTimeHiredResponse> findAllTimeHiredResponses = new ArrayList<>();
         for (FindAllTimeHiredDto findAllTimeHiredDto : content) {
             FindAllTimeHiredResponse findAllTimeHiredResponse = new FindAllTimeHiredResponse();
+            findAllTimeHiredResponse.setCodeTimeHired(findAllTimeHiredDto.getCodeTimeHired());
             findAllTimeHiredResponse.setTimeHired(findAllTimeHiredDto.getTimeHired());
             findAllTimeHiredResponse.setStatus(findAllTimeHiredDto.getStatus());
             findAllTimeHiredResponse.setIdTimeHired(findAllTimeHiredDto.getIdTimeHired());
