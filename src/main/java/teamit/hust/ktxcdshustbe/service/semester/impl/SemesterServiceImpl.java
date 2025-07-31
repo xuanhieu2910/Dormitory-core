@@ -123,7 +123,7 @@ public class SemesterServiceImpl implements SemesterService {
             FindAllSemesterResponse response = new FindAllSemesterResponse();
             response.setTitleSemester(dto.getTitleSemester());
             response.setCodeSemester(dto.getCodeSemester());
-            //response.setStatus(dto.getStatus());
+            response.setStatus(dto.getStatus());
             response.setNote(dto.getNote());
             responses.add(response);
         }

@@ -18,6 +18,4 @@ public class FindAllPriorityGroupDto {
     private Integer idUserModified;
     private String userNameCreated;
     private String userNameModified;
-    private Long registrationStartTime;
-    private Long registrationEndTime;
 }

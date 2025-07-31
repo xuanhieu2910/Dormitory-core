@@ -8,7 +8,7 @@ import lombok.*;
 public class UpdateTimeHiredRequest {
     @NonNull
     private String codeTimeHired;
-    private String timeStart;
-    private String timeEnd;
+    private Long timeStart;
+    private Long timeEnd;
     private Integer status;
 }

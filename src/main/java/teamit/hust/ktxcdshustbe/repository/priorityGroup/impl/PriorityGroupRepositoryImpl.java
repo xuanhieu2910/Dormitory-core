@@ -107,8 +107,6 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
                 findAllPriorityGroupDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 findAllPriorityGroupDto.setUserNameCreated(ValueUtil.getStringByObject(obj[8]));
                 findAllPriorityGroupDto.setUserNameModified(ValueUtil.getStringByObject(obj[9]));
-                findAllPriorityGroupDto.setRegistrationStartTime(ValueUtil.getLongByObject(obj[10]));
-                findAllPriorityGroupDto.setRegistrationEndTime(ValueUtil.getLongByObject(obj[11]));
                 priorityGroupDtos.add(findAllPriorityGroupDto);
             }
         }

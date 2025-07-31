@@ -7,8 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 public class CreateTimeHiredRequest {
     @NonNull
-    private String timeStart;
+    private Long timeStart;
     @NonNull
-    private String timeEnd;
+    private Long timeEnd;
     private Integer status;
 }
