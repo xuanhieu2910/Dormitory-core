@@ -123,7 +123,8 @@ public class SemesterServiceImpl implements SemesterService {
             FindAllSemesterResponse response = new FindAllSemesterResponse();
             response.setTitleSemester(dto.getTitleSemester());
             response.setCodeSemester(dto.getCodeSemester());
-            response.setStatus(dto.getStatus());
+            //response.setStatus(dto.getStatus());
+            response.setNote(dto.getNote());
             responses.add(response);
         }
         return responses;
@@ -151,7 +152,8 @@ public class SemesterServiceImpl implements SemesterService {
         DetailSemesterResponse response = new DetailSemesterResponse();
         response.setCodeSemester(findSemesterDetailDto.getCodeSemester());
         response.setTitle(findSemesterDetailDto.getTitleSemester());
-        response.setStatus(findSemesterDetailDto.getStatus().toString());
+        response.setNote(findSemesterDetailDto.getNote());
+        //response.setStatus(findSemesterDetailDto.getStatus().toString());
         //tra them
         return response;
     }
