@@ -51,11 +51,6 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Lazy
     @Autowired
     StudentRoomService studentRoomService;
-    @Lazy
-    @Autowired
-    KtxUserService ktxUserService;
-    @Autowired
-    BatchesRegistrationService batchesRegistrationService;
 
 
     @Override
@@ -236,6 +231,23 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             throw new NotFoundException();
         }
         return studentRegisterRoomOptional.get();
+    }
+
+    @Override
+    public List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer status) {
+        List<StudentRegisterRoom> studentRegisterRooms = studentRegisterRoomRepository.findListStudentRegisterRoomByCodeRoomAndStatus(codeRoom,status);
+        if (studentRegisterRooms.isEmpty()){
+            throw new NotFoundException();
+        }
+        return studentRegisterRooms;
+    }
+
+    @Override
+    public Page<UserRegisterRoomResponse> findAllInfoAnUserRegisterRoomByCode(UserRegisterRoomRequest request) {
+        Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
+        Page<UserRegisterRoomDto> userRegisterRoomRequests = studentRegisterRoomRepository.findAllInfoAnUserRegisterRoomDto(request,pageable);
+        List<UserRegisterRoomResponse> responses = convertToUserRegisterRoomResponse(userRegisterRoomRequests.stream().toList());
+        return new PageImpl<>(responses,pageable, userRegisterRoomRequests.getTotalElements());
     }
 
     private void initializeStudentRegisterRoom(DataStudentRegisterRoomDto dataStudentRegisterRoomDto) {

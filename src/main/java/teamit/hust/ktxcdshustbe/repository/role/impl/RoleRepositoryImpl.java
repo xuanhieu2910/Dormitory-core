@@ -61,7 +61,7 @@ public class RoleRepositoryImpl implements RoleRepositoryCustom {
         setConditionalFindAllRole(findAllRoleRequest, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllRole(findAllRoleRequest, query);
-        return ValueUtil.getLongByObject(query.getSingleResult());
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     private void setParameterFindAllRole(FindAllRoleRequest findAllRoleRequest, Query query) {

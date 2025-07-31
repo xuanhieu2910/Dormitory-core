@@ -122,8 +122,8 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 res.setCodeRoom(ValueUtil.getStringByObject(obj[4]));
                 res.setTitleRoom(ValueUtil.getStringByObject(obj[5]));
                 res.setHiredRoom(ValueUtil.getStringByObject(obj[6] + " - "
-                        + DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[7]),DateUtil.DATE_FORMAT_HH_MM) + " - "
-                        + DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[8]),DateUtil.DATE_FORMAT_HH_MM)));
+                        + ValueUtil.getStringByObject(obj[7]) + " - "
+                        + ValueUtil.getStringByObject(obj[8])));
                 res.setStatus(ValueUtil.getIntegerByObject(obj[9]));
                 responses.add(res);
             }
@@ -414,7 +414,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         setConditionListStudentHiredRoomResponse(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParametersListStudentHiredRoomResponse(request,query);
-        return ValueUtil.getLongByObject(query.getSingleResult()).longValue();
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
 
@@ -497,7 +497,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeUser", request.getCodeUser());
         setParametersListHiredRoomStudentResponse(query,request);
-        return ValueUtil.getLongByObject(query.getSingleResult()).longValue();
+        return ValueUtil.getLongByObject(query.getFirstResult()).longValue();
     }
 
     private void setParametersListHiredRoomStudentResponse(Query query, StudentListRoomHiredRequest request) {

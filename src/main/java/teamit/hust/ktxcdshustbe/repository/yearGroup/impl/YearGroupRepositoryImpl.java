@@ -236,7 +236,7 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
 
         setParameterFindAllYearGroups(request, query);
 
-        return ((Number) query.getSingleResult()).longValue();
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     @Override

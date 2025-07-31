@@ -138,6 +138,7 @@ public class DepartmentController {
             return ApiResponseDto.createdWithState(departmentService.findAllStudentSearchDepartment(request),
                     "Student search department success!", HttpStatus.OK);
         } catch (Exception e){
+            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

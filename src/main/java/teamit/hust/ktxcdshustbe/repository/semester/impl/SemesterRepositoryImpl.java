@@ -69,7 +69,7 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         setConditionFindAllSemesterDto(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllSemesterDto(request, query);
-        return ValueUtil.getLongByObject(query.getSingleResult());
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     private void setParameterFindAllSemesterDto(FindAllSemesterRequest request, Query query) {

@@ -10,6 +10,7 @@ import teamit.hust.ktxcdshustbe.request.studentRegister.FindAllSearchRoomRequest
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StudentRegisterRoomRepositoryCustom {
@@ -29,4 +30,8 @@ public interface StudentRegisterRoomRepositoryCustom {
     Optional<StudentRegisterRoom> findStudentRegisterRoomByIdStudentRegisterRoom(Integer idStudentRegisterRoom);
 
     Optional<StudentRegisterRoom> findStudentRegisterRoomByIdOrder(Integer idOrder);
+
+    List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer status);
+
+    Page<UserRegisterRoomDto> findAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request, Pageable pageable);
 }
