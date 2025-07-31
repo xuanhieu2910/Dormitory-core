@@ -76,6 +76,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
         TimeHired timeHired = new TimeHired();
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long timeCurrent = new Date().getTime();
+        timeHired.setTitleTimeHired(request.getTitleTimeHired());
         timeHired.setTimeStarted(request.getTimeStart());
         timeHired.setTimeEnded(request.getTimeEnd());
         if(ObjectUtils.isNotEmpty(request.getStatus())){
@@ -93,7 +94,12 @@ public class TimeHiredServiceImpl implements TimeHiredService {
     }
 
     private void validateDataCreateTimeHired(CreateTimeHiredRequest request) {
-        if (ObjectUtils.isNotEmpty(request.getTimeStart()) || ObjectUtils.isNotEmpty(request.getTimeEnd())) {
+        if (ObjectUtils.isNotEmpty(request.getTimeStart())
+            || ObjectUtils.isNotEmpty(request.getTimeEnd())
+            || StringUtils.isBlank(request.getTitleTimeHired())) {
+            throw new ValidParametersException();
+        }
+        if (request.getTimeStart() >= request.getTimeEnd()) {
             throw new ValidParametersException();
         }
     }
@@ -114,6 +120,10 @@ public class TimeHiredServiceImpl implements TimeHiredService {
         if (ObjectUtils.isNotEmpty(request.getStatus())) {
             timeHired.setStatus(request.getStatus());
         }
+        if (StringUtils.isNotBlank(request.getTitleTimeHired()) &&
+                !timeHired.getTitleTimeHired().equals(request.getTitleTimeHired())) {
+            timeHired.setTitleTimeHired(request.getTitleTimeHired());
+        }
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long timeCurrent = new Date().getTime();
         timeHired.setTimeModified(timeCurrent);
@@ -124,6 +134,10 @@ public class TimeHiredServiceImpl implements TimeHiredService {
     private TimeHired validateDataUpdateTimeHired(UpdateTimeHiredRequest request) {
         Optional<TimeHired> timeHiredOptional = timeHiredRepository.findTimeHiredByCodeTimeHired(request.getCodeTimeHired());
         if (timeHiredOptional.isEmpty()) {
+            throw new NotFoundException();
+        }
+        if (ObjectUtils.isNotEmpty(request.getTimeStart()) && ObjectUtils.isNotEmpty(request.getTimeEnd())
+                && request.getTimeStart() >= request.getTimeEnd()){
             throw new NotFoundException();
         }
         return timeHiredOptional.get();

@@ -60,7 +60,8 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append("select timeHired.id_time_hired, timeHired.time_started,  " +
                 "       timeHired.time_ended, timeHired.status, timeHired.time_created,  " +
-                "       timeHired.time_modified, timeHired.id_user_created, timeHired.id_user_modified,timeHired.code_time_hired     " +
+                "       timeHired.time_modified, timeHired.id_user_created, timeHired.id_user_modified, " +
+                "       timeHired.code_time_hired,  timeHired.title_time_hired    " +
                 "from time_hired timeHired     " +
                 "where timeHired.id_time_hired = :timeHiredId ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -120,7 +121,8 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append("select timeHired.id_time_hired, timeHired.time_started,  " +
                 "       timeHired.time_ended, timeHired.status, timeHired.time_created,  " +
-                "       timeHired.time_modified, timeHired.id_user_created, timeHired.id_user_modified,timeHired.code_time_hired     " +
+                "       timeHired.time_modified, timeHired.id_user_created, timeHired.id_user_modified," +
+                "       timeHired.code_time_hired, timeHired.title_time_hired      " +
                 "from time_hired timeHired     " +
                 "where timeHired.code_time_hired = :codeTimeHired ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -139,7 +141,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select th.id_time_hired, th.time_started, th.time_ended,  " +
                 "       th.status, th.time_created, th.time_modified,   " +
-                "       th.id_user_created, th.id_user_modified  " +
+                "       th.id_user_created, th.id_user_modified, th.code_time_hired, th.title_time_hired  " +
                 "from batches_registration br  " +
                 "         inner join batches_year_group_registration bygr  " +
                 "                    on br.id_batches_registration = bygr.id_batches_registration  " +
@@ -167,6 +169,8 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
                 timeHired.setTimeModified(ValueUtil.getLongByObject(obj[5]));
                 timeHired.setIdUserCreated(ValueUtil.getIntegerByObject(obj[6]));
                 timeHired.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
+                timeHired.setCodeTimeHired(ValueUtil.getStringByObject(obj[8]));
+                timeHired.setTitleTimeHired(ValueUtil.getStringByObject(obj[9]));
                 return Optional.of(timeHired);
             }
         }
@@ -198,6 +202,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         timeHired.setIdUserCreated(ValueUtil.getIntegerByObject(obj[6]));
         timeHired.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
         timeHired.setCodeTimeHired(ValueUtil.getStringByObject(obj[8]));
+        timeHired.setTitleTimeHired(ValueUtil.getStringByObject(obj[9]));
         return timeHired;
     }
 }
