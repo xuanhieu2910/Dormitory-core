@@ -35,7 +35,7 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select se.id_semester, se.title, se.time_created,  " +
                 "       se.time_modified, se.status, se.id_user_created,  " +
-                "       se.id_user_modified, se.code_semester " +
+                "       se.id_user_modified, se.code_semester, se.note " +
                 "from semester se  " +
                 "where 1 = 1 ");
         setConditionFindAllSemesterDto(request, sb);
@@ -55,6 +55,7 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
                 findAllSemesterDto.setIdUserCreated(ValueUtil.getIntegerByObject(obj[5]));
                 findAllSemesterDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[6]));
                 findAllSemesterDto.setCodeSemester(ValueUtil.getStringByObject(obj[7]));
+                findAllSemesterDto.setNote(ValueUtil.getStringByObject(obj[8]));
                 semesterDtos.add(findAllSemesterDto);
             }
         }
@@ -157,7 +158,7 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
     public Optional<Semester> findByCodeSemester(String codeSemester){
         StringBuilder sb = new StringBuilder();
         sb.append("""
-                select se.title, se.code_semester, se.status,
+                select se.title, se.code_semester, se.id_semester,
                     se.id_user_created, se.id_user_modified,
                     se.time_created, se.time_modified,
                     se.note
@@ -172,7 +173,8 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
                 Semester semester = new Semester();
                 semester.setTitle(ValueUtil.getStringByObject(obj[0]));
                 semester.setCodeSemester(ValueUtil.getStringByObject(obj[1]));
-                semester.setStatus(ValueUtil.getIntegerByObject(obj[2]));
+                //semester.setStatus(ValueUtil.getIntegerByObject(obj[2]));
+                semester.setIdSemester(ValueUtil.getIntegerByObject(obj[2]));
                 semester.setIdUserCreated(ValueUtil.getIntegerByObject(obj[3]));
                 semester.setIdUserModified(ValueUtil.getIntegerByObject(obj[4]));
                 semester.setTimeCreated(ValueUtil.getLongByObject(obj[5]));

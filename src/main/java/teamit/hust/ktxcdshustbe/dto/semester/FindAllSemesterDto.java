@@ -19,4 +19,5 @@ public class FindAllSemesterDto {
     private Integer status;
     private Integer idUserCreated;
     private Integer idUserModified;
+    private String note;
 }
