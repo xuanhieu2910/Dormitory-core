@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.BatchesRegistrationDetailDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllBatchesRegistrationDto;
+import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllDepartmentBatchesRegistrationDto;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
 import teamit.hust.ktxcdshustbe.entity.*;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
@@ -22,11 +23,13 @@ import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.repository.batchesRegistration.BatchesRegistrationRepository;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.CreateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
+import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllDepartmentInBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.UpdateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistrationRoom.CreateBatchesRegistrationRoomRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistrationSchedule.CreateBatchesRegistrationScheduleRequest;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.BatchesRegistrationDetailResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllBatchesRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllDepartmentBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
 import teamit.hust.ktxcdshustbe.service.batchesRegistrationRoom.BatchesRegistrationRoomService;
@@ -106,6 +109,34 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             throw new NotFoundException();
         }
          return batchesRegistration.get();
+    }
+
+    @Override
+    public Page<FindAllDepartmentBatchesRegistrationResponse>
+    findAllDepartmentBatchesRegistration(FindAllDepartmentInBatchesRegistrationRequest request) {
+        verifyFindAllDepartmentBatchesRegistration(request);
+        Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
+        Page<FindAllDepartmentBatchesRegistrationDto> dtos = batchesRegistrationRepository.findAllDepartmentBatchesRegistration(request, pageable);
+        return new PageImpl<>(convertToFindAllDepartmentBatchesRegistrationResponse(dtos.getContent()), pageable, dtos.getTotalElements());
+    }
+
+    private List<FindAllDepartmentBatchesRegistrationResponse>
+    convertToFindAllDepartmentBatchesRegistrationResponse(List<FindAllDepartmentBatchesRegistrationDto> content) {
+        List<FindAllDepartmentBatchesRegistrationResponse> responses = new ArrayList<>();
+        for (FindAllDepartmentBatchesRegistrationDto dto : content){
+            FindAllDepartmentBatchesRegistrationResponse response = new FindAllDepartmentBatchesRegistrationResponse();
+            response.setTitleDepartment(dto.getTitleDepartment());
+            response.setCodeDepartment(dto.getCodeDepartment());
+            response.setCodeBatchesRegistration(dto.getCodeBatchesRegistration());
+            responses.add(response);
+        }
+        return responses;
+    }
+
+    private void verifyFindAllDepartmentBatchesRegistration(FindAllDepartmentInBatchesRegistrationRequest request) {
+        if (StringUtils.isBlank(request.getCodeBatchesRegistration())){
+            throw new ValidParametersException();
+        }
     }
 
     private void updateFieldBatchesRegistration(UpdateBatchesRegistrationRequest request) {

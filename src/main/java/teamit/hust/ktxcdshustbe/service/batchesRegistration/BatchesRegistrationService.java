@@ -4,9 +4,11 @@ import org.springframework.data.domain.Page;
 import teamit.hust.ktxcdshustbe.entity.BatchesRegistration;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.CreateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
+import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllDepartmentInBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.UpdateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.BatchesRegistrationDetailResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllBatchesRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllDepartmentBatchesRegistrationResponse;
 
 public interface BatchesRegistrationService {
     Page<FindAllBatchesRegistrationResponse> findAll(FindAllBatchesRegistrationRequest request);
@@ -19,4 +21,6 @@ public interface BatchesRegistrationService {
 
     BatchesRegistration getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(Long timeCurrent, Integer idYearGroup,
                                                                                      Integer idPriorityGroup);
+    Page<FindAllDepartmentBatchesRegistrationResponse> findAllDepartmentBatchesRegistration(FindAllDepartmentInBatchesRegistrationRequest
+                                                                                                    request);
 }
