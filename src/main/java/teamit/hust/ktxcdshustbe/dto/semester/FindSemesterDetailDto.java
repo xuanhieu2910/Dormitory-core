@@ -21,5 +21,6 @@ public class FindSemesterDetailDto {
     private String userNameModified;
     private String codeUserCreated;
     private String codeUserModified;
+    private String note;
 
 }

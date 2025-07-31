@@ -109,13 +109,13 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append("""
                 select se.title, se.code_semester, se.status,
-                    se.id_user_created, se.id_user_modified,
-                    se.time_created, se.time_modified,
-                    ku_created.user_name, ku_modified.user_name,
-                    ku_created.code_user, ku_modified.code_user 
+                       se.id_user_created, se.id_user_modified,
+                       se.time_created, se.time_modified, se.note,
+                       ku_created.user_name, ku_modified.user_name,
+                       ku_created.code_user, ku_modified.code_user
                 from semester se
-                    inner join ktx_user ku_modified on se.id_user_modified = ku_modified.id_ktx_user
-                    inner join ktx_user ku_created on se.id_user_created = ku_created.id_ktx_user
+                         left join ktx_user ku_modified on se.id_user_modified = ku_modified.id_ktx_user
+                         left join ktx_user ku_created on se.id_user_created = ku_created.id_ktx_user
                 where se.code_semester = :codeSemester
                 """);
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -133,10 +133,11 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
             findSemesterDetailDto.setIdUserModified(ValueUtil.getIntegerByObject(obj[4]));
             findSemesterDetailDto.setTimeCreated(ValueUtil.getLongByObject(obj[5]));
             findSemesterDetailDto.setTimeModified(ValueUtil.getLongByObject(obj[6]));
-            findSemesterDetailDto.setUserNameCreated(ValueUtil.getStringByObject(obj[7]));
-            findSemesterDetailDto.setUserNameModified(ValueUtil.getStringByObject(obj[8]));
-            findSemesterDetailDto.setCodeUserCreated(ValueUtil.getStringByObject(obj[9]));
-            findSemesterDetailDto.setCodeUserModified(ValueUtil.getStringByObject(obj[10]));
+            findSemesterDetailDto.setNote(ValueUtil.getStringByObject(obj[7]));
+            findSemesterDetailDto.setUserNameCreated(ValueUtil.getStringByObject(obj[8]));
+            findSemesterDetailDto.setUserNameModified(ValueUtil.getStringByObject(obj[9]));
+            findSemesterDetailDto.setCodeUserCreated(ValueUtil.getStringByObject(obj[10]));
+            findSemesterDetailDto.setCodeUserModified(ValueUtil.getStringByObject(obj[11]));
             return findSemesterDetailDto;
         }
         return null;
