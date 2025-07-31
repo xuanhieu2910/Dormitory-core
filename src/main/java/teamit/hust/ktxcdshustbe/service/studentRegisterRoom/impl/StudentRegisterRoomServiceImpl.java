@@ -236,9 +236,6 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Override
     public List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer status) {
         List<StudentRegisterRoom> studentRegisterRooms = studentRegisterRoomRepository.findListStudentRegisterRoomByCodeRoomAndStatus(codeRoom,status);
-        if (studentRegisterRooms.isEmpty()){
-            throw new NotFoundException();
-        }
         return studentRegisterRooms;
     }
 

@@ -802,9 +802,16 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         if (ObjectUtils.isNotEmpty(request.getSex())){
             query.setParameter("sexRoom", request.getSex());
         }
+        if (StringUtils.isNotBlank(request.getKeyword())){
+            query.setParameter("keyword", request.getKeyword());
+        }
     }
 
     private void setConditionFindAllRoom(FindAllRoomsRequest request, StringBuilder sb) {
+        if (StringUtils.isNotBlank(request.getKeyword())) {
+            sb.append("   and (ro.title REGEXP '[' + :keyword + ']')  " );
+
+        }
         if (StringUtils.isNotBlank(request.getTitleRoom())) {
             sb.append(" and ro.title REGEXP :titleRoom ");
         }

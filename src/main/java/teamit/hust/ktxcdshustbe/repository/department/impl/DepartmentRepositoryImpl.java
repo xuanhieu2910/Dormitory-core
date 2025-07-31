@@ -128,15 +128,23 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
     }
 
     private void setParameterFindAllDepartment(FindAllDepartmentRequest request, Query query) {
+        if (StringUtils.isNotBlank(request.getKeyword())){
+            query.setParameter("keyword", request.getKeyword());
+        }
         if (StringUtils.isNotBlank(request.getTitleDepartment())){
             query.setParameter("titleDepartment", request.getTitleDepartment());
         }
         if (ObjectUtils.isNotEmpty(request.getStatus())){
             query.setParameter("status", request.getStatus());
         }
+
     }
 
     private void setConditionFindAllDepartment(FindAllDepartmentRequest request, StringBuilder sb) {
+        if (StringUtils.isNotBlank(request.getKeyword())) {
+            sb.append("   and (dep.title REGEXP '[' + :keyword + ']') OR " +
+                    "       (dep.short_name REGEXP '[' + :keyword + ']') ");
+        }
         if (StringUtils.isNotBlank(request.getTitleDepartment())){
             sb.append(" and dep.title REGEXP :titleDepartment ");
         }
