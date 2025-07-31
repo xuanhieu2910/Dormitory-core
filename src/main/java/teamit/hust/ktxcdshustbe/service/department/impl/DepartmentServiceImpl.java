@@ -389,8 +389,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     private Department verifyEditDepartmentRequest(EditDepartmentRequest request) {
-        if (StringUtils.isBlank(request.getCodeDepartment()) || StringUtils.isBlank(request.getTitle())
-        || ObjectUtils.isEmpty(request.getStatus())){
+        if (StringUtils.isBlank(request.getCodeDepartment()) || StringUtils.isBlank(request.getTitle())){
             throw new ValidParametersException();
         }
         if (!request.getStatus().equals(Constants.STATUS_DEPARTMENT_IS_ACTIVE) &&
