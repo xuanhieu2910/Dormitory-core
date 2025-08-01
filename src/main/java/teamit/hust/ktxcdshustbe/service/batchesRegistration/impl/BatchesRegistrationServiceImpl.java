@@ -27,10 +27,12 @@ import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllDepartmentInB
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.UpdateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistrationRoom.CreateBatchesRegistrationRoomRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistrationSchedule.CreateBatchesRegistrationScheduleRequest;
+import teamit.hust.ktxcdshustbe.request.batchesRegistrationSchedule.UpdateBatchesRegistrationScheduleRequest;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.BatchesRegistrationDetailResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllDepartmentBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
 import teamit.hust.ktxcdshustbe.service.batchesRegistrationRoom.BatchesRegistrationRoomService;
 import teamit.hust.ktxcdshustbe.service.batchesRegistrationSchedule.BatchesRegistrationScheduleService;
@@ -324,7 +326,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
     }
 
     private void updateBatchesRegistrationSchedule(Integer idBatchesRegistration,
-                                                   List<CreateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
+                                                   List<UpdateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
                                                    List<BatchesRegistrationSchedule> batchesRegistrationSchedulesOrigin) {
         List<Integer> idsPriorityGroup = new ArrayList<>();
         batchesRegistrationSchedulesOrigin.forEach(x->idsPriorityGroup.add(x.getIdPriorityGroup()));
@@ -336,10 +338,10 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
     }
 
     private void handleBatchesRegistrationScheduleNew(Integer idBatchesRegistration,
-                                                      List<CreateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
+                                                      List<UpdateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
                                                       List<PriorityGroup> priorityGroups) {
-        List<CreateBatchesRegistrationScheduleRequest> scheduleNewRequest = new ArrayList<>();
-        for (CreateBatchesRegistrationScheduleRequest scheduleRequest : batchesRegistrationScheduleRequest){
+        List<UpdateBatchesRegistrationScheduleRequest> scheduleNewRequest = new ArrayList<>();
+        for (UpdateBatchesRegistrationScheduleRequest scheduleRequest : batchesRegistrationScheduleRequest){
             if (priorityGroups.stream().noneMatch(x->x.getPriorityGroupCode().equals(scheduleRequest.getPriorityGroupCode()))){
                 scheduleNewRequest.add(scheduleRequest);
             }
@@ -351,7 +353,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             List<BatchesRegistrationSchedule> batchesRegistrationSchedulesNew = new ArrayList<>();
             Long timeCurrent = new Date().getTime();
             KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            for (CreateBatchesRegistrationScheduleRequest  scheduleRequest : scheduleNewRequest){
+            for (UpdateBatchesRegistrationScheduleRequest  scheduleRequest : scheduleNewRequest){
                 BatchesRegistrationSchedule batchesRegistrationSchedule = new BatchesRegistrationSchedule();
                 batchesRegistrationSchedule.setIdBatchesRegistration(idBatchesRegistration);
                 batchesRegistrationSchedule.setStatus(Constants.STATUS_BATCHES_REGISTRATION_SCHEDULE_ACTIVE);
@@ -372,14 +374,14 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         }
     }
 
-    private void handleBatchesRegistrationScheduleCurrent(List<CreateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
+    private void handleBatchesRegistrationScheduleCurrent(List<UpdateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
                                                           List<PriorityGroup> priorityGroups,
                                                           List<BatchesRegistrationSchedule> batchesRegistrationSchedulesOrigin) {
         Long timeCurrent = new Date().getTime();
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         boolean isCheckUpdate = false;
         for (PriorityGroup priorityGroup : priorityGroups){
-            Optional<CreateBatchesRegistrationScheduleRequest> scheduleRequest = batchesRegistrationScheduleRequest.stream().
+            Optional<UpdateBatchesRegistrationScheduleRequest> scheduleRequest = batchesRegistrationScheduleRequest.stream().
                     filter(x->x.getPriorityGroupCode().equals(priorityGroup.getPriorityGroupCode())).findFirst();
             if (scheduleRequest.isPresent()){
                 isCheckUpdate = true;
@@ -399,7 +401,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         }
     }
 
-    private void handleBatchesRegistrationScheduleDelete(List<CreateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
+    private void handleBatchesRegistrationScheduleDelete(List<UpdateBatchesRegistrationScheduleRequest> batchesRegistrationScheduleRequest,
                                                          List<PriorityGroup> priorityGroups,
                                                          List<BatchesRegistrationSchedule> batchesRegistrationSchedulesOrigin) {
         List<BatchesRegistrationSchedule> batchesRegistrationScheduleDelete = new ArrayList<>();
@@ -469,7 +471,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             throw new ValidParametersException();
         }
         Set<String> seenSchedule = new HashSet<>();
-        for (CreateBatchesRegistrationScheduleRequest scheduleRequest : request.getBatchesRegistrationSchedule()){
+        for (UpdateBatchesRegistrationScheduleRequest scheduleRequest : request.getBatchesRegistrationSchedule()){
             if (StringUtils.isBlank(scheduleRequest.getPriorityGroupCode())
                     || ObjectUtils.isEmpty(scheduleRequest.getRegistrationStartTime())
                     || ObjectUtils.isEmpty(scheduleRequest.getRegistrationEndTime())){
@@ -556,7 +558,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
                                                                                   CreateBatchesRegistrationRequest request) {
         List<YearGroup> yearGroups = yearGroupService.findYearGroupsByListCode(request.getYearGroups());
         List<BatchesYearGroupRegistration> yearGroupRegistrations = new ArrayList<>();
-        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication();
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long timeCurrent = new Date().getTime();
         for (YearGroup yearGroup : yearGroups){
             BatchesYearGroupRegistration batchesYearGroupRegistration = new BatchesYearGroupRegistration();
@@ -704,6 +706,14 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             } else if (timeCurrent >= response.getEndTime()) {
                 response.setStatus(Constants.STATUS_BATCHES_REGISTRATION_CLOSED);
             }
+
+            TimeHiredResponse timeHiredResponse = new TimeHiredResponse();
+            timeHiredResponse.setIdTimeHired(dto.getTimeHiredCurrentDto().getIdTimeHired());
+            timeHiredResponse.setCodeTimeHired(dto.getTimeHiredCurrentDto().getCodeTimeHired());
+            timeHiredResponse.setTimeHiredStarted(dto.getTimeHiredCurrentDto().getTimeStarted());
+            timeHiredResponse.setTimeHiredEnded(dto.getTimeHiredCurrentDto().getTimeEnded());
+            timeHiredResponse.setTitleTimeHired(dto.getTimeHiredCurrentDto().getTitleTimeHired());
+            response.setTimeHiredResponse(timeHiredResponse);
             for (BatchesYearGroupRegistrationDto batchesYearGroupRegistrationDto : dto.getBatchesYearGroupRegistrationDtos()) {
                 BatchesYearGroupRegistrationResponse groupRegistrationResponse = new BatchesYearGroupRegistrationResponse();
                 groupRegistrationResponse.setIdBatchesYearGroupRegistration(batchesYearGroupRegistrationDto.getIdBatchesYearGroupRegistration());

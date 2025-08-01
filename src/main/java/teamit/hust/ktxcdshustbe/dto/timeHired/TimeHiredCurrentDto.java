@@ -10,4 +10,6 @@ public class TimeHiredCurrentDto {
     private Integer idTimeHired;
     private Long timeStarted;
     private Long timeEnded;
+    private String codeTimeHired;
+    private String titleTimeHired;
 }

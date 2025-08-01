@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 
 import java.util.List;
 
@@ -31,5 +33,7 @@ public class FindAllBatchesRegistrationResponse {
     private Long endTime;
     @JsonProperty("status")
     private Integer status;
+    @JsonProperty("time_hired")
+    private TimeHiredResponse timeHiredResponse;
 
 }

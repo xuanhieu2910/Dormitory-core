@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import teamit.hust.ktxcdshustbe.request.batchesRegistrationRoom.CreateBatchesRegistrationRoomRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistrationSchedule.CreateBatchesRegistrationScheduleRequest;
+import teamit.hust.ktxcdshustbe.request.batchesRegistrationSchedule.UpdateBatchesRegistrationScheduleRequest;
 
 import java.util.List;
 
@@ -23,6 +24,6 @@ public class UpdateBatchesRegistrationRequest {
     private Integer idTimeHired;
     private String notes;
     private List<String> yearGroups;
-    private List<CreateBatchesRegistrationScheduleRequest> batchesRegistrationSchedule;
+    private List<UpdateBatchesRegistrationScheduleRequest> batchesRegistrationSchedule;
     private List<CreateBatchesRegistrationRoomRequest> rooms;
 }
