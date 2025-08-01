@@ -59,16 +59,12 @@ public class StudentRegisterRoomController {
             studentRegisterRoomService.createStudentRegisterRoom(request);
             return ApiResponseDto.createdWithMessage("Register room success!", HttpStatus.OK);
         } catch (SqlExecuteException e){
-            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ValidParametersException e){
-            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ExitsObjectException e){
-            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -170,6 +166,7 @@ public class StudentRegisterRoomController {
             return ApiResponseDto.createdWithState(studentRegisterRoomService.getRegisterRoomCurrent(),
                     "Get register room current", HttpStatus.OK);
         }catch (Exception e) {
+            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
