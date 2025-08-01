@@ -276,7 +276,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         studentRegisterRoom.setTimeModified(timeCurrent);
         studentRegisterRoom.setIdUserModified(ktxUser.getIdKtxUser());
         studentRegisterRoom.setIdUserCreated(ktxUser.getIdUserCreated());
-        studentRegisterRoom.setIdBatchesRegistration(dataStudentRegisterRoomDto.getIdBatchesRegister());
+        studentRegisterRoom.setIdBatchesRegistrationSchedule(dataStudentRegisterRoomDto.getIdBatchesRegisterSchedule());
         studentRegisterRoom.setExpiresAt(timeCurrent + Long.parseLong(PropertiesUtil.getProperty("time-holding.register-room")));
         return studentRegisterRoom;
     }
