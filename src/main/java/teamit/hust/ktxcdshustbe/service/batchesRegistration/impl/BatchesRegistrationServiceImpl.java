@@ -32,6 +32,7 @@ import teamit.hust.ktxcdshustbe.response.batchesRegistration.BatchesRegistration
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllDepartmentBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
 import teamit.hust.ktxcdshustbe.service.batchesRegistrationRoom.BatchesRegistrationRoomService;
 import teamit.hust.ktxcdshustbe.service.batchesRegistrationSchedule.BatchesRegistrationScheduleService;
@@ -705,6 +706,14 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             } else if (timeCurrent >= response.getEndTime()) {
                 response.setStatus(Constants.STATUS_BATCHES_REGISTRATION_CLOSED);
             }
+
+            TimeHiredResponse timeHiredResponse = new TimeHiredResponse();
+            timeHiredResponse.setIdTimeHired(dto.getTimeHiredCurrentDto().getIdTimeHired());
+            timeHiredResponse.setCodeTimeHired(dto.getTimeHiredCurrentDto().getCodeTimeHired());
+            timeHiredResponse.setTimeHiredStarted(dto.getTimeHiredCurrentDto().getTimeStarted());
+            timeHiredResponse.setTimeHiredEnded(dto.getTimeHiredCurrentDto().getTimeEnded());
+            timeHiredResponse.setTitleTimeHired(dto.getTimeHiredCurrentDto().getTitleTimeHired());
+            response.setTimeHiredResponse(timeHiredResponse);
             for (BatchesYearGroupRegistrationDto batchesYearGroupRegistrationDto : dto.getBatchesYearGroupRegistrationDtos()) {
                 BatchesYearGroupRegistrationResponse groupRegistrationResponse = new BatchesYearGroupRegistrationResponse();
                 groupRegistrationResponse.setIdBatchesYearGroupRegistration(batchesYearGroupRegistrationDto.getIdBatchesYearGroupRegistration());

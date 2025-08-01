@@ -47,8 +47,8 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
             for (Object[] obj: result){
                 TimeHiredResponse hired = new TimeHiredResponse();
                 hired.setIdTimeHired(ValueUtil.getIntegerByObject(obj[0]));
-                hired.setTimeHiredStarted(DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[1]), DateUtil.DDMMYYYY));
-                hired.setTimeHiredEnded(DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[2]),DateUtil.DDMMYYYY));
+                hired.setTimeHiredStarted(ValueUtil.getLongByObject(obj[1]));
+                hired.setTimeHiredEnded(ValueUtil.getLongByObject(obj[2]));
                 return Optional.of(hired);
             }
         }

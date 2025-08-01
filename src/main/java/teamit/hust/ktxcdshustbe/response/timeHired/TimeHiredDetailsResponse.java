@@ -27,4 +27,6 @@ public class TimeHiredDetailsResponse {
     private Integer idUserModified;
     @JsonProperty("code_time_hired")
     private String codeTimeHired;
+    @JsonProperty("title_time_hired")
+    private String titleTimeHired;
 }
