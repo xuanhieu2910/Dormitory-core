@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
-import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 
 import java.util.List;

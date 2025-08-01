@@ -561,7 +561,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 studentRegisterRoom.setIdUserCreated(ValueUtil.getIntegerByObject(obj[7]));
                 studentRegisterRoom.setIdUserModified(ValueUtil.getIntegerByObject(obj[8]));
                 studentRegisterRoom.setIdOrder(ValueUtil.getIntegerByObject(obj[9]));
-                studentRegisterRoom.setIdBatchesRegistration(ValueUtil.getIntegerByObject(obj[10]));
+                studentRegisterRoom.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[10]));
                 studentRegisterRoom.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
                 studentRegisterRoomArrayList.add(studentRegisterRoom);
             }
@@ -703,7 +703,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         studentRegisterRoom.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
         studentRegisterRoom.setIdUserCreated(ValueUtil.getIntegerByObject(obj[8]));
         studentRegisterRoom.setIdOrder(ValueUtil.getIntegerByObject(obj[9]));
-        studentRegisterRoom.setIdBatchesRegistration(ValueUtil.getIntegerByObject(obj[10]));
+        studentRegisterRoom.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[10]));
         studentRegisterRoom.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
         return studentRegisterRoom;
     }
