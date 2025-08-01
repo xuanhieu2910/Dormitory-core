@@ -36,6 +36,7 @@ import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -54,7 +55,8 @@ public class DepartmentServiceImpl implements DepartmentService {
     public Page<FindAllDepartmentsResponse> findAllDepartment(FindAllDepartmentRequest request){
         Pageable pageable = PageUtils.buildPage(request.getPage(), request.getSize());
         Page<FindAllDepartmentDto> departments = departmentRepository.findAllDepartment(pageable, request);
-        return new PageImpl<>(convertToFindAllDepartmentResponse(departments.getContent()), pageable, departments.getTotalElements());
+        return new PageImpl<>(convertToFindAllDepartmentResponse(departments.get().collect(Collectors.toList())),
+                pageable, departments.getTotalElements());
     }
 
     private List<FindAllDepartmentsResponse> convertToFindAllDepartmentResponse(List<FindAllDepartmentDto> contents) {
@@ -239,18 +241,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         response.setIdUserModified(department.getIdUserModified());
         response.setStatus(department.getStatus());
         for(FindAllRoomsDto findAllRoomsDto : findAllRoomsDtoList){
-            if(findAllRoomsDto.getStatusRegister() ==null){
-                totalRoomClose += 0;
-                totalRoomOpen += 0;
-            }
-            else {
-                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE)) {
+            if (findAllRoomsDto.getIsActive().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE)) {
                     totalRoomClose++;
                 }
-                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE)) {
+            if (findAllRoomsDto.getIsActive().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE)) {
                     totalRoomOpen++;
                 }
-            }
+
 
             totalRoom++;
             totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
@@ -290,18 +287,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         response.setIdParent(departmentParent.getIdDepartment());
         response.setStatus(department.getStatus());
         for(FindAllRoomsDto findAllRoomsDto : findAllRoomsDtoList){
-            if(findAllRoomsDto.getStatusRegister() ==null){
-                totalRoomClose += 0;
-                totalRoomOpen += 0;
-            }
-            else {
-                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE)) {
+            if (findAllRoomsDto.getIsActive().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_IN_ACTIVE)) {
                     totalRoomClose++;
                 }
-                if (findAllRoomsDto.getStatusRegister().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE)) {
+            if (findAllRoomsDto.getIsActive().equals(Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE)) {
                     totalRoomOpen++;
                 }
-            }
+
             totalRoom++;
             totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
             totalStudentRegister = totalStudentRegister + findAllRoomsDto.getQuantityRegistered();

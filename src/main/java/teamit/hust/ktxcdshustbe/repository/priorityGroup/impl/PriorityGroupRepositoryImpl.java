@@ -124,20 +124,26 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
         setConditionFindAllPriorityGroupDto(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllPriorityGroupDto(request, query);
-        return ValueUtil.getLongByObject(query.getFirstResult());
+        return ValueUtil.getLongByObject(query.getSingleResult());
     }
 
     private  void setParameterFindAllPriorityGroupDto(FindAllPriorityGroupRequest request, Query query) {
         if(StringUtils.isNotBlank(request.getTitlePriorityGroup())){
             query.setParameter("titlePriorityGroup", request.getTitlePriorityGroup());
         }
+        if (StringUtils.isNotBlank(request.getKeyword())){
+            query.setParameter("keyword", request.getKeyword());
+        }
     }
 
     private void setConditionFindAllPriorityGroupDto(FindAllPriorityGroupRequest request, StringBuilder sb) {
+        if (StringUtils.isNotBlank(request.getKeyword())) {
+            sb.append("   and (pg.title REGEXP '[' + :keyword + ']')  " );
+        }
         if(StringUtils.isNotBlank(request.getTitlePriorityGroup())){
             sb.append(" and pg.title REGEXP :titlePriorityGroup ");
         }
-        sb.append(" order by pg.priority_group_code");
+        sb.append(" order by pg.id_priority_group desc ");
     }
 
 

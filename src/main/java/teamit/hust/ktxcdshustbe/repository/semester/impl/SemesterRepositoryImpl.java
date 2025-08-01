@@ -70,7 +70,7 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         setConditionFindAllSemesterDto(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllSemesterDto(request, query);
-        return ValueUtil.getLongByObject(query.getFirstResult());
+        return ValueUtil.getLongByObject(query.getSingleResult());
     }
 
     private void setParameterFindAllSemesterDto(FindAllSemesterRequest request, Query query) {
@@ -80,6 +80,9 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         if (ObjectUtils.isNotEmpty(request.getStatus())){
             query.setParameter("status", request.getStatus());
         }
+        if (StringUtils.isNotBlank(request.getKeyword())){
+            query.setParameter("keyword", request.getKeyword());
+        }
     }
 
     private void setConditionFindAllSemesterDto(FindAllSemesterRequest request, StringBuilder sb) {
@@ -88,6 +91,9 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
         }
         if (ObjectUtils.isNotEmpty(request.getStatus())){
             sb.append(" and se.status = :status ");
+        }
+        if (StringUtils.isNotBlank(request.getKeyword())) {
+            sb.append("   and (se.title REGEXP '[' + :keyword + ']')  " );
         }
         sb.append(" order by se.id_semester desc  ");
     }

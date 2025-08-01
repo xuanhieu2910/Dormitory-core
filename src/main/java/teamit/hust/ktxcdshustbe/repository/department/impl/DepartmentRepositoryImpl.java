@@ -124,7 +124,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         setConditionFindAllDepartment(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartment(request, query);
-        return ValueUtil.getIntegerByObject(query.getFirstResult());
+        return ValueUtil.getIntegerByObject(query.getSingleResult());
     }
 
     private void setParameterFindAllDepartment(FindAllDepartmentRequest request, Query query) {

@@ -730,13 +730,11 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "       ro.code_room,  " +
                 "       de.title, de.code_department,  " +
                 "       kuCreated.user_name,  " +
-                "       kuModified.user_name, " +
-                "       brr.status " +
+                "       kuModified.user_name " +
                 "from room ro  " +
                 "    inner join ktx_user kuCreated on ro.id_user_created = kuCreated.id_ktx_user  " +
                 "    inner join ktx_user kuModified on ro.id_user_modified = kuModified.id_ktx_user  " +
                 "    inner join department de on ro.id_department = de.id_department " +
-                "    left join  batches_registration_room brr on brr.id_room = ro.id_room " +
                 "where de.code_department = :codeDepartment ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeDepartment",codeDepartment);
@@ -766,7 +764,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 roomDto.setCodeDepartment(ValueUtil.getStringByObject(obj[18]));
                 roomDto.setUserNameCreated(ValueUtil.getStringByObject(obj[19]));
                 roomDto.setUserNameModified(ValueUtil.getStringByObject(obj[20]));
-                roomDto.setStatusRegister(ValueUtil.getIntegerByObject(obj[21]));
                 findAllRoomsDtos.add(roomDto);
             }
         }
@@ -938,6 +935,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         setConditionFindAllRoom(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllRoom(request, query);
-        return  ValueUtil.getLongByObject(query.getFirstResult());
+        return  ValueUtil.getLongByObject(query.getSingleResult());
     }
 }

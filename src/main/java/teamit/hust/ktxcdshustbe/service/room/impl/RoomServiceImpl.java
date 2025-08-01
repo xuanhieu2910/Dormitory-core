@@ -349,9 +349,6 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment) {
         List<FindAllRoomsDto> roomsDtos = roomRepository.findAllListRoomByCodeDepartment(codeDepartment);
-        if (roomsDtos.isEmpty()){
-            throw new NotFoundException();
-        }
         return roomsDtos;
     }
 

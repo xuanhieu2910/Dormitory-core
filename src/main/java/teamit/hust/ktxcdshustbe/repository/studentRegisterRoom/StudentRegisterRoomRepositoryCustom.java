@@ -34,4 +34,5 @@ public interface StudentRegisterRoomRepositoryCustom {
     List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer status);
 
     Page<UserRegisterRoomDto> findAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request, Pageable pageable);
+    List<UserRegisterRoomDto> findListUserRegisterInRoom(Integer status);
 }
