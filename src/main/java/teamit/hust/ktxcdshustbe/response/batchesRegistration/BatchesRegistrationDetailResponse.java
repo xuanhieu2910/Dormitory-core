@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class BatchesRegistrationDetailResponse {
     private String titleSemester;
     @JsonProperty("code_semester")
     private String codeSemester;
+    @JsonProperty("batches_year_group")
     private List<BatchesYearGroupRegistrationResponse> batchesYearGroupRegistrationResponseList;
     @JsonProperty("start_time")
     private Long startTime;
@@ -34,4 +37,7 @@ public class BatchesRegistrationDetailResponse {
     private String notes;
     @JsonProperty("description")
     private String description;
+    @JsonProperty("time_hired")
+    private TimeHiredResponse timeHiredResponse;
+
 }

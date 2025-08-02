@@ -101,16 +101,19 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
     @Override
     public Optional<BatchesRegistrationDetailDto> getDetailBatchesRegistration(String codeBatchesRegistration) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select bare.id_batches_registration, bare.title, bare.code_batches_registration,   " +
-                "       bare.start_time, bare.end_time, bare.notes, bare.description, " +
-                "       se.id_semester, se.title, se.code_semester, " +
-                "       bygr.id_batches_year_group_registration, yg.id_year_group,   " +
-                "       yg.title, bygr.status, bygr.time_created, bygr.time_modified   " +
-                "from batches_registration bare   " +
-                "    inner join semester se on bare.id_semester = se.id_semester   " +
-                "    inner join batches_year_group_registration bygr on bare.id_batches_registration = bygr.id_batches_registration   " +
-                "    inner join year_group yg on bygr.id_year_group = yg.id_year_group   " +
-                "where bare.code_batches_registration = :codeBatchesRegistration ");
+        sb.append(" select bare.id_batches_registration, bare.title, bare.code_batches_registration, " +
+                        "       bare.start_time, bare.end_time, bare.notes, bare.description,  " +
+                        "       se.id_semester, se.title, se.code_semester,  " +
+                        "       bygr.id_batches_year_group_registration, yg.id_year_group,  " +
+                        "       yg.title, bygr.status, bygr.time_created, bygr.time_modified, " +
+                        "       th.id_time_hired, th.code_time_hired, th.title_time_hired, " +
+                        "       th.time_started, th.time_ended " +
+                        "from batches_registration bare  " +
+                        "    inner join semester se on bare.id_semester = se.id_semester    " +
+                        "    inner join batches_year_group_registration bygr on bare.id_batches_registration = bygr.id_batches_registration  " +
+                        "    inner join year_group yg on bygr.id_year_group = yg.id_year_group " +
+                        "    inner join time_hired th on bare.id_time_hired = th.id_time_hired " +
+                        "where bare.code_batches_registration = :codeBatchesRegistration  ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeBatchesRegistration", codeBatchesRegistration);
         List<Object[]> result = query.getResultList();
@@ -126,6 +129,13 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
             detailDto.setIdSemester(ValueUtil.getIntegerByObject(result.get(0)[7]));
             detailDto.setTitleSemester(ValueUtil.getStringByObject(result.get(0)[8]));
             detailDto.setCodeSemester(ValueUtil.getStringByObject(result.get(0)[9]));
+            TimeHiredCurrentDto timeHiredCurrentDto = new TimeHiredCurrentDto();
+            timeHiredCurrentDto.setIdTimeHired(ValueUtil.getIntegerByObject(result.get(0)[16]));
+            timeHiredCurrentDto.setCodeTimeHired(ValueUtil.getStringByObject(result.get(0)[17]));
+            timeHiredCurrentDto.setTitleTimeHired(ValueUtil.getStringByObject(result.get(0)[18]));
+            timeHiredCurrentDto.setTimeStarted(ValueUtil.getLongByObject(result.get(0)[19]));
+            timeHiredCurrentDto.setTimeEnded(ValueUtil.getLongByObject(result.get(0)[20]));
+            detailDto.setTimeHiredCurrentDto(timeHiredCurrentDto);
             List<BatchesYearGroupRegistrationDto> batchesYearGroupRegistrationDtos = new ArrayList<>();
 
             for (Object[] obj : result){
