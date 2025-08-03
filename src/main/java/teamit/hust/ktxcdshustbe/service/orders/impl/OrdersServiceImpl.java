@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -104,6 +105,7 @@ public class OrdersServiceImpl implements OrdersService {
 
 
     @Transactional
+    @Modifying
     @Override
     public ConfirmOrdersResponse confirmOrder(ConfirmOrderRequest request) throws JsonProcessingException {
         verifyConfirmOrder(request);
@@ -206,6 +208,7 @@ public class OrdersServiceImpl implements OrdersService {
             );
             return convertToConfirmPayment(responseEntity);
         } catch (HttpClientErrorException | JsonProcessingException e){
+            e.printStackTrace();
             throw new ValidateFiledException();
         }
     }
@@ -355,9 +358,9 @@ public class OrdersServiceImpl implements OrdersService {
     private CustomerToGetBillDto initializeCustomerToGetBill() {
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CustomerToGetBillDto customerToGetBillDto = new CustomerToGetBillDto();
-        customerToGetBillDto.setFirst_name(ktxUser.getUsername());
-        customerToGetBillDto.setLast_name(ktxUser.getUsername());
-        customerToGetBillDto.setPhone_number("12345678999");
+        customerToGetBillDto.setFirst_name(ktxUser.getCodeUser());
+        customerToGetBillDto.setLast_name(ktxUser.getCodeUser());
+        customerToGetBillDto.setPhone_number("1234567899");
         customerToGetBillDto.setEmail(ktxUser.getUsername());
         return customerToGetBillDto;
     }
@@ -375,7 +378,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     private OrderToGetBillDto initializeOrderToGetBill(Orders orders, List<OrderItems> orderItems){
         OrderToGetBillDto orderToGetBillDto = new OrderToGetBillDto();
-        orderToGetBillDto.setId(String.valueOf(orders.getIdOrder()));
+        orderToGetBillDto.setId(String.valueOf(orders.getIdOrder()) + new Date().getTime());
         orderToGetBillDto.setAmount(orders.getTotalMoney());
         orderToGetBillDto.setCurrency("VND");
         orderToGetBillDto.setDescription(orders.getCodeOrder());

@@ -32,6 +32,7 @@ import teamit.hust.ktxcdshustbe.response.batchesRegistration.BatchesRegistration
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllDepartmentBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
 import teamit.hust.ktxcdshustbe.service.batchesRegistrationRoom.BatchesRegistrationRoomService;
@@ -668,6 +669,16 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         }
         response.setNotes(detailDto.getNotes());
         response.setDescription(detailDto.getDescription());
+
+        TimeHiredResponse timeHiredResponse = new TimeHiredResponse();
+        timeHiredResponse.setIdTimeHired(detailDto.getTimeHiredCurrentDto().getIdTimeHired());
+        timeHiredResponse.setCodeTimeHired(detailDto.getTimeHiredCurrentDto().getCodeTimeHired());
+        timeHiredResponse.setTitleTimeHired(detailDto.getTimeHiredCurrentDto().getTitleTimeHired());
+        timeHiredResponse.setTimeHiredStarted(detailDto.getTimeHiredCurrentDto().getTimeStarted());
+        timeHiredResponse.setTimeHiredEnded(detailDto.getTimeHiredCurrentDto().getTimeEnded());
+
+        response.setTimeHiredResponse(timeHiredResponse);
+
         List<BatchesYearGroupRegistrationResponse> yearGroupRegistrationResponses = new ArrayList<>();
         for (BatchesYearGroupRegistrationDto batchesYearGroupRegistrationDto : detailDto.getBatchesYearGroupRegistrationDtos()){
             BatchesYearGroupRegistrationResponse yearGroupRegistrationResponse = new BatchesYearGroupRegistrationResponse();
