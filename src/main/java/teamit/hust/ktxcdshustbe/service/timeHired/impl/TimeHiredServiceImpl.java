@@ -99,7 +99,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
             || StringUtils.isBlank(request.getTitleTimeHired())) {
             throw new ValidParametersException();
         }
-        if (request.getTimeStart() >= request.getTimeEnd()) {
+        if (request.getTimeStart() <= request.getTimeEnd()) {
             throw new ValidParametersException();
         }
     }
