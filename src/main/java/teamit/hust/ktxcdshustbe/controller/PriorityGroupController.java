@@ -64,7 +64,7 @@ public class PriorityGroupController {
             priorityGroupService.create(request);
             return ApiResponseDto.createdWithMessage("Create priority group success", HttpStatus.OK);
         }
-        catch (IsBlankException e) {
+        catch(ValidParametersException e) {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         }
         catch (ExitsObjectException e) {

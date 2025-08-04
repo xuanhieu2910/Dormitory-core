@@ -120,7 +120,7 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
     }
     private void verifyCreatePriorityGroupRequest(CreatePriorityGroupRequest request){
         if(StringUtils.isBlank(request.getTitlePriorityGroup())) {
-            throw new IsBlankException();
+            throw new ValidParametersException();
         }
         if(priorityGroupRepository.existsByTitlePriorityGroup(request.getTitlePriorityGroup())) {
             throw new ExitsObjectException();

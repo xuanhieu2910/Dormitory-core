@@ -462,7 +462,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         setConditionFindAllRoomSearchStudentRegister(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllRoomSearchStudent(query, request);
-        return ValueUtil.getIntegerByObject(query.getFirstResult());
+        return ValueUtil.getIntegerByObject(query.getSingleResult());
     }
 
     private void setParameterFindAllRoomSearchStudent(Query query, StudentSearchRoomRequest request) {

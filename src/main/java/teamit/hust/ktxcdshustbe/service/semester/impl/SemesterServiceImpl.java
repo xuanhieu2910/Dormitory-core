@@ -63,7 +63,7 @@ public class SemesterServiceImpl implements SemesterService {
     }
     private void verifyCreateSemesterRequest(CreateSemesterRequest request) {
         if(StringUtils.isBlank(request.getTitleSemester())) {
-            throw new IsBlankException();
+            throw new ValidParametersException();
         }
         if(semesterRepository.existsByTitle(request.getTitleSemester())) {
             throw new ExitsObjectException();
@@ -90,7 +90,7 @@ public class SemesterServiceImpl implements SemesterService {
     }
     private void verifyUpdateSemesterRequest(UpdateSemesterRequest request) {
         if(StringUtils.isBlank(request.getTitleSemester())) {
-            throw new IsBlankException();
+            throw new ValidParametersException();
         }
         Optional<Semester> optionalSemester = semesterRepository.findByCodeSemester(request.getCodeSemester());
         if(optionalSemester.isEmpty()) {

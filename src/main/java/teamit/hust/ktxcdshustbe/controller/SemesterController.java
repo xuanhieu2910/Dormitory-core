@@ -12,6 +12,7 @@ import teamit.hust.ktxcdshustbe.dto.ApiResponseDto;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.IsBlankException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
+import teamit.hust.ktxcdshustbe.exception.ValidateFiledException;
 import teamit.hust.ktxcdshustbe.request.semester.CreateSemesterRequest;
 import teamit.hust.ktxcdshustbe.request.semester.FindAllSemesterRequest;
 import teamit.hust.ktxcdshustbe.request.semester.UpdateSemesterRequest;
@@ -66,7 +67,7 @@ public class SemesterController {
         catch (ExitsObjectException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         }
-        catch (IsBlankException e){
+        catch (ValidateFiledException e){
             return  ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
@@ -83,7 +84,7 @@ public class SemesterController {
         catch (NotFoundException e) {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         }
-        catch (IsBlankException e) {
+        catch (ValidateFiledException e) {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         }
         catch (Exception e) {
