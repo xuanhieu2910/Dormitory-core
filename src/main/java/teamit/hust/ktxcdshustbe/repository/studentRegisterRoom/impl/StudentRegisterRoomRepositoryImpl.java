@@ -388,6 +388,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "          inner join time_hired th on srr.id_time_hired = th.id_time_hired" +
                 "          left join orders ord on srr.id_order = ord.id_order " +
                 " where :currentTime between brs.registration_start_time and brs.registration_end_time  " +
+                "    and :currentTime <= srr.expires_at " +
                 "   and pg.id_priority_group = :idPriorityGroup  " +
                 "   and yg.id_year_group = :idYearGroup  " +
                 "   and ktu.id_ktx_user = :idKtxUser  ");
