@@ -94,12 +94,13 @@ public class TimeHiredServiceImpl implements TimeHiredService {
     }
 
     private void validateDataCreateTimeHired(CreateTimeHiredRequest request) {
-        if (ObjectUtils.isNotEmpty(request.getTimeStart())
-            || ObjectUtils.isNotEmpty(request.getTimeEnd())
-            || StringUtils.isBlank(request.getTitleTimeHired())) {
+        if (ObjectUtils.isEmpty(request.getTimeStart())
+            || ObjectUtils.isEmpty(request.getTimeEnd())
+            || StringUtils.isBlank(request.getTitleTimeHired())
+            || ObjectUtils.isEmpty(request.getStatus())) {
             throw new ValidParametersException();
         }
-        if (request.getTimeStart() <= request.getTimeEnd()) {
+        if (request.getTimeStart() >= request.getTimeEnd()) {
             throw new ValidParametersException();
         }
     }
