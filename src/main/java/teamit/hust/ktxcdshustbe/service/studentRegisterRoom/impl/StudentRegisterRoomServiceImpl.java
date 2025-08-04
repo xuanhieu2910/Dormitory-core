@@ -326,6 +326,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         response.setPrice(dto.getPrice());
         response.setStatusStudentRegisterRoom(dto.getStatusStudentRegisterRoom());
         response.setExpiresAt(dto.getExpiresAt());
+        response.setCodeOrders(dto.getCodeOrders());
         return response;
     }
 
