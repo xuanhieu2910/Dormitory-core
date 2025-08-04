@@ -89,6 +89,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
                     "       (time_hired.time_ended REGEXP '[' + :keyword + ']')  OR " +
                     "  (time_hired.title_time_hired REGEXP '[' + :keyword + ']')   ");
         }
+        sb.append(" order by id_time_hired desc ");
         Query query = entityManager.createNativeQuery(sb.toString());
         if (StringUtils.isNotBlank(request.getKeyword())) {
             query.setParameter("keyword", request.getKeyword());

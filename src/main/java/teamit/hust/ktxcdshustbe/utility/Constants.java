@@ -166,7 +166,7 @@ public class Constants {
      * */
     public static final Integer STATUS_BATCHES_REGISTRATION_NOT_YET_OPEN = -1;
     public static final Integer STATUS_BATCHES_REGISTRATION_OPENING = 1;
-    public static final Integer STATUS_BATCHES_REGISTRATION_CLOSED = 1;
+    public static final Integer STATUS_BATCHES_REGISTRATION_CLOSED = 2;
     /*----------------------------------------------------*/
 
     /**
