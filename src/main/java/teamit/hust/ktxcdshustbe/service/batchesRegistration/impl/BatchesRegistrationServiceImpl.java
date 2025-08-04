@@ -614,6 +614,11 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             || CollectionUtils.isEmpty(request.getRooms())) {
             throw new ValidParametersException();
         }
+
+        if (new Date().getTime() >= request.getStartTime()){
+            throw new ValidParametersException();
+        }
+
         if (hasDuplicationYearGroupCreateBatchesRegistration(request.getYearGroups())){
             throw new ValidParametersException();
         }
