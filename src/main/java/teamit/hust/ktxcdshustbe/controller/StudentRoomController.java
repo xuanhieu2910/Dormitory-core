@@ -97,7 +97,7 @@ public class StudentRoomController {
     public ResponseEntity<?> downloadReportToolInventory(ListStudentHiredRoomRequest request){
         try {
             return ApiResponseDto.createdWithState(studentRoomService.downloadStudentHiredRoomList(request),
-                    "Download inventory report success!", HttpStatus.OK);
+                    "Download list student hired room report success!", HttpStatus.OK);
         } catch (Exception e){
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

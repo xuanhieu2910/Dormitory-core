@@ -1,7 +1,12 @@
 package teamit.hust.ktxcdshustbe.service.studentRegisterRoom.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -13,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
+import teamit.hust.ktxcdshustbe.dto.studentRoom.FindAllStudentHiredRoomDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
@@ -24,6 +30,7 @@ import teamit.hust.ktxcdshustbe.repository.studentRegisterRoom.StudentRegisterRo
 import teamit.hust.ktxcdshustbe.request.registerRoom.ChangeRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.request.studentRoom.ListStudentHiredRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
@@ -33,10 +40,20 @@ import teamit.hust.ktxcdshustbe.service.room.RoomService;
 import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
 import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
-import teamit.hust.ktxcdshustbe.utility.Constants;
-import teamit.hust.ktxcdshustbe.utility.PageUtils;
-import teamit.hust.ktxcdshustbe.utility.PropertiesUtil;
+import teamit.hust.ktxcdshustbe.utility.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Log4j2
@@ -52,7 +69,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Autowired
     StudentRoomService studentRoomService;
 
-
+    private static final String SEPARATOR = File.separator;
     @Override
     public void saveInfoApprovedStudentRegisterRoom(StudentRegisterRoom room) {
         studentRegisterRoomRepository.save(room);
@@ -373,5 +390,153 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         studentRoom.setTimeCreated(timeCurrently);
         studentRoom.setTimeModified(timeCurrently);
         studentRoomService.saveStudentRoom(studentRoom);
+    }
+
+    @Override
+    public String downloadListStudentRegisterRoom(UserRegisterRoomRequest request) throws IOException {
+//        String fileExcel = PropertiesUtil.getProperty("hust.ktx.static.location.resources.static")
+//                + SEPARATOR
+//                + FileUtil.FOLDER_NAME_REPORT
+//                + SEPARATOR
+//                + Constants.NAME_REPORT_STUDENT_HIRED_ROOM_LIST;
+
+        String fileExcel = "C:\\Users\\ADMIN\\Downloads\\test excel\\Template_List_Student_Register_Room.xlsx";
+
+        List<UserRegisterRoomDto> studentList = studentRegisterRoomRepository.downloadListStudentRegisterRoom(request);
+
+        try (FileInputStream fileInputStream = new FileInputStream(new File(fileExcel));
+             Workbook workbook = new XSSFWorkbook(fileInputStream)) {
+            Map<String, CellStyle> styles = createStyles(workbook);
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            writeDataInfoReport(sheet, styles);
+            writeDataToStudentHiredRoomReport(sheet, studentList, styles);
+
+//            String fileFinal = createFileExportInventoryReport();
+//            File outputFilePath = FileUtil.createFileSampleAsset(fileFinal);
+//            String fileReturn = fileFinal.replace(PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.csvcbe")
+//                    , PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
+
+            String outputFilePathStr = "C:\\Users\\ADMIN\\Downloads\\test excel\\Template_List_Student_Register_Room_output.xlsx";
+            Path outputFilePath = Paths.get(outputFilePathStr);
+
+            Files.createDirectories(outputFilePath.getParent());
+
+            try (FileOutputStream fileOut = new FileOutputStream(outputFilePath.toFile())) {
+                workbook.write(fileOut);
+            }
+
+            return outputFilePath.toAbsolutePath().toString();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Error during Excel file generation: " + e.getMessage(), e);
+        }
+    }
+
+    private void writeDataInfoReport(Sheet sheet, Map<String, CellStyle> styles) {
+        String reportTitle = "DANH SÁCH SINH VIÊN ĐĂNG KÍ PHÒNG";
+        String dateExport = "Ngày xuất báo cáo: " + new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+
+        writeValueCell(sheet, 0, 0, reportTitle, styles.get("header"));
+        writeValueCell(sheet, 1, 0, dateExport, styles.get("normal"));
+    }
+
+    private void writeDataToStudentHiredRoomReport(Sheet sheet, List<UserRegisterRoomDto> studentList, Map<String, CellStyle> styles) throws JsonProcessingException {
+        int rowStart = 4;
+        if (studentList.isEmpty()) {
+            return;
+        }
+//        int shiftSize = studentList.size();
+//        if (sheet.getLastRowNum() >= rowStart) {
+//            sheet.shiftRows(rowStart, sheet.getLastRowNum(), shiftSize, true, true);
+//        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        int stt = 1;
+        for (UserRegisterRoomDto student : studentList) {
+            Row row = sheet.createRow(rowStart);
+            writeValueCell(row, 0, String.valueOf(stt), styles.get("normal"));
+            HashMap<String, Object> dataStudent = objectMapper.readValue(
+                    student.getValue() == null ? "{}" : student.getValue(),
+                    new TypeReference<>() {}
+            );
+
+            writeValueCell(row, 1, ValueUtil.getStringByObject(dataStudent.get("full_name")), null);
+            writeValueCell(row, 2, ValueUtil.getStringByObject(dataStudent.get("number_student")), null);
+            writeValueCell(row, 3, ValueUtil.getStringByObject(dataStudent.get("number_phone")), null);
+            writeValueCell(row, 4, formatTimestamp(student.getTimeRegister(), "dd/MM/yyyy HH:mm"), styles.get("normal"));
+            writeValueCell(row, 5, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
+            writeValueCell(row, 6, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
+            writeValueCell(row, 7, ValueUtil.getStringByObject(student.getTitleSemester()), styles.get("normal"));
+            writeValueCell(row, 8, formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredStarted()), "dd/MM/yyyy HH:mm"), styles.get("normal"));
+            writeValueCell(row, 9, formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredEnded()), "dd/MM/yyyy HH:mm"), styles.get("normal"));
+
+            rowStart++;
+            stt++;
+        }
+    }
+    public static String formatTimestamp(Long timestampMillis, String formatPattern) {
+        if (timestampMillis == null || timestampMillis == 0) {
+            return "";
+        }
+        try {
+            Instant instant = Instant.ofEpochMilli(timestampMillis);
+            LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(formatPattern);
+            return dateTime.format(formatter);
+        } catch (Exception e) {
+            return "Invalid Date";
+        }
+    }
+    private String createFileExportPath() {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = "DanhSachSinhVienDangKyPhong_" + timestamp + ".xlsx";
+
+        return PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.ktxbe")
+                + SEPARATOR
+                + FileUtil.FOLDER_NAME_REPORT
+                + SEPARATOR
+                + fileName;
+    }
+
+    private void writeValueCell(Sheet sheet, int rowIndex, int colIndex, String content, CellStyle style) {
+        Row row = sheet.getRow(rowIndex);
+        if (row == null) {
+            row = sheet.createRow(rowIndex);
+        }
+        Cell cell = row.createCell(colIndex);
+        cell.setCellValue(content);
+        cell.setCellStyle(style);
+    }
+    private Map<String, CellStyle> createStyles(Workbook workbook) {
+        Map<String, CellStyle> styles = new HashMap<>();
+
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerStyle.setFont(headerFont);
+        styles.put("header", headerStyle);
+
+        CellStyle normalStyle = workbook.createCellStyle();
+        Font normalFont = workbook.createFont();
+        normalFont.setBold(false);
+        normalStyle.setFont(normalFont);
+        styles.put("normal", normalStyle);
+
+        return styles;
+    }
+
+    private void writeValueCell(Row row, int colIndex, String content, CellStyle style) {
+        Cell cell = row.createCell(colIndex);
+        cell.setCellValue(content);
+        cell.setCellStyle(style);
+    }
+
+    private String createFileExportInventoryReport() {
+        String root = PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.csvcbe");
+        String folder = root + SEPARATOR + FileUtil.FOLDER_NAME_REPORT + SEPARATOR + FileUtil.getFolderInfo();
+        FileUtil.createFolder(folder);
+        return folder + SEPARATOR + "Student_Register_Room_Report_" + new Date().getTime() + "." + ExcelUtil.FILE_EXCEL[1];
     }
 }

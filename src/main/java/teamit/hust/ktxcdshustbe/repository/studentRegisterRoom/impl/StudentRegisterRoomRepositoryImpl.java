@@ -708,4 +708,47 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         return studentRegisterRoom;
     }
 
+    @Override
+    public List<UserRegisterRoomDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select ktxUser.code_user, ktxUser.value,  " +
+                "       studentRegisterRoom.time_created,  " +
+                "       de.code_department, de.title, ro.code_room, ro.title,  " +
+                "       se.code_semester, se.title, timeHired.id_time_hired,  " +
+                "       timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status  " +
+                "from student_register_room studentRegisterRoom " +
+                "       inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user  " +
+                "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
+                "       inner join department de on ro.id_department = de.id_department  " +
+                "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
+                "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
+                "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
+                "       inner join semester se on se.id_semester = br.id_semester " +
+                "       where 1 = 1   ");
+        setConditionFindAllUserRegisterRoom(sb, request);
+        Query query = entityManager.createNativeQuery(sb.toString());
+        setParameterFindAllUserRegisterRoom(query, request);
+        List<Object[]> result = query.getResultList();
+        List<UserRegisterRoomDto> userRegisterRoomDtos = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj: result){
+                UserRegisterRoomDto dto = new UserRegisterRoomDto();
+                dto.setCodeUser(ValueUtil.getStringByObject(obj[0]));
+                dto.setValue(ValueUtil.getStringByObject(obj[1]));
+                dto.setTimeRegister(ValueUtil.getLongByObject(obj[2]));
+                dto.setCodeDepartment(ValueUtil.getStringByObject(obj[3]));
+                dto.setTitleDepartment(ValueUtil.getStringByObject(obj[4]));
+                dto.setCodeRoom(ValueUtil.getStringByObject(obj[5]));
+                dto.setTitleRoom(ValueUtil.getStringByObject(obj[6]));
+                dto.setCodeSemester(ValueUtil.getStringByObject(obj[7]));
+                dto.setTitleSemester(ValueUtil.getStringByObject(obj[8]));
+                dto.setIdTimeHired(ValueUtil.getIntegerByObject(obj[9]));
+                dto.setTimeHiredStarted(ValueUtil.getStringByObject(obj[10]));
+                dto.setTimeHiredEnded(ValueUtil.getStringByObject(obj[11]));
+                dto.setStatusInformationRegister(ValueUtil.getIntegerByObject(obj[12]));
+                userRegisterRoomDtos.add(dto);
+            }
+        }
+        return userRegisterRoomDtos;
+    }
 }

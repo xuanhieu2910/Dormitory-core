@@ -21,6 +21,7 @@ import teamit.hust.ktxcdshustbe.request.registerRoom.DeclareInformationRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.FindAllSearchRoomRequest;
+import teamit.hust.ktxcdshustbe.request.studentRoom.ListStudentHiredRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.user.UserRegisterRoomResponse;
@@ -169,5 +170,16 @@ public class StudentRegisterRoomController {
             e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/download-list-student-register-room")
+    public ResponseEntity<?> downloadListStudentRegisterRoom(UserRegisterRoomRequest request){
+        try {
+            return ApiResponseDto.createdWithState(studentRegisterRoomService.downloadListStudentRegisterRoom(request),
+            "Download list student register room report success!", HttpStatus.OK);
+        } catch (Exception e){
+        return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

@@ -6,11 +6,13 @@ import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.request.registerRoom.ChangeRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.request.studentRoom.ListStudentHiredRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.response.user.UserRegisterRoomResponse;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +48,6 @@ public interface StudentRegisterRoomService {
 
     List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer statusSuccessPaymentStudentRoomRegister);
     Page<UserRegisterRoomResponse> findAllInfoAnUserRegisterRoomByCode(UserRegisterRoomRequest request);
+
+    String downloadListStudentRegisterRoom(UserRegisterRoomRequest request) throws IOException;
 }
