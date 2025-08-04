@@ -53,13 +53,14 @@ public class Constants {
     public final static Integer DEFAULT_REMAIN_AMOUNT = 0;
 
 
-    // Register room
+    // Student Register room
     public final static Integer STUDENT_REGISTER_ROOM_STATUS_ACCEPT = 1;
     public final static Integer STATUS_HOLD_STUDENT_ROOM_REGISTER = 2;
     public final static Integer STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER = 3;
     public final static Integer STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER = 4;
     public final static Integer STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER = 5;
     public final static Integer STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER = 6;
+    public final static Integer STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER = 7;
 
     /****************************************************************/
 
@@ -229,5 +230,7 @@ public class Constants {
     public static final String TYPE_PAYMENT_INTERNATIONAL = "INTERNATIONAL";
     public static final String TYPE_PAYMENT_DOMESTIC = "DOMESTIC";
     /*----------------------------------------------------*/
+
+
 
 }
