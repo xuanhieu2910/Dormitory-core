@@ -103,23 +103,23 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
     @Override
     public Optional<BatchesRegistrationDetailDto> getDetailBatchesRegistration(String codeBatchesRegistration) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select bare.id_batches_registration, bare.title, bare.code_batches_registration,  " +
-                "       bare.start_time, bare.end_time, bare.notes, bare.description,   " +
-                "       se.id_semester, se.title, se.code_semester,   " +
-                "       bygr.id_batches_year_group_registration, yg.id_year_group,   " +
-                "       yg.title, bygr.status, bygr.time_created, bygr.time_modified,  " +
-                "       th.id_time_hired, th.code_time_hired, th.title_time_hired,  " +
-                "       th.time_started, th.time_ended, " +
-                "       brs.id_batches_registration_schedule, brs.status, brs.time_created, " +
-                "       brs.time_modified, brs.registration_start_time, brs.registration_end_time, " +
-                "       pg.id_priority_group, pg.priority_group_code, pg.title " +
-                "from batches_registration bare " +
-                "    inner join semester se on bare.id_semester = se.id_semester     " +
-                "    inner join batches_year_group_registration bygr on bare.id_batches_registration = bygr.id_batches_registration " +
-                "    inner join batches_registration_schedule brs on bare.id_batches_registration = brs.id_batches_registration " +
-                "    inner join priority_group pg on brs.id_priority_group = pg.id_priority_group " +
-                "    inner join year_group yg on bygr.id_year_group = yg.id_year_group  " +
-                "    inner join time_hired th on bare.id_time_hired = th.id_time_hired  " +
+        sb.append("select bare.id_batches_registration, bare.title, bare.code_batches_registration,   " +
+                "        bare.start_time, bare.end_time, bare.notes, bare.description,   " +
+                "        se.id_semester, se.title, se.code_semester,    " +
+                "        bygr.id_batches_year_group_registration, yg.id_year_group,   " +
+                "        yg.title, yg.code_year_group, bygr.status, bygr.time_created, bygr.time_modified,   " +
+                "        th.id_time_hired, th.code_time_hired, th.title_time_hired,   " +
+                "        th.time_started, th.time_ended,   " +
+                "        brs.id_batches_registration_schedule, brs.status, brs.time_created,   " +
+                "        brs.time_modified, brs.registration_start_time, brs.registration_end_time,   " +
+                "        pg.id_priority_group, pg.priority_group_code, pg.title   " +
+                "from batches_registration bare   " +
+                "     inner join semester se on bare.id_semester = se.id_semester   " +
+                "     inner join batches_year_group_registration bygr on bare.id_batches_registration = bygr.id_batches_registration   " +
+                "     inner join batches_registration_schedule brs on bare.id_batches_registration = brs.id_batches_registration   " +
+                "     inner join priority_group pg on brs.id_priority_group = pg.id_priority_group   " +
+                "     inner join year_group yg on bygr.id_year_group = yg.id_year_group   " +
+                "     inner join time_hired th on bare.id_time_hired = th.id_time_hired   " +
                 "where bare.code_batches_registration = :codeBatchesRegistration   ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeBatchesRegistration", codeBatchesRegistration);
@@ -137,11 +137,11 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
             detailDto.setTitleSemester(ValueUtil.getStringByObject(result.get(0)[8]));
             detailDto.setCodeSemester(ValueUtil.getStringByObject(result.get(0)[9]));
             TimeHiredCurrentDto timeHiredCurrentDto = new TimeHiredCurrentDto();
-            timeHiredCurrentDto.setIdTimeHired(ValueUtil.getIntegerByObject(result.get(0)[16]));
-            timeHiredCurrentDto.setCodeTimeHired(ValueUtil.getStringByObject(result.get(0)[17]));
-            timeHiredCurrentDto.setTitleTimeHired(ValueUtil.getStringByObject(result.get(0)[18]));
-            timeHiredCurrentDto.setTimeStarted(ValueUtil.getLongByObject(result.get(0)[19]));
-            timeHiredCurrentDto.setTimeEnded(ValueUtil.getLongByObject(result.get(0)[20]));
+            timeHiredCurrentDto.setIdTimeHired(ValueUtil.getIntegerByObject(result.get(0)[17]));
+            timeHiredCurrentDto.setCodeTimeHired(ValueUtil.getStringByObject(result.get(0)[18]));
+            timeHiredCurrentDto.setTitleTimeHired(ValueUtil.getStringByObject(result.get(0)[19]));
+            timeHiredCurrentDto.setTimeStarted(ValueUtil.getLongByObject(result.get(0)[20]));
+            timeHiredCurrentDto.setTimeEnded(ValueUtil.getLongByObject(result.get(0)[21]));
             detailDto.setTimeHiredCurrentDto(timeHiredCurrentDto);
             List<BatchesYearGroupRegistrationDto> batchesYearGroupRegistrationDtos = new ArrayList<>();
             List<BatchesRegistrationScheduleDto> batchesRegistrationScheduleDtos = new ArrayList<>();
@@ -151,23 +151,24 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
                     yearGroupRegistrationDto.setIdBatchesYearGroupRegistration(ValueUtil.getIntegerByObject(obj[10]));
                     yearGroupRegistrationDto.setIdYearGroup(ValueUtil.getIntegerByObject(obj[11]));
                     yearGroupRegistrationDto.setTitleYearGroup(ValueUtil.getStringByObject(obj[12]));
-                    yearGroupRegistrationDto.setStatus(ValueUtil.getIntegerByObject(obj[13]));
-                    yearGroupRegistrationDto.setTimeCreated(ValueUtil.getLongByObject(obj[14]));
-                    yearGroupRegistrationDto.setTimeModified(ValueUtil.getLongByObject(obj[15]));
+                    yearGroupRegistrationDto.setCodeYearGroup(ValueUtil.getStringByObject(obj[13]));
+                    yearGroupRegistrationDto.setStatus(ValueUtil.getIntegerByObject(obj[14]));
+                    yearGroupRegistrationDto.setTimeCreated(ValueUtil.getLongByObject(obj[15]));
+                    yearGroupRegistrationDto.setTimeModified(ValueUtil.getLongByObject(obj[16]));
                     batchesYearGroupRegistrationDtos.add(yearGroupRegistrationDto);
                 }
-                if (ValueUtil.getIntegerByObject(obj[21]) != null){
+                if (ValueUtil.getIntegerByObject(obj[22]) != null){
                     BatchesRegistrationScheduleDto batchesRegistrationScheduleDto = new BatchesRegistrationScheduleDto();
-                    batchesRegistrationScheduleDto.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[21]));
-                    batchesRegistrationScheduleDto.setStatus(ValueUtil.getIntegerByObject(obj[22]));
-                    batchesRegistrationScheduleDto.setTimeCreated(ValueUtil.getLongByObject(obj[23]));
-                    batchesRegistrationScheduleDto.setTimeModified(ValueUtil.getLongByObject(obj[24]));
-                    batchesRegistrationScheduleDto.setRegistrationStartTime(ValueUtil.getLongByObject(obj[25]));
-                    batchesRegistrationScheduleDto.setRegistrationEndTime(ValueUtil.getLongByObject(obj[26]));
+                    batchesRegistrationScheduleDto.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[22]));
+                    batchesRegistrationScheduleDto.setStatus(ValueUtil.getIntegerByObject(obj[23]));
+                    batchesRegistrationScheduleDto.setTimeCreated(ValueUtil.getLongByObject(obj[24]));
+                    batchesRegistrationScheduleDto.setTimeModified(ValueUtil.getLongByObject(obj[25]));
+                    batchesRegistrationScheduleDto.setRegistrationStartTime(ValueUtil.getLongByObject(obj[26]));
+                    batchesRegistrationScheduleDto.setRegistrationEndTime(ValueUtil.getLongByObject(obj[27]));
                     PriorityGroupDto priorityGroupDto = new PriorityGroupDto();
-                    priorityGroupDto.setIdPriorityGroup(ValueUtil.getIntegerByObject(obj[27]));
-                    priorityGroupDto.setCodePriorityGroup(ValueUtil.getStringByObject(obj[28]));
-                    priorityGroupDto.setTitle(ValueUtil.getStringByObject(obj[29]));
+                    priorityGroupDto.setIdPriorityGroup(ValueUtil.getIntegerByObject(obj[28]));
+                    priorityGroupDto.setCodePriorityGroup(ValueUtil.getStringByObject(obj[29]));
+                    priorityGroupDto.setTitle(ValueUtil.getStringByObject(obj[30]));
                     batchesRegistrationScheduleDto.setPriorityGroupDto(priorityGroupDto);
                     batchesRegistrationScheduleDtos.add(batchesRegistrationScheduleDto);
                 }

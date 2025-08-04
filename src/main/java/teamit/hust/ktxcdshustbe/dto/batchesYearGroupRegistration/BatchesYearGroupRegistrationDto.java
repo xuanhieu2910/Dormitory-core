@@ -13,5 +13,5 @@ public class BatchesYearGroupRegistrationDto {
     private Integer status;
     private Long timeCreated;
     private Long timeModified;
-
+    private String codeYearGroup;
 }

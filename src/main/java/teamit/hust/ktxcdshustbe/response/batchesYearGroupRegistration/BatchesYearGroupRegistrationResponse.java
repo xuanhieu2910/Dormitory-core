@@ -20,4 +20,6 @@ public class BatchesYearGroupRegistrationResponse {
     private String titleYearGroup;
     @JsonProperty("status")
     private Integer status;
+    @JsonProperty("code_year_group")
+    private String codeYearGroup;
 }
