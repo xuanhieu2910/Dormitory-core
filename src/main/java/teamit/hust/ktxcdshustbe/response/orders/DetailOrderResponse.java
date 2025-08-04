@@ -30,5 +30,7 @@ public class DetailOrderResponse {
     private Long timeModified;
     @JsonProperty("items")
     private List<DetailOrderItemsResponse> items;
+    @JsonProperty("value")
+    private String value;
 
 }

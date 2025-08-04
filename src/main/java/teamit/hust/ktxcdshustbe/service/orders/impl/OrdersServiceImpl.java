@@ -142,6 +142,7 @@ public class OrdersServiceImpl implements OrdersService {
         response.setTotalMoney(detailOrderDto.getTotalMoney());
         response.setTimeCreated(detailOrderDto.getTimeCreated());
         response.setTimeModified(detailOrderDto.getTimeModified());
+        response.setValue(detailOrderDto.getValue());
         List<DetailOrderItemsResponse> items = new ArrayList<>();
         for (DetailOrderItemsDto detailOrderItemsDto : detailOrderDto.getItems()){
             DetailOrderItemsResponse item = new DetailOrderItemsResponse();

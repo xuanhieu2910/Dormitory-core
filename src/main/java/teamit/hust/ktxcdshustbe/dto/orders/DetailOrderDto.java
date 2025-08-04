@@ -22,4 +22,5 @@ public class DetailOrderDto {
     private Long timeModified;
     private String value;
     private List<DetailOrderItemsDto> items;
+    private String session;
 }
