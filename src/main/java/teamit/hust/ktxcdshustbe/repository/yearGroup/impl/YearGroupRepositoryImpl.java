@@ -179,9 +179,6 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         if (StringUtils.isNotBlank(request.getUserNameCreated())) {
             sb.append(" AND kuCreated.user_name LIKE :userNameCreated ");
         }
-        if (StringUtils.isNotBlank(request.getFullNameCreated())) {
-            sb.append(" AND kuCreated.full_name LIKE :fullNameCreated ");
-        }
     }
 
     private void setParameterFindAllYearGroups(FindAllYearGroupsRequest request, Query query) {
@@ -200,12 +197,6 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
         }
         if (request.getIdUserCreated() != null) {
             query.setParameter("idUserCreated", request.getIdUserCreated());
-        }
-        if (StringUtils.isNotBlank(request.getUserNameCreated())) {
-            query.setParameter("userNameCreated", "%" + request.getUserNameCreated() + "%");
-        }
-        if (StringUtils.isNotBlank(request.getFullNameCreated())) {
-            query.setParameter("fullNameCreated", "%" + request.getFullNameCreated() + "%");
         }
     }
 
