@@ -690,6 +690,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             yearGroupRegistrationResponse.setIdYearGroup(batchesYearGroupRegistrationDto.getIdYearGroup());
             yearGroupRegistrationResponse.setTitleYearGroup(batchesYearGroupRegistrationDto.getTitleYearGroup());
             yearGroupRegistrationResponse.setStatus(batchesYearGroupRegistrationDto.getStatus());
+            yearGroupRegistrationResponse.setCodeYearGroup(batchesYearGroupRegistrationDto.getCodeYearGroup());
             yearGroupRegistrationResponses.add(yearGroupRegistrationResponse);
         }
 
