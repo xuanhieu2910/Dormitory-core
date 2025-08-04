@@ -21,7 +21,7 @@ public class BatchesRegistrationScheduleDetailResponse {
     private Long timeCreated;
     @JsonProperty("time_modified")
     private Long timeModified;
-    @JsonProperty("registration_start_tine")
+    @JsonProperty("registration_start_time")
     private Long registrationStartTime;
     @JsonProperty("registration_end_time")
     private Long registrationEndTime;
