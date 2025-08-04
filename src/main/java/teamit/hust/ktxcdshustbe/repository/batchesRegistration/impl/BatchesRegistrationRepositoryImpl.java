@@ -107,7 +107,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
                 "        bare.start_time, bare.end_time, bare.notes, bare.description,   " +
                 "        se.id_semester, se.title, se.code_semester,    " +
                 "        bygr.id_batches_year_group_registration, yg.id_year_group,   " +
-                "        yg.title, yg,code_year_group, bygr.status, bygr.time_created, bygr.time_modified,   " +
+                "        yg.title, yg.code_year_group, bygr.status, bygr.time_created, bygr.time_modified,   " +
                 "        th.id_time_hired, th.code_time_hired, th.title_time_hired,   " +
                 "        th.time_started, th.time_ended,   " +
                 "        brs.id_batches_registration_schedule, brs.status, brs.time_created,   " +
