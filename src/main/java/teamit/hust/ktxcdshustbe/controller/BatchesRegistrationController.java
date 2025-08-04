@@ -81,12 +81,16 @@ public class BatchesRegistrationController {
             batchesRegistrationService.updateBatchesRegistration(request);
             return ApiResponseDto.createdWithMessage("Update batches registration success!", HttpStatus.OK);
         } catch (ValidParametersException e){
+            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e){
+            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ExitsObjectException e){
+            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
+            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
