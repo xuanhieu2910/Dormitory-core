@@ -11,4 +11,5 @@ public class CreateTimeHiredRequest {
     @NonNull
     private Long timeEnd;
     private Integer status;
+    private String titleTimeHired;
 }

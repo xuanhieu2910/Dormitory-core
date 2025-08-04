@@ -31,4 +31,6 @@ public class TimeHired {
     private Integer idUserModified;
     @Column(name = "code_time_hired")
     private String codeTimeHired;
+    @Column(name = "title_time_hired")
+    private String titleTimeHired;
 }

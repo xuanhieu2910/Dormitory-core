@@ -11,4 +11,5 @@ public class UpdateTimeHiredRequest {
     private Long timeStart;
     private Long timeEnd;
     private Integer status;
+    private String titleTimeHired;
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
+import teamit.hust.ktxcdshustbe.dto.timeHired.TimeHiredCurrentDto;
 
 import java.util.List;
 
@@ -25,5 +26,6 @@ public class BatchesRegistrationDetailDto {
     private Integer status;
     private String notes;
     private String description;
+    private TimeHiredCurrentDto timeHiredCurrentDto;
 
 }

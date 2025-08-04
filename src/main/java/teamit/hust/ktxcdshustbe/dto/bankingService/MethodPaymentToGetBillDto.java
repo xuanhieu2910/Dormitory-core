@@ -8,6 +8,6 @@ import lombok.Setter;
 public class MethodPaymentToGetBillDto {
 
     private String value;
-    private Integer option;
+    private Integer option = 0;
 
 }

@@ -410,9 +410,9 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 dto.setTimeHiredStarted(ValueUtil.getLongByObject(obj[6]));
                 dto.setTimeHiredEnded(ValueUtil.getLongByObject(obj[7]));
                 dto.setPrice(ValueUtil.getStringByObject(obj[8]));
-                dto.setStatusStudentRegisterRoom(ValueUtil.getIntegerByObject(obj[10]));
-                dto.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
-                dto.setCodeOrders(ValueUtil.getStringByObject(obj[12]));
+                dto.setStatusStudentRegisterRoom(ValueUtil.getIntegerByObject(obj[9]));
+                dto.setExpiresAt(ValueUtil.getLongByObject(obj[10]));
+                dto.setCodeOrders(ValueUtil.getStringByObject(obj[11]));
                 return Optional.of(dto);
             }
         }
@@ -561,7 +561,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 studentRegisterRoom.setIdUserCreated(ValueUtil.getIntegerByObject(obj[7]));
                 studentRegisterRoom.setIdUserModified(ValueUtil.getIntegerByObject(obj[8]));
                 studentRegisterRoom.setIdOrder(ValueUtil.getIntegerByObject(obj[9]));
-                studentRegisterRoom.setIdBatchesRegistration(ValueUtil.getIntegerByObject(obj[10]));
+                studentRegisterRoom.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[10]));
                 studentRegisterRoom.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
                 studentRegisterRoomArrayList.add(studentRegisterRoom);
             }
@@ -703,7 +703,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         studentRegisterRoom.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
         studentRegisterRoom.setIdUserCreated(ValueUtil.getIntegerByObject(obj[8]));
         studentRegisterRoom.setIdOrder(ValueUtil.getIntegerByObject(obj[9]));
-        studentRegisterRoom.setIdBatchesRegistration(ValueUtil.getIntegerByObject(obj[10]));
+        studentRegisterRoom.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[10]));
         studentRegisterRoom.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
         return studentRegisterRoom;
     }
