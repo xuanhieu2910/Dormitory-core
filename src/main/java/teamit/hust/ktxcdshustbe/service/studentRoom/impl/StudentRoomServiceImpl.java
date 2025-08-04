@@ -1,7 +1,9 @@
 package teamit.hust.ktxcdshustbe.service.studentRoom.impl;
 
 
-import jakarta.transaction.Transactional;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.FindAllStudentHiredRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
@@ -380,7 +383,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         writeValueCell(sheet, 1, 0, dateExport, styles.get("normal"));
     }
 
-    private void writeDataToStudentHiredRoomReport(Sheet sheet, List<FindAllStudentHiredRoomDto> studentList, Map<String, CellStyle> styles) {
+    private void writeDataToStudentHiredRoomReport(Sheet sheet, List<FindAllStudentHiredRoomDto> studentList, Map<String, CellStyle> styles) throws JsonProcessingException {
         int rowStart = 4;
         if (studentList.isEmpty()) {
             return;
@@ -389,19 +392,26 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 //        if (sheet.getLastRowNum() >= rowStart) {
 //            sheet.shiftRows(rowStart, sheet.getLastRowNum(), shiftSize, true, true);
 //        }
+        ObjectMapper objectMapper = new ObjectMapper();
         int stt = 1;
         for (FindAllStudentHiredRoomDto student : studentList) {
             Row row = sheet.createRow(rowStart);
             writeValueCell(row, 0, String.valueOf(stt), styles.get("normal"));
-            writeValueCell(row, 1, ValueUtil.getStringByObject(student.getCodeUser()), styles.get("normal"));
-            writeValueCell(row, 2, ValueUtil.getStringByObject(student.getValueUser()), styles.get("normal"));
-            writeValueCell(row, 3, ValueUtil.getStringByObject(student.getTimeHired()), styles.get("normal"));
-            writeValueCell(row, 4, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
-            writeValueCell(row, 5, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
+            HashMap<String, Object> dataStudent = objectMapper.readValue(
+                    student.getValueUser() == null ? "{}" : student.getValueUser(),
+                    new TypeReference<>() {}
+            );
+
+            writeValueCell(row, 1, ValueUtil.getStringByObject(dataStudent.get("full_name")), null);
+            writeValueCell(row, 2, ValueUtil.getStringByObject(dataStudent.get("number_student")), null);
+            writeValueCell(row, 3, ValueUtil.getStringByObject(dataStudent.get("number_phone")), null);
+            writeValueCell(row, 4, ValueUtil.getStringByObject(student.getTimeHired()), styles.get("normal"));
+            writeValueCell(row, 5, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
+            writeValueCell(row, 6, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
 
             Integer status = student.getStatus();
             String statusText = (status != null && status == 1) ? "Đang thuê" : "Đã trả phòng";
-            writeValueCell(row, 6, statusText, styles.get("normal"));
+            writeValueCell(row, 7, statusText, styles.get("normal"));
 
             rowStart++;
             stt++;
