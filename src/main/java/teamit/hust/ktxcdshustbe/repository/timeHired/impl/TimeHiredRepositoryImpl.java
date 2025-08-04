@@ -80,7 +80,8 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append(" select time_hired.id_time_hired, time_started, " +
                 "       time_ended, status, time_created,  " +
-                "       time_modified, id_user_created, id_user_modified,code_time_hired " +
+                "       time_modified, id_user_created, id_user_modified,code_time_hired," +
+                "       title_time_hired " +
                 "from time_hired where 1=1 ");
 
         if (StringUtils.isNotBlank(request.getKeyword())){
@@ -109,6 +110,7 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
                 hired.setIdUserCreated(ValueUtil.getIntegerByObject(obj[6]));
                 hired.setIdUserModified(ValueUtil.getStringByObject(obj[7]));
                 hired.setCodeTimeHired(ValueUtil.getStringByObject(obj[8]));
+                hired.setTitleTimeHired(ValueUtil.getStringByObject(obj[9]));
                 responses.add(hired);
 
             }
