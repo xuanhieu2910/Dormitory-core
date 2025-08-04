@@ -13,6 +13,7 @@ import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllBatchesRegistrati
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllDepartmentBatchesRegistrationDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistrationSchedule.BatchesRegistrationScheduleDto;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
+import teamit.hust.ktxcdshustbe.dto.priorityGroup.PriorityGroupDto;
 import teamit.hust.ktxcdshustbe.dto.timeHired.TimeHiredCurrentDto;
 import teamit.hust.ktxcdshustbe.entity.BatchesRegistration;
 import teamit.hust.ktxcdshustbe.repository.batchesRegistration.BatchesRegistrationRepositoryCustom;
@@ -146,15 +147,33 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
             List<BatchesRegistrationScheduleDto> batchesRegistrationScheduleDtos = new ArrayList<>();
             for (Object[] obj : result){
                 BatchesYearGroupRegistrationDto yearGroupRegistrationDto = new BatchesYearGroupRegistrationDto();
-                yearGroupRegistrationDto.setIdBatchesYearGroupRegistration(ValueUtil.getIntegerByObject(obj[10]));
-                yearGroupRegistrationDto.setIdYearGroup(ValueUtil.getIntegerByObject(obj[11]));
-                yearGroupRegistrationDto.setTitleYearGroup(ValueUtil.getStringByObject(obj[12]));
-                yearGroupRegistrationDto.setStatus(ValueUtil.getIntegerByObject(obj[13]));
-                yearGroupRegistrationDto.setTimeCreated(ValueUtil.getLongByObject(obj[14]));
-                yearGroupRegistrationDto.setTimeModified(ValueUtil.getLongByObject(obj[15]));
-                batchesYearGroupRegistrationDtos.add(yearGroupRegistrationDto);
+                if (ValueUtil.getIntegerByObject(obj[10]) != null) {
+                    yearGroupRegistrationDto.setIdBatchesYearGroupRegistration(ValueUtil.getIntegerByObject(obj[10]));
+                    yearGroupRegistrationDto.setIdYearGroup(ValueUtil.getIntegerByObject(obj[11]));
+                    yearGroupRegistrationDto.setTitleYearGroup(ValueUtil.getStringByObject(obj[12]));
+                    yearGroupRegistrationDto.setStatus(ValueUtil.getIntegerByObject(obj[13]));
+                    yearGroupRegistrationDto.setTimeCreated(ValueUtil.getLongByObject(obj[14]));
+                    yearGroupRegistrationDto.setTimeModified(ValueUtil.getLongByObject(obj[15]));
+                    batchesYearGroupRegistrationDtos.add(yearGroupRegistrationDto);
+                }
+                if (ValueUtil.getIntegerByObject(obj[21]) != null){
+                    BatchesRegistrationScheduleDto batchesRegistrationScheduleDto = new BatchesRegistrationScheduleDto();
+                    batchesRegistrationScheduleDto.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[21]));
+                    batchesRegistrationScheduleDto.setStatus(ValueUtil.getIntegerByObject(obj[22]));
+                    batchesRegistrationScheduleDto.setTimeCreated(ValueUtil.getLongByObject(obj[23]));
+                    batchesRegistrationScheduleDto.setTimeModified(ValueUtil.getLongByObject(obj[24]));
+                    batchesRegistrationScheduleDto.setRegistrationStartTime(ValueUtil.getLongByObject(obj[25]));
+                    batchesRegistrationScheduleDto.setRegistrationEndTime(ValueUtil.getLongByObject(obj[26]));
+                    PriorityGroupDto priorityGroupDto = new PriorityGroupDto();
+                    priorityGroupDto.setIdPriorityGroup(ValueUtil.getIntegerByObject(obj[27]));
+                    priorityGroupDto.setCodePriorityGroup(ValueUtil.getStringByObject(obj[28]));
+                    priorityGroupDto.setTitle(ValueUtil.getStringByObject(obj[29]));
+                    batchesRegistrationScheduleDto.setPriorityGroupDto(priorityGroupDto);
+                    batchesRegistrationScheduleDtos.add(batchesRegistrationScheduleDto);
+                }
             }
             detailDto.setBatchesYearGroupRegistrationDtos(batchesYearGroupRegistrationDtos);
+            detailDto.setRegistrationScheduleDtos(batchesRegistrationScheduleDtos);
             return Optional.of(detailDto);
         }
         return Optional.empty();
