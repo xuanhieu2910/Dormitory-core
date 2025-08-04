@@ -11,7 +11,9 @@ import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.BatchesRegistrationDetailDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllBatchesRegistrationDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllDepartmentBatchesRegistrationDto;
+import teamit.hust.ktxcdshustbe.dto.batchesRegistrationSchedule.BatchesRegistrationScheduleDto;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
+import teamit.hust.ktxcdshustbe.dto.priorityGroup.PriorityGroupDto;
 import teamit.hust.ktxcdshustbe.dto.timeHired.TimeHiredCurrentDto;
 import teamit.hust.ktxcdshustbe.entity.BatchesRegistration;
 import teamit.hust.ktxcdshustbe.repository.batchesRegistration.BatchesRegistrationRepositoryCustom;
@@ -101,19 +103,24 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
     @Override
     public Optional<BatchesRegistrationDetailDto> getDetailBatchesRegistration(String codeBatchesRegistration) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select bare.id_batches_registration, bare.title, bare.code_batches_registration, " +
-                        "       bare.start_time, bare.end_time, bare.notes, bare.description,  " +
-                        "       se.id_semester, se.title, se.code_semester,  " +
-                        "       bygr.id_batches_year_group_registration, yg.id_year_group,  " +
-                        "       yg.title, bygr.status, bygr.time_created, bygr.time_modified, " +
-                        "       th.id_time_hired, th.code_time_hired, th.title_time_hired, " +
-                        "       th.time_started, th.time_ended " +
-                        "from batches_registration bare  " +
-                        "    inner join semester se on bare.id_semester = se.id_semester    " +
-                        "    inner join batches_year_group_registration bygr on bare.id_batches_registration = bygr.id_batches_registration  " +
-                        "    inner join year_group yg on bygr.id_year_group = yg.id_year_group " +
-                        "    inner join time_hired th on bare.id_time_hired = th.id_time_hired " +
-                        "where bare.code_batches_registration = :codeBatchesRegistration  ");
+        sb.append(" select bare.id_batches_registration, bare.title, bare.code_batches_registration,  " +
+                "       bare.start_time, bare.end_time, bare.notes, bare.description,   " +
+                "       se.id_semester, se.title, se.code_semester,   " +
+                "       bygr.id_batches_year_group_registration, yg.id_year_group,   " +
+                "       yg.title, bygr.status, bygr.time_created, bygr.time_modified,  " +
+                "       th.id_time_hired, th.code_time_hired, th.title_time_hired,  " +
+                "       th.time_started, th.time_ended, " +
+                "       brs.id_batches_registration_schedule, brs.status, brs.time_created, " +
+                "       brs.time_modified, brs.registration_start_time, brs.registration_end_time, " +
+                "       pg.id_priority_group, pg.priority_group_code, pg.title " +
+                "from batches_registration bare " +
+                "    inner join semester se on bare.id_semester = se.id_semester     " +
+                "    inner join batches_year_group_registration bygr on bare.id_batches_registration = bygr.id_batches_registration " +
+                "    inner join batches_registration_schedule brs on bare.id_batches_registration = brs.id_batches_registration " +
+                "    inner join priority_group pg on brs.id_priority_group = pg.id_priority_group " +
+                "    inner join year_group yg on bygr.id_year_group = yg.id_year_group  " +
+                "    inner join time_hired th on bare.id_time_hired = th.id_time_hired  " +
+                "where bare.code_batches_registration = :codeBatchesRegistration   ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeBatchesRegistration", codeBatchesRegistration);
         List<Object[]> result = query.getResultList();
@@ -137,18 +144,36 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
             timeHiredCurrentDto.setTimeEnded(ValueUtil.getLongByObject(result.get(0)[20]));
             detailDto.setTimeHiredCurrentDto(timeHiredCurrentDto);
             List<BatchesYearGroupRegistrationDto> batchesYearGroupRegistrationDtos = new ArrayList<>();
-
+            List<BatchesRegistrationScheduleDto> batchesRegistrationScheduleDtos = new ArrayList<>();
             for (Object[] obj : result){
                 BatchesYearGroupRegistrationDto yearGroupRegistrationDto = new BatchesYearGroupRegistrationDto();
-                yearGroupRegistrationDto.setIdBatchesYearGroupRegistration(ValueUtil.getIntegerByObject(obj[10]));
-                yearGroupRegistrationDto.setIdYearGroup(ValueUtil.getIntegerByObject(obj[11]));
-                yearGroupRegistrationDto.setTitleYearGroup(ValueUtil.getStringByObject(obj[12]));
-                yearGroupRegistrationDto.setStatus(ValueUtil.getIntegerByObject(obj[13]));
-                yearGroupRegistrationDto.setTimeCreated(ValueUtil.getLongByObject(obj[14]));
-                yearGroupRegistrationDto.setTimeModified(ValueUtil.getLongByObject(obj[15]));
-                batchesYearGroupRegistrationDtos.add(yearGroupRegistrationDto);
+                if (ValueUtil.getIntegerByObject(obj[10]) != null) {
+                    yearGroupRegistrationDto.setIdBatchesYearGroupRegistration(ValueUtil.getIntegerByObject(obj[10]));
+                    yearGroupRegistrationDto.setIdYearGroup(ValueUtil.getIntegerByObject(obj[11]));
+                    yearGroupRegistrationDto.setTitleYearGroup(ValueUtil.getStringByObject(obj[12]));
+                    yearGroupRegistrationDto.setStatus(ValueUtil.getIntegerByObject(obj[13]));
+                    yearGroupRegistrationDto.setTimeCreated(ValueUtil.getLongByObject(obj[14]));
+                    yearGroupRegistrationDto.setTimeModified(ValueUtil.getLongByObject(obj[15]));
+                    batchesYearGroupRegistrationDtos.add(yearGroupRegistrationDto);
+                }
+                if (ValueUtil.getIntegerByObject(obj[21]) != null){
+                    BatchesRegistrationScheduleDto batchesRegistrationScheduleDto = new BatchesRegistrationScheduleDto();
+                    batchesRegistrationScheduleDto.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[21]));
+                    batchesRegistrationScheduleDto.setStatus(ValueUtil.getIntegerByObject(obj[22]));
+                    batchesRegistrationScheduleDto.setTimeCreated(ValueUtil.getLongByObject(obj[23]));
+                    batchesRegistrationScheduleDto.setTimeModified(ValueUtil.getLongByObject(obj[24]));
+                    batchesRegistrationScheduleDto.setRegistrationStartTime(ValueUtil.getLongByObject(obj[25]));
+                    batchesRegistrationScheduleDto.setRegistrationEndTime(ValueUtil.getLongByObject(obj[26]));
+                    PriorityGroupDto priorityGroupDto = new PriorityGroupDto();
+                    priorityGroupDto.setIdPriorityGroup(ValueUtil.getIntegerByObject(obj[27]));
+                    priorityGroupDto.setCodePriorityGroup(ValueUtil.getStringByObject(obj[28]));
+                    priorityGroupDto.setTitle(ValueUtil.getStringByObject(obj[29]));
+                    batchesRegistrationScheduleDto.setPriorityGroupDto(priorityGroupDto);
+                    batchesRegistrationScheduleDtos.add(batchesRegistrationScheduleDto);
+                }
             }
             detailDto.setBatchesYearGroupRegistrationDtos(batchesYearGroupRegistrationDtos);
+            detailDto.setRegistrationScheduleDtos(batchesRegistrationScheduleDtos);
             return Optional.of(detailDto);
         }
         return Optional.empty();

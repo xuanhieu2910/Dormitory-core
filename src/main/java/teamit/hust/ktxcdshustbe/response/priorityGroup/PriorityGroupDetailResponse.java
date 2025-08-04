@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 
 public class PriorityGroupDetailResponse {
 
-    @JsonProperty("title_priortity_group")
-    private String titlePriortityGroup;
+    @JsonProperty("title_priority_group")
+    private String titlePriorityGroup;
     @JsonProperty("description")
     private String description;
     @JsonProperty("priority_group_code")

@@ -190,6 +190,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
         timeHiredDetailsResponse.setTimeModified(timeHired.getTimeModified().toString());
         timeHiredDetailsResponse.setIdUserCreated(timeHired.getIdUserCreated());
         timeHiredDetailsResponse.setIdUserModified(timeHired.getIdUserModified());
+        timeHiredDetailsResponse.setTitleTimeHired(timeHired.getTitleTimeHired());
         return timeHiredDetailsResponse;
     }
 
@@ -207,6 +208,7 @@ public class TimeHiredServiceImpl implements TimeHiredService {
             findAllTimeHiredResponse.setTimeModified(findAllTimeHiredDto.getTimeModified());
             findAllTimeHiredResponse.setIdUserCreated(findAllTimeHiredDto.getIdUserCreated());
             findAllTimeHiredResponse.setIdUserModified(findAllTimeHiredDto.getIdUserModified());
+            findAllTimeHiredResponse.setTitleTimeHired(findAllTimeHiredDto.getTitleTimeHired());
             findAllTimeHiredResponses.add(findAllTimeHiredResponse);
         }
         return findAllTimeHiredResponses;

@@ -105,7 +105,7 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
 
     private PriorityGroupDetailResponse convertToPriorityGroupDetailResponse(FindPriorityGroupDetailDto dto) {
         PriorityGroupDetailResponse response = new PriorityGroupDetailResponse();
-        response.setTitlePriortityGroup(dto.getTitlePriorityGroup());
+        response.setTitlePriorityGroup(dto.getTitlePriorityGroup());
         response.setPriorityGroupCode(dto.getPriorityGroupCode());
         response.setDescription(dto.getDescription());
         return response;

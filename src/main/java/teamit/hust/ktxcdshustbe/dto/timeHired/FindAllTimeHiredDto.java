@@ -17,4 +17,5 @@ public class FindAllTimeHiredDto {
     private String timeModified;
     private Integer idUserCreated;
     private String idUserModified;
+    private String titleTimeHired;
 }
