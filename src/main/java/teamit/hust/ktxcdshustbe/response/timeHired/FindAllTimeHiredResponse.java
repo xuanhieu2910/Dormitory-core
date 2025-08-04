@@ -27,4 +27,6 @@ public class FindAllTimeHiredResponse {
     private Integer idUserCreated;
     @JsonProperty("id_user_modified")
     private String idUserModified;
+    @JsonProperty("title_time_hired")
+    private String titleTimeHired;
 }

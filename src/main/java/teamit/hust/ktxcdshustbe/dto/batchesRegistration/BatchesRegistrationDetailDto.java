@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import teamit.hust.ktxcdshustbe.dto.batchesRegistrationSchedule.BatchesRegistrationScheduleDto;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
 import teamit.hust.ktxcdshustbe.dto.timeHired.TimeHiredCurrentDto;
 
@@ -27,5 +28,6 @@ public class BatchesRegistrationDetailDto {
     private String notes;
     private String description;
     private TimeHiredCurrentDto timeHiredCurrentDto;
+    private List<BatchesRegistrationScheduleDto> registrationScheduleDtos;
 
 }

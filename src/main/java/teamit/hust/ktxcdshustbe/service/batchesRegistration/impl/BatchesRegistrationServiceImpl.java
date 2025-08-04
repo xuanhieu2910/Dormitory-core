@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.BatchesRegistrationDetailDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllBatchesRegistrationDto;
 import teamit.hust.ktxcdshustbe.dto.batchesRegistration.FindAllDepartmentBatchesRegistrationDto;
+import teamit.hust.ktxcdshustbe.dto.batchesRegistrationSchedule.BatchesRegistrationScheduleDto;
 import teamit.hust.ktxcdshustbe.dto.batchesYearGroupRegistration.BatchesYearGroupRegistrationDto;
 import teamit.hust.ktxcdshustbe.entity.*;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
@@ -31,7 +32,9 @@ import teamit.hust.ktxcdshustbe.request.batchesRegistrationSchedule.UpdateBatche
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.BatchesRegistrationDetailResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllBatchesRegistrationResponse;
 import teamit.hust.ktxcdshustbe.response.batchesRegistration.FindAllDepartmentBatchesRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.batchesRegistrationSchedule.BatchesRegistrationScheduleDetailResponse;
 import teamit.hust.ktxcdshustbe.response.batchesYearGroupRegistration.BatchesYearGroupRegistrationResponse;
+import teamit.hust.ktxcdshustbe.response.priorityGroup.PriorityGroupDetailResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredDetailsResponse;
 import teamit.hust.ktxcdshustbe.response.timeHired.TimeHiredResponse;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
@@ -45,6 +48,7 @@ import teamit.hust.ktxcdshustbe.service.timeHired.TimeHiredService;
 import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
+import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
 import java.util.*;
 
@@ -688,7 +692,25 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
             yearGroupRegistrationResponse.setStatus(batchesYearGroupRegistrationDto.getStatus());
             yearGroupRegistrationResponses.add(yearGroupRegistrationResponse);
         }
+
+        List<BatchesRegistrationScheduleDetailResponse> batchesRegistrationSchedules = new ArrayList<>();
+        for (BatchesRegistrationScheduleDto dto : detailDto.getRegistrationScheduleDtos()){
+            BatchesRegistrationScheduleDetailResponse registrationSchedule = new BatchesRegistrationScheduleDetailResponse();
+            registrationSchedule.setIdBatchesRegistrationSchedule(dto.getIdBatchesRegistrationSchedule());
+            registrationSchedule.setStatus(dto.getStatus());
+            registrationSchedule.setTimeCreated(dto.getTimeCreated());
+            registrationSchedule.setTimeModified(dto.getTimeModified());
+            registrationSchedule.setRegistrationStartTime(dto.getRegistrationStartTime());
+            registrationSchedule.setRegistrationEndTime(dto.getRegistrationEndTime());
+            PriorityGroupDetailResponse priorityGroupDetailResponse = new PriorityGroupDetailResponse();
+            priorityGroupDetailResponse.setTitlePriorityGroup(dto.getPriorityGroupDto().getTitle());
+            priorityGroupDetailResponse.setPriorityGroupCode(dto.getPriorityGroupDto().getCodePriorityGroup());
+            registrationSchedule.setPriorityGroupDetailResponse(priorityGroupDetailResponse);
+            batchesRegistrationSchedules.add(registrationSchedule);
+        }
+
         response.setBatchesYearGroupRegistrationResponseList(yearGroupRegistrationResponses);
+        response.setBatchesRegistrationScheduleDetailResponses(batchesRegistrationSchedules);
         return response;
     }
 
