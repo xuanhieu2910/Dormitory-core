@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
@@ -128,7 +129,7 @@ public class PaymentServiceImpl implements PaymentService {
         verifyCallBackPayment(callBackPaymentRequest);
         log.info("[CALL BACK] : {} - {}", new ObjectMapper().writeValueAsString(callBackPaymentRequest.toString()), DateUtil.formatToPattern(new Date(), DateUtil.DATE_FORMAT));
         TransactionPayment transactionPayment =
-                transactionPaymentService.findByCheckSumAndStatusAndType(callBackPaymentRequest.getSignature(), Constants.STATUS_INIT_TRANSACTION_PAYMENT,
+                transactionPaymentService.findByIdOrderAndStatusAndType(ValueUtil.getIntegerByObject(callBackPaymentRequest.getOrder_id()), Constants.STATUS_INIT_TRANSACTION_PAYMENT,
                         Constants.TYPE_REQ_TRANSACTION_PAYMENT);
         verifyTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
         Orders orders = ordersService.findOrdersByIdOrder(transactionPayment.getIdOrder());

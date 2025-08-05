@@ -22,9 +22,9 @@ public class TransactionPaymentServiceImpl implements TransactionPaymentService 
     }
 
     @Override
-    public TransactionPayment findByCheckSumAndStatusAndType(String checkSum, Integer status, Integer type) {
+    public TransactionPayment findByIdOrderAndStatusAndType(Integer idOrder, Integer status, Integer type) {
         Optional<TransactionPayment> transactionPayment =
-                transactionPaymentRepository.findByCheckSumAndStatusAndType(checkSum, status, type);
+                transactionPaymentRepository.findByIdOrderAndStatusAndType(idOrder, status, type);
         if (transactionPayment.isEmpty()){
             throw new NotFoundException();
         }

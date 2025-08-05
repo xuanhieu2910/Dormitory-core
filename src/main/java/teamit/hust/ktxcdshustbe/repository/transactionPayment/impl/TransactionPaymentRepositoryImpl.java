@@ -19,7 +19,7 @@ public class TransactionPaymentRepositoryImpl implements TransactionPaymentRepos
 
 
     @Override
-    public Optional<TransactionPayment> findByCheckSumAndStatusAndType(String checkSum, Integer status, Integer type) {
+    public Optional<TransactionPayment> findByIdOrderAndStatusAndType(Integer idOrder, Integer status, Integer type) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select tp.id_transaction_payment, tp.id_order, tp.code_transaction_payment,   " +
                 "        tp.status, tp.type, tp.time_created, tp.time_modified,   " +
@@ -27,11 +27,11 @@ public class TransactionPaymentRepositoryImpl implements TransactionPaymentRepos
                 "        tp.method_payment, tp.merchant_id, tp.terminal_id   " +
                 " from transaction_payment tp   " +
                 "     inner join orders ord on tp.id_order = ord.id_order" +
-                " where tp.check_sum = :checkSum   " +
+                " where ord.id_order = :idOrder   " +
                 " and tp.status = :status  " +
                 " and tp.type = :type ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("checkSum", checkSum);
+        query.setParameter("idOrder", idOrder);
         query.setParameter("status", status);
         query.setParameter("type", type);
         List<Object[]> result = query.getResultList();
