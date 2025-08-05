@@ -224,9 +224,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private void verifyTransactionPaymentCallBack(TransactionPayment transactionPayment, CallBackPaymentRequest request) {
-        if (!transactionPayment.getCheckSum().equals(request.getSignature())){
-            throw new ChecksumException();
-        }
         if (!transactionPayment.getMerchantId().equals(request.getMerchant_id())
                 || !transactionPayment.getTerminalId().equals(request.getTerminal_id())){
             throw new ValidParametersException();
