@@ -331,4 +331,24 @@ public class YearGroupRepositoryImpl implements YearGroupRepositoryCustom {
 
         return Optional.of(yearGroup);
     }
+
+    @Override
+    public Optional<List<YearGroup>> findAllListYearGroup() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select id_year_group, code_year_group, title, " +
+                "       description, time_created, time_modified, " +
+                "       id_user_created, id_user_modified " +
+                " from year_group  " +
+                " where 1=1  ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        List<Object[]> results = query.getResultList();
+        if(!CollectionUtils.isEmpty(results)){
+            List<YearGroup> yearGroups = new ArrayList<>();
+            for (Object[] result : results) {
+                yearGroups.add(writeObjYearGroup(result));
+            }
+            return Optional.of(yearGroups);
+        }
+        return Optional.empty();
+    }
 }

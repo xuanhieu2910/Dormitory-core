@@ -29,4 +29,6 @@ public interface YearGroupService {
     void updateYearGroup(UpdateYearGroupRequest request);
 
     void deleteYearGroup(String code);
+
+    List<YearGroup> getAllTYearGroup();
 }

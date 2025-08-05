@@ -24,4 +24,6 @@ public interface YearGroupRepositoryCustom {
     Optional<YearGroup> findByTitle(String title);
 
     Optional<YearGroup> findByCodeYearGroup(String code);
+
+    Optional<List<YearGroup>> findAllListYearGroup();
 }
