@@ -17,19 +17,27 @@ import teamit.hust.ktxcdshustbe.response.ErrorResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component
 public class UnauthorizedEntryPoint implements AuthenticationEntryPoint, Serializable {
 
+
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.error("Unauthenticated error: {}",authException.getMessage());
+        Set<String> allowOriginals = new HashSet<>();
+        allowOriginals.add(WebSecurityConfig.DOMAIN_FPT_PAYMENT);
+        allowOriginals.add(WebSecurityConfig.DOMAIN_FE);
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setHeader("Access-Control-Allow-Origin", WebSecurityConfig.DOMAIN_FE);
+        String uriCurrent = request.getRequestURI();
+        log.info("Uri current un-author {}", uriCurrent);
+        if (allowOriginals.contains(uriCurrent)) {
+            log.info("Allow uri: {}", uriCurrent);
+            response.setHeader("Access-Control-Allow-Origin", uriCurrent);
+        }
         response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
         response.setHeader("Access-Control-Allow-Credentials","true");

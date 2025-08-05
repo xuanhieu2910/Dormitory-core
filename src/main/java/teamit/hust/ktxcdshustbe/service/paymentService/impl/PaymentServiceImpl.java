@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import teamit.hust.ktxcdshustbe.entity.Orders;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
@@ -21,6 +22,7 @@ import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomS
 import teamit.hust.ktxcdshustbe.service.transactionPayment.TransactionPaymentService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.DateUtil;
+import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
 import java.util.*;
 
@@ -121,18 +123,44 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public void callBackPayment(CallBackPaymentRequest request) throws JsonProcessingException {
-        verifyCallBackPayment(request);
-        log.info("[CALL BACK] : {} - {}", request.toString(), DateUtil.formatToPattern(new Date(), DateUtil.DATE_FORMAT));
+    public void callBackPayment(Map<String,Object> request) throws JsonProcessingException {
+        CallBackPaymentRequest callBackPaymentRequest = convertToCallBackPaymentRequest(request);
+        verifyCallBackPayment(callBackPaymentRequest);
+        log.info("[CALL BACK] : {} - {}", callBackPaymentRequest.toString(), DateUtil.formatToPattern(new Date(), DateUtil.DATE_FORMAT));
         TransactionPayment transactionPayment =
-                transactionPaymentService.findByIdOrderAndStatusAndType(Integer.valueOf(request.getOrder_id()), Constants.STATUS_INIT_TRANSACTION_PAYMENT,
+                transactionPaymentService.findByIdOrderAndStatusAndType(Integer.valueOf(callBackPaymentRequest.getOrder_id()), Constants.STATUS_INIT_TRANSACTION_PAYMENT,
                         Constants.TYPE_REQ_TRANSACTION_PAYMENT);
-        verifyTransactionPaymentCallBack(transactionPayment, request);
+        verifyTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
         Orders orders = ordersService.findOrdersByIdOrder(transactionPayment.getIdOrder());
-        updateTransactionPaymentCallBack(transactionPayment, request);
-        updateOrdersCallBack(orders, request);
-        updateStudentRegisterRoomCallBack(orders, request);
-        createNewTransactionResponse(orders, transactionPayment, request);
+        updateTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
+        updateOrdersCallBack(orders, callBackPaymentRequest);
+        updateStudentRegisterRoomCallBack(orders, callBackPaymentRequest);
+        createNewTransactionResponse(orders, transactionPayment, callBackPaymentRequest);
+    }
+
+    private CallBackPaymentRequest convertToCallBackPaymentRequest(Map<String, Object> request) {
+        CallBackPaymentRequest callBackPaymentRequest = new CallBackPaymentRequest();
+        callBackPaymentRequest.setPayment_method(request.containsKey("merchant_id") ? ValueUtil.getStringByObject(request.get("merchant_id")) : null);
+        callBackPaymentRequest.setTerminal_id(request.containsKey("terminal_id") ? ValueUtil.getStringByObject(request.get("terminal_id")) : null);
+        callBackPaymentRequest.setTxn_code(request.containsKey("txn_code") ? ValueUtil.getStringByObject(request.get("txn_code")) : null);
+        callBackPaymentRequest.setTxn_amount(request.containsKey("txn_amount") ? ValueUtil.getStringByObject(request.get("txn_amount")) : null);
+        callBackPaymentRequest.setTxn_fee(request.containsKey("txn_fee") ? ValueUtil.getStringByObject(request.get("txn_fee")) : null);
+        callBackPaymentRequest.setTxn_currency(request.containsKey("txn_currency") ? ValueUtil.getStringByObject(request.get("txn_currency")) : null);
+        callBackPaymentRequest.setOrder_id(request.containsKey("order_id") ? ValueUtil.getStringByObject(request.get("order_id")) : null);
+        callBackPaymentRequest.setOrder_status(request.containsKey("order_status") ? ValueUtil.getStringByObject(request.get("order_status")) : null);
+        callBackPaymentRequest.setPayment_method(request.containsKey("payment_method") ? ValueUtil.getStringByObject(request.get("payment_method")) : null);
+        callBackPaymentRequest.setPayment_card_brand(request.containsKey("payment_card_brand") ? ValueUtil.getStringByObject(request.get("payment_card_brand")) : null);
+        callBackPaymentRequest.setPayment_card_bin(request.containsKey("payment_card_bin") ? ValueUtil.getStringByObject(request.get("payment_card_bin")) : null);
+        callBackPaymentRequest.setPayment_card_suffix(request.containsKey("payment_card_suffix") ? ValueUtil.getStringByObject(request.get("payment_card_suffix")) : null);
+        callBackPaymentRequest.setToken_card_id(request.containsKey("token_card_id") ? ValueUtil.getStringByObject("token_card_id") : null);
+        callBackPaymentRequest.setToken_card_brand(request.containsKey("token_card_brand") ? ValueUtil.getStringByObject("token_card_brand") : null);
+        callBackPaymentRequest.setToken_card_bin(request.containsKey("token_card_bin") ? ValueUtil.getStringByObject("token_card_bin") : null);
+        callBackPaymentRequest.setToken_card_suffix(request.containsKey("token_card_suffix") ? ValueUtil.getStringByObject("token_card_suffix") : null);
+        callBackPaymentRequest.setToken_value(request.containsValue("token_value") ? ValueUtil.getStringByObject("token_value") : null);
+        callBackPaymentRequest.setResult_code(request.containsKey("result_code") ? ValueUtil.getStringByObject("result_code") : null);
+        callBackPaymentRequest.setResult_explicit_code(request.containsKey("result_explicit_code") ? ValueUtil.getStringByObject("result_explicit_code") : null);
+        callBackPaymentRequest.setSignature(request.containsKey("signature") ? ValueUtil.getStringByObject("signature") : null);
+        return callBackPaymentRequest;
     }
 
     private void updateStudentRegisterRoomCallBack(Orders orders, CallBackPaymentRequest request) {
