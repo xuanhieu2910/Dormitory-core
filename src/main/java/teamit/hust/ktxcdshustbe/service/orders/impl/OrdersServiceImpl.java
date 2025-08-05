@@ -345,7 +345,7 @@ public class OrdersServiceImpl implements OrdersService {
         dataBody.put("method", methodPaymentToGetBillDto);
         dataBody.put("return_token", "true");
         dataBody.put("device", deviceToGetBillDto);
-        dataBody.put("customer", customerToGetBillDto);
+//        dataBody.put("customer", customerToGetBillDto);
         dataBody.put("order", orderToGetBillDto);
         dataBody.put("return_url", PropertiesUtil.getProperty("pft.pay-gate.return-url"));
         dataBody.put("cancel_url", PropertiesUtil.getProperty("pft.pay-gate.cancel-url"));
@@ -359,10 +359,10 @@ public class OrdersServiceImpl implements OrdersService {
     private CustomerToGetBillDto initializeCustomerToGetBill() {
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         CustomerToGetBillDto customerToGetBillDto = new CustomerToGetBillDto();
-        customerToGetBillDto.setFirst_name(ktxUser.getCodeUser());
-        customerToGetBillDto.setLast_name(ktxUser.getCodeUser());
-        customerToGetBillDto.setPhone_number("1234567899");
-        customerToGetBillDto.setEmail(ktxUser.getUsername());
+//        customerToGetBillDto.setFirst_name(ktxUser.getCodeUser());
+//        customerToGetBillDto.setLast_name(ktxUser.getCodeUser());
+//        customerToGetBillDto.setPhone_number("1234567899");
+//        customerToGetBillDto.setEmail(ktxUser.getUsername());
         return customerToGetBillDto;
     }
 
