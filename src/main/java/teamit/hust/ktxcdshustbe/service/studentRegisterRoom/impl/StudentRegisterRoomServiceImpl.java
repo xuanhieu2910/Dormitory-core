@@ -180,6 +180,8 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             response.setCodeSemester(dto.getCodeSemester());
             response.setTitleSemester(dto.getTitleSemester());
             response.setStatusRegisterInformation(dto.getStatusInformationRegister());
+            response.setTimeStart(dto.getTimeHiredStarted());
+            response.setTimeEnd(dto.getTimeHiredEnded());
             responses.add(response);
         }
         return responses;

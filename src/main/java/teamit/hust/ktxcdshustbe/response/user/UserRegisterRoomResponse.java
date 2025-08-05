@@ -34,5 +34,9 @@ public class UserRegisterRoomResponse {
     private String titleSemester;
     @JsonProperty("status_register_information")
     private Integer statusRegisterInformation;
+    @JsonProperty("time_start")
+    private Long timeStart;
+    @JsonProperty("time_end")
+    private Long timeEnd;
 
 }
