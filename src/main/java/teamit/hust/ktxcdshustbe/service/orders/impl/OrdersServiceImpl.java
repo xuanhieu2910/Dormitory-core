@@ -379,7 +379,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     private OrderToGetBillDto initializeOrderToGetBill(Orders orders, List<OrderItems> orderItems){
         OrderToGetBillDto orderToGetBillDto = new OrderToGetBillDto();
-        orderToGetBillDto.setId(String.valueOf(orders.getIdOrder()));
+        orderToGetBillDto.setId(String.valueOf(orders.getIdOrder()) + new Date().getTime());
         orderToGetBillDto.setAmount(orders.getTotalMoney());
         orderToGetBillDto.setCurrency("VND");
         orderToGetBillDto.setDescription(orders.getCodeOrder());
