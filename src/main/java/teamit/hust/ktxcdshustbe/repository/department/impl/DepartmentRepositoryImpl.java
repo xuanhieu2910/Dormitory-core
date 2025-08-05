@@ -335,8 +335,8 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         if (StringUtils.isNotBlank(shortName)){
             query.setParameter("shortName", shortName);
         }
-        List<Object[]> result = query.getResultList();
-        return CollectionUtils.isEmpty(result);
+        Number count = (Number) query.getSingleResult();
+        return count.longValue() > 0;
     }
 
     @Override
