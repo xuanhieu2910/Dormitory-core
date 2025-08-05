@@ -58,6 +58,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     InterceptLog logInterceptor;
     public final static String INFORMATION_USER = "informationUser";
     public final static String DOMAIN_FE = "https://ktx-staging.hust.edu.vn";
+    public final static String DOMAIN_FPT_PAYMENT = "https://merchantmock-test.foxpay.vn";
     public final static String DOMAIN_BE = "https://ktx-staging-be.hust.edu.vn/ktx-be";
 
     @Bean
@@ -110,7 +111,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(DOMAIN_FE));
+        configuration.setAllowedOrigins(Arrays.asList(DOMAIN_FE, DOMAIN_FPT_PAYMENT));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
