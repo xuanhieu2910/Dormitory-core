@@ -31,10 +31,8 @@ public class OrdersController {
                     "Create order success!",
                     HttpStatus.OK);
         } catch (NotFoundException e){
-            e.printStackTrace();
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (Exception e){
-            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

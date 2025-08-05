@@ -6,5 +6,7 @@ public interface TransactionPaymentService {
 
     TransactionPayment saveTransactionPayment(TransactionPayment transactionPayment);
 
-    TransactionPayment findByIdOrderAndStatusAndType(Integer orderId, Integer status, Integer type);
+    TransactionPayment findByCheckSumAndStatusAndType(String checkSum, Integer status, Integer type);
+
+    TransactionPayment findTransactionPaymentByIdOrderAndType(Integer idOrder, Integer type);
 }

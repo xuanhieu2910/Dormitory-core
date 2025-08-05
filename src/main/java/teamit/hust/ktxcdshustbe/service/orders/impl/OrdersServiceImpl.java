@@ -75,7 +75,7 @@ public class OrdersServiceImpl implements OrdersService {
         }
         Orders orders = storeOrder(initializeOrder(registerRoomCurrentResponse, request));
         List<OrderItems> orderItems = orderItemsService.saveListOrderItems(initializeOrderItems(orders, registerRoomCurrentResponse));
-        TransactionPayment transactionPayment = transactionPaymentService.saveTransactionPayment(initializeTransactionPayment(orders));
+//        TransactionPayment transactionPayment = transactionPaymentService.saveTransactionPayment(initializeTransactionPayment(orders));
         OrderSessions orderSessions = orderSessionService.saveOrderSessions(initializeOrderSession(orders));
         return orders.getCodeOrder();
     }
@@ -169,7 +169,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     private TransactionPayment initializeTransactionPaymentConfirmOrder(Orders orders, Map<String, Object> dataBody,
-                                                                        String dataJsonFetch) {
+                                                                        String dataJsonFetch) throws JsonProcessingException {
         Long timeCurrent = new Date().getTime();
         TransactionPayment transactionPayment = new TransactionPayment();
         transactionPayment.setIdOrder(orders.getIdOrder());
@@ -186,6 +186,7 @@ public class OrdersServiceImpl implements OrdersService {
         transactionPayment.setMethodPayment(methodPaymentToGetBillDto.getValue());
         transactionPayment.setMerchantId(String.valueOf(dataBody.get("merchant_id")));
         transactionPayment.setTerminalId(String.valueOf(dataBody.get("terminal_id")));
+        log.info("[TRANSACTION-CONFIRM-ORDER] Body : {}", new ObjectMapper().writeValueAsString(transactionPayment));
         return transactionPayment;
     }
 
