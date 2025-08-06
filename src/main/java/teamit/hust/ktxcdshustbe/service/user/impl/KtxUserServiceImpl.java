@@ -39,6 +39,7 @@ import teamit.hust.ktxcdshustbe.service.room.RoomService;
 import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
 import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
+import teamit.hust.ktxcdshustbe.service.userInstance.KtxUserInstanceService;
 import teamit.hust.ktxcdshustbe.service.userRole.UserRoleService;
 import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
 import teamit.hust.ktxcdshustbe.utility.*;
@@ -63,11 +64,11 @@ public class KtxUserServiceImpl implements KtxUserService {
     @Autowired
     UserRoleService userRoleService;
     @Autowired
-    DepartmentService departmentService;
-    @Autowired
     YearGroupService yearGroupService;
     @Autowired
     PriorityGroupService priorityGroupService;
+    @Autowired
+    private KtxUserInstanceService ktxUserInstanceService;
 
     @Override
     public UserDetails loadUserByUsername(String username){
@@ -146,6 +147,11 @@ public class KtxUserServiceImpl implements KtxUserService {
             throw new NotFoundException();
         }
         return ktxUserOptional.get();
+    }
+
+    @Override
+    public void saveAllValue(List<KtxUser> customUserDetails) {
+        ktxUserRepository.saveAll(customUserDetails);
     }
 
     private void updateInfoUser(KtxUser ktxUser, UpdateProfileUserRequest request) {
@@ -227,8 +233,8 @@ public class KtxUserServiceImpl implements KtxUserService {
     @Override
     public void uploadFileAccountStudent(MultipartFile file) {
         ValidateExcelUtils.checkFileExcel(file);
-        List<KtxUserInstance> ktxUsers = handleUploadFileAccountStudent(file);
-
+        List<KtxUserInstance> ktxUsersInstance = handleUploadFileAccountStudent(file);
+        ktxUserInstanceService.saveAllData(ktxUsersInstance);
 //        ktxUserRepository.saveAll(ktxUsers);
 //        createUserRole(ktxUsers);
     }
@@ -281,7 +287,6 @@ public class KtxUserServiceImpl implements KtxUserService {
 
 
     private List<KtxUserInstance> handleUploadFileAccountStudent(MultipartFile file) {
-        List<KtxUser> customUserDetails = new ArrayList<>();
         Map<String, Integer> mapYearGroup =
                 convertToMapYearGroup(yearGroupService.
                         getAllTYearGroup());
@@ -305,7 +310,7 @@ public class KtxUserServiceImpl implements KtxUserService {
               List<XSSFRow> allRowsConfirm = new ArrayList<>();
             for (int i = indexRowStartToReadData; i <= totalRow; ++i) {
                 XSSFRow row = xssfSheet.getRow(i);
-                if(row != null && hasDataInRow(row, 6)){
+                if(row != null && hasDataInRow(row, 2)){
                     allRowsConfirm.add(row);
                 }
             }
@@ -345,7 +350,7 @@ public class KtxUserServiceImpl implements KtxUserService {
                 } else {
                     commonData.put("sex",Constants.FEMALE);
                 }
-                commonData.put("sex",sex);
+
                 String admissionCode = (String) ExcelUtil.convertValue(row.getCell(7), CellType.STRING);
                 commonData.put("admission_code",admissionCode);
                 String admissionName = (String) ExcelUtil.convertValue(row.getCell(8), CellType.STRING);
@@ -422,12 +427,14 @@ public class KtxUserServiceImpl implements KtxUserService {
                 String titleYearGroup = ExcelUtil.convertValue(row.getCell(45), CellType.STRING) == null ? "" :
                         String.valueOf(ExcelUtil.convertValue(row.getCell(45), CellType.STRING));
                 Integer idYearGroup = mapYearGroup.get(titleYearGroup);
+                commonData.put("title_year_group",titleYearGroup);
                 commonData.put("id_year_group",idYearGroup);
                 String titlePriorityGroup = ExcelUtil.convertValue(row.getCell(46), CellType.STRING) == null ? "" :
                         String.valueOf(ExcelUtil.convertValue(row.getCell(46), CellType.STRING));
                 Integer idPriorityGroup = mapPriorityGroup.get(titlePriorityGroup);
+                commonData.put("title_year_group",titlePriorityGroup);
                 commonData.put("id_priority_group",idPriorityGroup);
-                if (userName == null){
+                if (userName == null || numberStudent == null) {
                     error = 1;
                 }
                 String valueUser = mapper.writeValueAsString(commonData);

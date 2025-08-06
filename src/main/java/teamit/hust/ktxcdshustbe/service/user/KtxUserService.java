@@ -13,6 +13,7 @@ import teamit.hust.ktxcdshustbe.response.user.FindAllStudentsResponse;
 import teamit.hust.ktxcdshustbe.response.user.InformationStudentHiredResponse;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public interface KtxUserService extends UserDetailsService {
 
@@ -33,4 +34,6 @@ public interface KtxUserService extends UserDetailsService {
     void updateUserProfile(UpdateProfileUserRequest request);
 
     KtxUser findKtxUserByUserName(String lowerCase);
+
+    void saveAllValue(List<KtxUser> customUserDetails);
 }
