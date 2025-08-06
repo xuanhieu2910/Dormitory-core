@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -226,9 +227,10 @@ public class KtxUserServiceImpl implements KtxUserService {
     @Override
     public void uploadFileAccountStudent(MultipartFile file) {
         ValidateExcelUtils.checkFileExcel(file);
-        List<KtxUser> ktxUsers = handleUploadFileAccountStudent(file);
-        ktxUserRepository.saveAll(ktxUsers);
-        createUserRole(ktxUsers);
+        List<KtxUserInstance> ktxUsers = handleUploadFileAccountStudent(file);
+
+//        ktxUserRepository.saveAll(ktxUsers);
+//        createUserRole(ktxUsers);
     }
 
     @Override
@@ -278,24 +280,199 @@ public class KtxUserServiceImpl implements KtxUserService {
     }
 
 
-    private List<KtxUser> handleUploadFileAccountStudent(MultipartFile file) {
+    private List<KtxUserInstance> handleUploadFileAccountStudent(MultipartFile file) {
         List<KtxUser> customUserDetails = new ArrayList<>();
+        Map<String, Integer> mapYearGroup =
+                convertToMapYearGroup(yearGroupService.
+                        getAllTYearGroup());
+        Map<String, Integer> mapPriorityGroup =
+                convertToMapPriorityGroup(priorityGroupService.
+                        getAllTPriorityGroup());
         int indexSheet = 0;
         int indexRowStartToReadData = 3;
+
+        int constantMaximumRow = 2000;
+
         try {
             XSSFWorkbook xssfWorkbook = new XSSFWorkbook(file.getInputStream());
             XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(indexSheet);
-            int totalRow = xssfSheet.getLastRowNum();
+//            int totalRow = xssfSheet.getLastRowNum();
+            int totalRow = xssfSheet.getPhysicalNumberOfRows();
+            log.info("Total row is: {}", totalRow);
+            if (totalRow > (constantMaximumRow + indexRowStartToReadData)) {
+                totalRow = constantMaximumRow;
+            }
+              List<XSSFRow> allRowsConfirm = new ArrayList<>();
             for (int i = indexRowStartToReadData; i <= totalRow; ++i) {
                 XSSFRow row = xssfSheet.getRow(i);
-                if(row != null){
-                    customUserDetails.add(getCustomUserDetailsFromFile(row));
+                if(row != null && hasDataInRow(row, 6)){
+                    allRowsConfirm.add(row);
                 }
             }
+            List<KtxUserInstance> instances = new ArrayList<>();
+            KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String timeCurrent = String.valueOf(new Date().getTime());
+            ObjectMapper mapper = new ObjectMapper();
+            for (XSSFRow row : allRowsConfirm){
+                KtxUserInstance instance = new KtxUserInstance();
+                instance.setIdUserCreated(ktxUserCurrent.getIdKtxUser());
+                instance.setIdUserModified(ktxUserCurrent.getIdKtxUser());
+                instance.setTimeCreated(timeCurrent);
+                instance.setTimeModified(timeCurrent);
+
+                int error = -1;
+
+                Map<String, Object> commonData = new HashMap<>();
+                String numberStudent = ExcelUtil.convertValue(row.getCell(1), CellType.STRING) == null ? null :
+                ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(1), CellType.STRING))).toLowerCase();
+                commonData.put("number_student", numberStudent);
+                String userName = ExcelUtil.convertValue(row.getCell(2), CellType.STRING) == null ? null :
+                        ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(2), CellType.STRING))).toLowerCase();
+                commonData.put("user_name", userName);
+                String SBD = ExcelUtil.convertValue(row.getCell(3), CellType.STRING) == null ? null :
+                        ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(3), CellType.STRING))).toLowerCase();
+                commonData.put("sbd", SBD);
+                String fullNameTmp = ExcelUtil.convertValue(row.getCell(4), CellType.STRING) == null ? null :
+                        ((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(4), CellType.STRING))).toLowerCase();
+                String fullName = fullNameTmp.substring(0,1).toUpperCase() + fullNameTmp.substring(1);
+                commonData.put("full_name", fullName);
+                String dateOfBirth = ExcelUtil.convertValue(row.getCell(5), CellType.STRING) == null ? null :
+                        (String) ExcelUtil.convertValue(row.getCell(5), CellType.STRING);
+                commonData.put("date_of_birth", dateOfBirth);
+                String sex = (String) ExcelUtil.convertValue(row.getCell(6), CellType.STRING);
+                if (Objects.nonNull(sex)) {
+                    commonData.put("sex",sex.equals(Constants.TITLE_SEX[0]) ? Constants.FEMALE : Constants.MALE);
+                } else {
+                    commonData.put("sex",Constants.FEMALE);
+                }
+                commonData.put("sex",sex);
+                String admissionCode = (String) ExcelUtil.convertValue(row.getCell(7), CellType.STRING);
+                commonData.put("admission_code",admissionCode);
+                String admissionName = (String) ExcelUtil.convertValue(row.getCell(8), CellType.STRING);
+                commonData.put("admission_name",admissionName);
+                String PTXTCode = (String) ExcelUtil.convertValue(row.getCell(9), CellType.STRING);
+                commonData.put("PTXT_code",PTXTCode);
+                String admissionCombinationCode = (String) ExcelUtil.convertValue(row.getCell(10), CellType.STRING);
+                commonData.put("admission_combination_code",admissionCombinationCode);
+                String numberOrderOfOrigin = (String) ExcelUtil.convertValue(row.getCell(11), CellType.STRING);
+                commonData.put("number_order_of_origin",numberOrderOfOrigin);
+                Double graduationScore = Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(12), CellType.STRING)));
+                commonData.put("graduation_score",graduationScore);
+                Integer encourageScore = Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(13), CellType.STRING)));
+                commonData.put("encourage_score",encourageScore);
+                String firstLessonName = (String) ExcelUtil.convertValue(row.getCell(14), CellType.STRING);
+                commonData.put("first_lesson_name",firstLessonName);
+                Double firstLessonScore = Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(15), CellType.STRING)));
+                commonData.put("first_lesson_score",firstLessonScore);
+                String secondLessonName = (String) ExcelUtil.convertValue(row.getCell(16), CellType.STRING);
+                commonData.put("second_lesson_name",secondLessonName);
+                Double secondLessonScore = Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(17), CellType.STRING)));
+                commonData.put("second_lesson_score",secondLessonScore);
+                String thirdLessonName = (String) ExcelUtil.convertValue(row.getCell(18), CellType.STRING);
+                commonData.put("third_lesson_name",thirdLessonName);
+                Double thirdLessonScore =  Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(19), CellType.STRING)));
+                commonData.put("third_lesson_score",thirdLessonScore);
+                String priorityObject = (String) ExcelUtil.convertValue(row.getCell(20), CellType.STRING);
+                commonData.put("priority_object",priorityObject);
+                Integer priorityArea =  Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(21), CellType.STRING)));
+                commonData.put("priority_area",priorityArea);
+                Integer yearGrade = Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(22), CellType.STRING)));
+                commonData.put("year_grade",yearGrade);
+                String academicPerformance = (String) ExcelUtil.convertValue(row.getCell(23), CellType.STRING);
+                commonData.put("academic_performance",academicPerformance);
+                String conduct = (String) ExcelUtil.convertValue(row.getCell(24), CellType.STRING);
+                commonData.put("conduct",conduct);
+                Double scoreAverageTwelve =  Double.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(25), CellType.STRING)));
+                commonData.put("score_average_twelve",scoreAverageTwelve);
+                String collegeGraduate = (String) ExcelUtil.convertValue(row.getCell(26), CellType.STRING);
+                commonData.put("college_graduate",collegeGraduate);
+                String highSchoolGraduate = (String) ExcelUtil.convertValue(row.getCell(27), CellType.STRING);
+                commonData.put("high_school_graduate",highSchoolGraduate);
+                String codeProvince = (String) ExcelUtil.convertValue(row.getCell(28), CellType.STRING);
+                commonData.put("code_province",codeProvince);
+                String nameProvince = (String) ExcelUtil.convertValue(row.getCell(29), CellType.STRING);
+                commonData.put("name_province",nameProvince);
+                String codeDistrict = (String) ExcelUtil.convertValue(row.getCell(30), CellType.STRING);
+                commonData.put("code_district",codeDistrict);
+                String nameDistrict = (String) ExcelUtil.convertValue(row.getCell(31), CellType.STRING);
+                commonData.put("name_district",nameDistrict);
+                String codeWards = (String) ExcelUtil.convertValue(row.getCell(32), CellType.STRING);
+                commonData.put("code_wards",codeWards);
+                String nameWards = (String) ExcelUtil.convertValue(row.getCell(33), CellType.STRING);
+                commonData.put("name_wards",nameWards);
+                String codeProvinceTwelve = (String) ExcelUtil.convertValue(row.getCell(34), CellType.STRING);
+                commonData.put("code_province_twelve",codeProvinceTwelve);
+                String codeSchoolTwelve = (String) ExcelUtil.convertValue(row.getCell(35), CellType.STRING);
+                commonData.put("code_school_twelve",codeSchoolTwelve);
+                String numberPhone = (String) ExcelUtil.convertValue(row.getCell(36), CellType.STRING);
+                commonData.put("number_phone",numberPhone);
+                String emailOther = (String) ExcelUtil.convertValue(row.getCell(37), CellType.STRING);
+                commonData.put("email_other",emailOther);
+                String NotificationAddress = (String) ExcelUtil.convertValue(row.getCell(38), CellType.STRING);
+                commonData.put("Notification_Address",NotificationAddress);
+                String placeOfBirth = (String) ExcelUtil.convertValue(row.getCell(39), CellType.STRING);
+                commonData.put("place_of_birth",placeOfBirth);
+                Integer codeNation =  Integer.valueOf((String) Objects.requireNonNull(ExcelUtil.convertValue(row.getCell(40), CellType.STRING)));
+                commonData.put("code_nation",codeNation);
+                String nation = (String) ExcelUtil.convertValue(row.getCell(41), CellType.STRING);
+                commonData.put("nation",nation);
+                String cccd = (String) ExcelUtil.convertValue(row.getCell(42), CellType.STRING);
+                commonData.put("cccd",cccd);
+
+                String titleYearGroup = ExcelUtil.convertValue(row.getCell(45), CellType.STRING) == null ? "" :
+                        String.valueOf(ExcelUtil.convertValue(row.getCell(45), CellType.STRING));
+                Integer idYearGroup = mapYearGroup.get(titleYearGroup);
+                commonData.put("id_year_group",idYearGroup);
+                String titlePriorityGroup = ExcelUtil.convertValue(row.getCell(46), CellType.STRING) == null ? "" :
+                        String.valueOf(ExcelUtil.convertValue(row.getCell(46), CellType.STRING));
+                Integer idPriorityGroup = mapPriorityGroup.get(titlePriorityGroup);
+                commonData.put("id_priority_group",idPriorityGroup);
+                if (userName == null){
+                    error = 1;
+                }
+                String valueUser = mapper.writeValueAsString(commonData);
+                instance.setValue(valueUser);
+                instance.setError(error);
+                instances.add(instance);
+
+            }
+            return instances;
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return customUserDetails;
+    }
+
+    private boolean hasDataInRow(XSSFRow row, int numCellsToCheck) {
+        int limit = Math.min(numCellsToCheck, row.getLastCellNum());
+        int countCheckExits = 0;
+        for (int cellIndex = 0; cellIndex < limit; cellIndex++) {
+            XSSFCell cell = row.getCell(cellIndex);
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                ++countCheckExits;
+            }
+        }
+        if (countCheckExits == numCellsToCheck) {
+            return true;
+        }
+        return false;
+    }
+
+    private Map<String, Integer> convertToMapPriorityGroup(List<PriorityGroup> allTPriorityGroup) {
+        Map<String, Integer> PriorityGroupMap = new HashMap<>();
+        for (PriorityGroup priorityGroup : allTPriorityGroup){
+            PriorityGroupMap.put(priorityGroup.getTitle(), priorityGroup.getIdPriorityGroup());
+        }
+        return PriorityGroupMap;
+    }
+
+    private Map<String, Integer> convertToMapYearGroup(List<YearGroup> allTYearGroup) {
+        Map<String, Integer> YearGroupMap = new HashMap<>();
+        for (YearGroup yearGroup : allTYearGroup){
+            YearGroupMap.put(yearGroup.getTitle(), yearGroup.getIdYearGroup());
+        }
+        return YearGroupMap;
     }
 
     private KtxUser getCustomUserDetailsFromFile(XSSFRow row) throws JsonProcessingException {
@@ -387,6 +564,7 @@ public class KtxUserServiceImpl implements KtxUserService {
         commonData.put("nation",nation);
         String cccd = (String) ExcelUtil.convertValue(row.getCell(42), CellType.STRING);
         commonData.put("cccd",cccd);
+
 
         customUserDetails.setUserName(userName);
         if (Objects.nonNull(sex)) {

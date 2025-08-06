@@ -103,6 +103,15 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
         return priorityGroups.get();
     }
 
+    @Override
+    public List<PriorityGroup> getAllTPriorityGroup() {
+        Optional<List<PriorityGroup>> priorityGroups = priorityGroupRepository.findListAllPriorityGroup();
+        if (priorityGroups.isEmpty()){
+            throw new NotFoundException();
+        }
+        return priorityGroups.get();
+    }
+
     private PriorityGroupDetailResponse convertToPriorityGroupDetailResponse(FindPriorityGroupDetailDto dto) {
         PriorityGroupDetailResponse response = new PriorityGroupDetailResponse();
         response.setTitlePriorityGroup(dto.getTitlePriorityGroup());

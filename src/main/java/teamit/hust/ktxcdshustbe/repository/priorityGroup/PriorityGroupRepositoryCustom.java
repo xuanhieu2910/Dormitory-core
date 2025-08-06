@@ -25,4 +25,6 @@ public interface PriorityGroupRepositoryCustom {
     Optional<List<PriorityGroup>> findPriorityGroupByIdsPriorityGroup(List<Integer> idsPriorityGroup);
     //boolean existsByPriorityGroupCode(String priorityGroupCode);
     boolean existsByTitlePriorityGroup(String titlePriorityGroup);
+
+    Optional<List<PriorityGroup>> findListAllPriorityGroup();
 }

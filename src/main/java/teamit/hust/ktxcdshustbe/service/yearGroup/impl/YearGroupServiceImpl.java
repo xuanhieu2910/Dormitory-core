@@ -198,4 +198,13 @@ public class YearGroupServiceImpl implements YearGroupService {
 
         yearGroupRepository.delete(yearGroupToDelete);
     }
+
+    @Override
+    public List<YearGroup> getAllTYearGroup() {
+        Optional<List<YearGroup>>yearGroups = yearGroupRepository.findAllListYearGroup();
+        if (yearGroups.isEmpty()){
+            throw new NotFoundException();
+        }
+        return yearGroups.get();
+    }
 }

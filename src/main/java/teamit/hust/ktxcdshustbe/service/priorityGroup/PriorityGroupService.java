@@ -28,4 +28,6 @@ public interface PriorityGroupService {
     List<PriorityGroup> findPriorityGroupsByListPriorityGroupCode(List<String> codesPriorityGroup);
 
     List<PriorityGroup> findAllPriorityGroupByIdsPriorGroup(List<Integer> idsPriorityGroup);
+
+    List<PriorityGroup> getAllTPriorityGroup();
 }
