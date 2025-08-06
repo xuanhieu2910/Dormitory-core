@@ -2,6 +2,7 @@ package teamit.hust.ktxcdshustbe.service.userInstance.impl;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ public class KtxUserInstanceServiceImpl implements KtxUserInstanceService {
 
     @Autowired
     KtxUserInstanceRepository userInstanceRepository;
+    @Lazy
     @Autowired
     KtxUserService ktxUserService;
     @Autowired

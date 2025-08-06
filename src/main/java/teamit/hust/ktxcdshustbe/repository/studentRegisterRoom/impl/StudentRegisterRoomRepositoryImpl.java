@@ -256,7 +256,8 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         StringBuilder sb = new StringBuilder();
         sb.append("select srr.id_student_register_room,srr.id_user,srr.time_created,  " +
                 "       srr.time_modified,srr.id_room,srr.id_time_hired,  " +
-                "       srr.status,srr.id_user_modified,srr.id_user_created,srr.is_payment  " +
+                "       srr.status,srr.id_user_modified,srr.id_user_created," +
+                "       srr.id_order,srr.id_batches_registration_schedule,srr.expires_at  " +
                 "from student_register_room srr  " +
                 "inner join ktx_user on srr.id_user = ktx_user.id_ktx_user  " +
                 "where ktx_user.code_user = :codeUser ");
@@ -275,6 +276,9 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 srr.setStatus(ValueUtil.getIntegerByObject(obj[6]));
                 srr.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 srr.setIdUserCreated(ValueUtil.getIntegerByObject(obj[8]));
+                srr.setIdOrder(ValueUtil.getIntegerByObject(obj[9]));
+                srr.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[10]));
+                srr.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
                 return Optional.of(srr);
             }
         }
@@ -287,7 +291,8 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         StringBuilder sb = new StringBuilder();
         sb.append("select srr.id_student_register_room,srr.id_user,srr.time_created,  " +
                 "       srr.time_modified,srr.id_room,srr.id_time_hired,  " +
-                "       srr.status,srr.id_user_modified,srr.id_user_created,srr.is_payment  " +
+                "       srr.status,srr.id_user_modified,srr.id_user_created, " +
+                "       srr.id_order,srr.id_batches_registration_schedule,srr.expires_at  " +
                 "from student_register_room srr  " +
                 "where ktx_user.id_student_register_room = :studentRegisterRoomId ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -305,6 +310,9 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 srr.setStatus(ValueUtil.getIntegerByObject(obj[6]));
                 srr.setIdUserModified(ValueUtil.getIntegerByObject(obj[7]));
                 srr.setIdUserCreated(ValueUtil.getIntegerByObject(obj[8]));
+                srr.setIdOrder(ValueUtil.getIntegerByObject(obj[9]));
+                srr.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[10]));
+                srr.setExpiresAt(ValueUtil.getLongByObject(obj[11]));
                 return Optional.of(srr);
             }
         }

@@ -10,6 +10,7 @@ public class FindAllStudentHiredRoomDto {
     private Integer idStudentRoom;
     private String codeUser;
     private String valueUser;
+    private Integer sex;
     private String timeHired;
     private String codeDepartment;
     private String titleDepartment;

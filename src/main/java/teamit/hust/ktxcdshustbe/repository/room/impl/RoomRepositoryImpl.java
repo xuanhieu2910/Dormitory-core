@@ -61,9 +61,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         sb.append("update room ro  " +
                 "set ro.quantity_hired               = ro.quantity_hired + :quantity,  " +
                 "    ro.remain_amount                = ro.remain_amount - :quantity,  " +
-                "    ro.limit_amount_people_register = ro.limit_amount_people_register - :quantity,  " +
-                "    ro.quantity_registered          = ro.quantity_registered - :quantity,  " +
-                "    ro.remain_amount_register          = ro.remain_amount_register - :quantity,  " +
                 "    ro.time_modified                = :timeModified,  " +
                 "    ro.id_user_modified             = :userIdModified  " +
                 "where ro.id_room = :roomId  " +
@@ -86,7 +83,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         sb.append("update room ro " +
                 "set ro.quantity_hired               = ro.quantity_hired + :quantity, " +
                 "    ro.remain_amount                = ro.remain_amount - :quantity, " +
-                "    ro.limit_amount_people_register = ro.limit_amount_people_register - :quantity, " +
                 "    ro.remain_amount_register       = ro.remain_amount_register - :quantity, " +
                 "    ro.time_modified                = :timeModified, " +
                 "    ro.id_user_modified             = :userIdModified " +

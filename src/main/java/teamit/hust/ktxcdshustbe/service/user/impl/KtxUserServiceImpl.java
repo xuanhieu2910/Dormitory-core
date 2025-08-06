@@ -67,8 +67,9 @@ public class KtxUserServiceImpl implements KtxUserService {
     YearGroupService yearGroupService;
     @Autowired
     PriorityGroupService priorityGroupService;
+    @Lazy
     @Autowired
-    private KtxUserInstanceService ktxUserInstanceService;
+    KtxUserInstanceService ktxUserInstanceService;
 
     @Override
     public UserDetails loadUserByUsername(String username){

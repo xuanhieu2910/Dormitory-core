@@ -322,23 +322,32 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         if (StringUtils.isNotBlank(request.getKeyword())){
             query.setParameter("keyword", request.getKeyword());
         }
-        if (request.isStatusHired()){
+        if (ObjectUtils.isNotEmpty(request.getStatusHired())){
             query.setParameter("statusStudent", Constants.STATUS_STUDENT_HIRING_ROOM);
         }
+
 
 
     }
 
     private void setConditionFindAllStudents(FindAllStudentsRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append("   and (ktxUser.value REGEXP '[' + :keyword + ']') OR " +
-                    "       (ktxUser.user_name REGEXP '[' + :keyword + ']') ");
+            sb.append("   and (ktxUser.value REGEXP  :keyword ) OR " +
+                    "       (ktxUser.user_name REGEXP  :keyword ) ");
         }
-        if(request.isStatusHired()){
-            sb.append("  AND  EXISTS  (  " +
-                    "  SELECT 1 FROM student_room sr  " +
-                    "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
-                    "  AND sr.status = :statusStudent )  ");
+        if(ObjectUtils.isNotEmpty(request.getStatusHired())) {
+            if (request.getStatusHired().equals(Constants.STATUS_STUDENT_HIRING_ROOM)) {
+                sb.append("  AND  EXISTS  (  " +
+                        "  SELECT 1 FROM student_room sr  " +
+                        "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
+                        "  AND sr.status = :statusStudent )  ");
+            }
+            else {
+                sb.append("  AND  NOT EXISTS  (  " +
+                        "  SELECT 1 FROM student_room sr  " +
+                        "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
+                        "  AND sr.status = :statusStudent )  ");
+            }
         }
     }
 

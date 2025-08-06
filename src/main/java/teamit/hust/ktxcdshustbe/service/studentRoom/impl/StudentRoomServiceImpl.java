@@ -302,14 +302,12 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         if (destinationRoom.getLimitAmountPeople().equals(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM)) {
             destinationRoom.setQuantityHired(destinationRoom.getLimitAmountPeople());
             destinationRoom.setRemainAmount(Constants.DEFAULT_QUANTITY_HIRED);
-            destinationRoom.setLimitAmountPeopleRegister(Constants.DEFAULT_QUANTITY_HIRED);
             destinationRoom.setRemainAmountRegister(Constants.DEFAULT_QUANTITY_HIRED);
             destinationRoom.setTimeModified(new Date().getTime());
             destinationRoom.setIdUserModified(userIdModified);
         } else {
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
-            destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getRemainAmount());
             if (destinationRoom.getQuantityRegistered() >= destinationRoom.getLimitAmountPeopleRegister()){
                 destinationRoom.setRemainAmountRegister(Constants.DEFAULT_QUANTITY_HIRED);
             } else {

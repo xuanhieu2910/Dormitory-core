@@ -34,9 +34,6 @@ import teamit.hust.ktxcdshustbe.service.upload.impl.FileUploadService;
 @RequestMapping("/api/v1/student-register")
 public class StudentRegisterRoomController {
 
-
-    @Autowired
-    FileUploadService fileUploadService;
     @Autowired
     StudentRegisterRoomService studentRegisterRoomService;
 
