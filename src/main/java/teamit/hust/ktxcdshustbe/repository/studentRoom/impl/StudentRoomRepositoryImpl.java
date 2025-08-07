@@ -95,13 +95,19 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "       de.code_department , de.title titleDepartment,   " +
                 "       ro.code_room roomId, ro.title titleRoom,   " +
                 "       ktxUser.sex, timeHired.time_started, timeHired.time_ended,   " +
-                "       studentRoom.status   " +
-                "from student_room studentRoom   " +
+                "       studentRoom.status    " +
+                "from student_room studentRoom    " +
                 "    inner join room ro on studentRoom.id_room = ro.id_room   " +
                 "    inner join department de on ro.id_department = de.id_department   " +
                 "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
                 "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
-                "where ktxUser.code_user = :codeUser  ");
+                "    inner join student_register_room srr on studentRoom.id_user = studentRoom.id_user and srr.id_room = studentRoom.id_room  " +
+                "    inner join batches_registration br on br.id_time_hired = timeHired.id_time_hired  " +
+                "    inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration  " +
+                "                                                    and brr.id_room = ro.id_room  " +
+                "    inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration   " +
+                "                                                        and srr.id_batches_registration_schedule = brs.id_batches_registration_schedule  " +
+                "where ktxUser.code_user = :codeUser   ");
         setConditionListHiredRoomStudentResponse(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeUser", request.getCodeUser());

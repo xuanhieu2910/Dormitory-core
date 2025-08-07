@@ -128,19 +128,20 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     public Page<UserRegisterRoomDto> findAllUserRegisterRoomDto(UserRegisterRoomRequest request, Pageable pageable) {
         StringBuilder sb = new StringBuilder();
         sb.append("select ktxUser.code_user, ktxUser.value,  " +
-                "       studentRegisterRoom.time_created,  " +
-                "       de.code_department, de.title, ro.code_room, ro.title,  " +
-                "       se.code_semester, se.title, timeHired.id_time_hired,  " +
-                "       timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status  " +
-                "from student_register_room studentRegisterRoom " +
-                "       inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user  " +
-                "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
-                "       inner join department de on ro.id_department = de.id_department  " +
-                "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
-                "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
-                "       inner join semester se on se.id_semester = br.id_semester " +
-                "       where 1 = 1   ");
+                "          studentRegisterRoom.time_created,  " +
+                "          de.code_department, de.title, ro.code_room, ro.title,  " +
+                "          se.code_semester, se.title, timeHired.id_time_hired,  " +
+                "          timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status  " +
+                " from student_register_room studentRegisterRoom   " +
+                "          inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user  " +
+                "          inner join room ro on studentRegisterRoom.id_room = ro.id_room   " +
+                "          inner join department de on ro.id_department = de.id_department  " +
+                "          inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
+                "          inner join batches_registration_room brr on brr.id_room = ro.id_room   " +
+                "          inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration  " +
+                "          inner join batches_registration_schedule brs on brs.id_batches_registration_schedule = studentRegisterRoom.id_batches_registration_schedule " +
+                "          inner join semester se on se.id_semester = br.id_semester  " +
+                "where 1 = 1   ");
         setConditionFindAllUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllUserRegisterRoom(query, request);
@@ -581,20 +582,23 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public Page<UserRegisterRoomDto> findAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request, Pageable pageable) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ktxUser.code_user, ktxUser.value,  " +
-                "       studentRegisterRoom.time_created,  " +
-                "       de.code_department, de.title, ro.code_room, ro.title,  " +
-                "       se.code_semester, se.title, timeHired.id_time_hired,  " +
-                "       timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status  " +
-                "from student_register_room studentRegisterRoom " +
-                "       inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user  " +
-                "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
-                "       inner join department de on ro.id_department = de.id_department  " +
-                "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
+        sb.append("select ktxUser.code_user, ktxUser.value,   " +
+                "       studentRegisterRoom.time_created, " +
+                "       de.code_department, de.title, ro.code_room, ro.title, " +
+                "       se.code_semester, se.title, timeHired.id_time_hired, " +
+                "       timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status " +
+                "from student_register_room studentRegisterRoom  " +
+                "       inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user   " +
+                "       inner join room ro on studentRegisterRoom.id_room = ro.id_room " +
+                "       inner join department de on ro.id_department = de.id_department " +
+                "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired " +
                 "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
                 "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
+                "                                                 and br.id_time_hired = timeHired.id_time_hired " +
+                "        inner join batches_registration_schedule brs on brs.id_batches_registration = brs.id_batches_registration " +
+                "                                                and studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule " +
                 "       inner join semester se on se.id_semester = br.id_semester " +
-                "       where 1 = 1  and ktxUser.code_user = :codeUser ");
+                "where 1 = 1  and ktxUser.code_user = :codeUser ");
         setConditionFindAllInfoAnUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllInfoAnUserRegisterRoom(query, request);
