@@ -286,7 +286,7 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
                 "       title, description, time_created,   " +
                 "       time_modified, id_user_created, id_user_modified  " +
                 "from priority_group  " +
-                "where i1=1 ");
+                "where 1=1 ");
         Query query = entityManager.createNativeQuery(sb.toString());
         List<Object[]> results = query.getResultList();
         if (!CollectionUtils.isEmpty(results)){
