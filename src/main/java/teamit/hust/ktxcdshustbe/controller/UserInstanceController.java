@@ -28,7 +28,7 @@ public class UserInstanceController {
     KtxUserInstanceService ktxUserInstanceService;
 
     @GetMapping("/find-all")
-    public ResponseEntity<?> findAllAdmissionProgramStudentInstance(@And({
+    public ResponseEntity<?> findAllUserInstance(@And({
             @Spec(path = "page", params = "page", spec = Like.class),
             @Spec(path = "size", params = "size", spec = Like.class),
             @Spec(path = "keyword", params = "keyword", spec = Like.class)
@@ -43,7 +43,7 @@ public class UserInstanceController {
 
 
     @PostMapping("/update")
-    public ResponseEntity<?> updateTrainingProgramInstance(
+    public ResponseEntity<?> UpdateUserInstance(
             @RequestBody List<UserInstanceRequest> requests){
         try {
             ktxUserInstanceService.UpdateUserInstance(requests);
@@ -57,7 +57,7 @@ public class UserInstanceController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteTrainingProgramInstance(@RequestBody List<UserInstanceRequest> requests){
+    public ResponseEntity<?> deleteUserInstance(@RequestBody List<UserInstanceRequest> requests){
         try {
             ktxUserInstanceService.deleteUserInstance(requests);
             return ApiResponseDto.createdWithMessage("Delete student instance success!", HttpStatus.OK);
@@ -69,7 +69,7 @@ public class UserInstanceController {
     }
 
     @PostMapping("/create-student")
-    public ResponseEntity<?> createStudentRegisterOfficial(@RequestBody List<UserDetailsInstanceRequest>  requests){
+    public ResponseEntity<?> createUserInstance(@RequestBody List<UserDetailsInstanceRequest>  requests){
         try {
             ktxUserInstanceService.createUserInstance(requests);
             return ApiResponseDto.createdWithMessage("Create student official success!", HttpStatus.OK);

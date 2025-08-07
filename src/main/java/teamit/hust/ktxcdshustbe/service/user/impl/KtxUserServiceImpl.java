@@ -433,7 +433,7 @@ public class KtxUserServiceImpl implements KtxUserService {
                 String titlePriorityGroup = ExcelUtil.convertValue(row.getCell(49), CellType.STRING) == null ? "" :
                         String.valueOf(ExcelUtil.convertValue(row.getCell(49), CellType.STRING));
                 Integer idPriorityGroup = mapPriorityGroup.get(titlePriorityGroup);
-                commonData.put("title_year_group",titlePriorityGroup);
+                commonData.put("title_priority_group",titlePriorityGroup);
                 commonData.put("id_priority_group",idPriorityGroup);
                 if (userName == null || numberStudent == null) {
                     error = 1;
