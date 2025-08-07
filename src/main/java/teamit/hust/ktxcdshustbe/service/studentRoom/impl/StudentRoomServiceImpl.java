@@ -4,6 +4,7 @@ package teamit.hust.ktxcdshustbe.service.studentRoom.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -55,6 +56,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+@Log4j2
 @Service
 public class StudentRoomServiceImpl implements StudentRoomService {
 
@@ -332,13 +334,11 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     @Override
     public String downloadStudentHiredRoomList(ListStudentHiredRoomRequest request) throws IOException {
-//        String fileExcel = PropertiesUtil.getProperty("hust.ktx.static.location.resources.static")
-//                + SEPARATOR
-//                + FileUtil.FOLDER_NAME_REPORT
-//                + SEPARATOR
-//                + Constants.NAME_REPORT_STUDENT_HIRED_ROOM_LIST;
-
-        String fileExcel = "C:\\Users\\ADMIN\\Downloads\\test excel\\Book1.xlsx";
+        String fileExcel = PropertiesUtil.getProperty("hust.ktx.static.location.resources.static")
+                + SEPARATOR
+                + FileUtil.FOLDER_HIRED_ROOM
+                + SEPARATOR
+                + "Template_List_Student_Hired_Room.xlsx";
 
         List<FindAllStudentHiredRoomDto> studentList = studentRoomRepository.findAllStudentsForExport(request);
 
@@ -351,22 +351,26 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             writeDataInfoReport(sheet, styles);
             writeDataToStudentHiredRoomReport(sheet, studentList, styles);
 
-//            String fileFinal = createFileExportInventoryReport();
-//            File outputFilePath = FileUtil.createFileSampleAsset(fileFinal);
-//            String fileReturn = fileFinal.replace(PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.csvcbe")
-//                    , PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
 
-            String outputFilePathStr = "C:\\Users\\ADMIN\\Downloads\\test excel\\DanhSachSinhVienThuePhong_output.xlsx";
-            Path outputFilePath = Paths.get(outputFilePathStr);
-
-            Files.createDirectories(outputFilePath.getParent());
-
-            try (FileOutputStream fileOut = new FileOutputStream(outputFilePath.toFile())) {
-                workbook.write(fileOut);
+            String root = PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.ktx-be");
+            String folder = root + FileUtil.SEPARATOR
+                    + FileUtil.FOLDER_HIRED_ROOM
+                    + FileUtil.SEPARATOR
+                    + FileUtil.getFolderInfo();
+            FileUtil.createFolder(folder);
+            String fileFinal = folder + FileUtil.SEPARATOR + "Sample_List_Student_Hired_Room" + new Date().getTime() + ".xlsx";
+            File filePathOutput = new File(fileFinal);
+            if (!filePathOutput.exists()) {
+                if (filePathOutput.createNewFile()) {
+                    log.info("Create file success!");
+                }
             }
-
-            return outputFilePath.toAbsolutePath().toString();
-
+            String fileReturn = fileFinal.replace(root, PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
+            log.info("File return: " + fileReturn);
+            FileOutputStream fileOut = new FileOutputStream(filePathOutput);
+            workbook.write(fileOut);
+            workbook.close();
+            return fileReturn;
         } catch (IOException e) {
             e.printStackTrace();
             throw new IOException("Error during Excel file generation: " + e.getMessage(), e);

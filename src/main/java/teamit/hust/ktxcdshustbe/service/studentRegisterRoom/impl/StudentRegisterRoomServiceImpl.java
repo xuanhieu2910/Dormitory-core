@@ -397,13 +397,11 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
 
     @Override
     public String downloadListStudentRegisterRoom(UserRegisterRoomRequest request) throws IOException {
-//        String fileExcel = PropertiesUtil.getProperty("hust.ktx.static.location.resources.static")
-//                + SEPARATOR
-//                + FileUtil.FOLDER_NAME_REPORT
-//                + SEPARATOR
-//                + Constants.NAME_REPORT_STUDENT_HIRED_ROOM_LIST;
-
-        String fileExcel = "C:\\Users\\ADMIN\\Downloads\\test excel\\Template_List_Student_Register_Room.xlsx";
+        String fileExcel = PropertiesUtil.getProperty("hust.ktx.static.location.resources.static")
+                + SEPARATOR
+                + FileUtil.FOLDER_REGISTER_ROOM
+                + SEPARATOR
+                + "Template_List_Student_Register_Room.xlsx";
 
         List<UserRegisterRoomDto> studentList = studentRegisterRoomRepository.downloadListStudentRegisterRoom(request);
 
@@ -416,22 +414,27 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             writeDataInfoReport(sheet, styles);
             writeDataToStudentHiredRoomReport(sheet, studentList, styles);
 
-//            String fileFinal = createFileExportInventoryReport();
-//            File outputFilePath = FileUtil.createFileSampleAsset(fileFinal);
-//            String fileReturn = fileFinal.replace(PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.csvcbe")
-//                    , PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
 
-            String outputFilePathStr = "C:\\Users\\ADMIN\\Downloads\\test excel\\Template_List_Student_Register_Room_output.xlsx";
-            Path outputFilePath = Paths.get(outputFilePathStr);
 
-            Files.createDirectories(outputFilePath.getParent());
-
-            try (FileOutputStream fileOut = new FileOutputStream(outputFilePath.toFile())) {
-                workbook.write(fileOut);
+            String root = PropertiesUtil.getProperty("hust.ktx.static.location.tomcat.webapp.ktx-be");
+            String folder = root + FileUtil.SEPARATOR
+                    + FileUtil.FOLDER_REGISTER_ROOM
+                    + FileUtil.SEPARATOR
+                    + FileUtil.getFolderInfo();
+            FileUtil.createFolder(folder);
+            String fileFinal = folder + FileUtil.SEPARATOR + "Template_List_Student_Register_Room" + new Date().getTime() + ".xlsx";
+            File filePathOutput = new File(fileFinal);
+            if (!filePathOutput.exists()) {
+                if (filePathOutput.createNewFile()) {
+                    log.info("Create file success!");
+                }
             }
-
-            return outputFilePath.toAbsolutePath().toString();
-
+            String fileReturn = fileFinal.replace(root, PropertiesUtil.getProperty("hust.ktx.static.location.static.files"));
+            log.info("File return: " + fileReturn);
+            FileOutputStream fileOut = new FileOutputStream(filePathOutput);
+            workbook.write(fileOut);
+            workbook.close();
+            return fileReturn;
         } catch (IOException e) {
             e.printStackTrace();
             throw new IOException("Error during Excel file generation: " + e.getMessage(), e);

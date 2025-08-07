@@ -22,6 +22,10 @@ public class FileUtil {
     public static final String FOLDER_NAME_IMAGE = "upload_image";
     public static final String FOLDER_NAME_FILE = "upload_file";
     public static final String FOLDER_NAME_REPORT ="report";
+    public static final String FOLDER_HIRED_ROOM ="hired-room";
+    public static final String FOLDER_IMPORT_STUDENT ="import-student";
+    public static final String FOLDER_REGISTER_ROOM ="register-room";
+    public static final String FOLDER_RECEIPT ="receipt";
     public static final String SEPARATOR = "/";
     public static String pathReturn = "";
     private static final StringBuilder builder = new StringBuilder();
