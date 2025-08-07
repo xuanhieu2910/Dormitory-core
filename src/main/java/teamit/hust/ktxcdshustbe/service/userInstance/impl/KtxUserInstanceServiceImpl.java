@@ -8,10 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import teamit.hust.ktxcdshustbe.entity.KtxUser;
-import teamit.hust.ktxcdshustbe.entity.KtxUserInstance;
-import teamit.hust.ktxcdshustbe.entity.Role;
-import teamit.hust.ktxcdshustbe.entity.UserRole;
+import teamit.hust.ktxcdshustbe.entity.*;
 import teamit.hust.ktxcdshustbe.enums.OAuth2Factory;
 import teamit.hust.ktxcdshustbe.enums.RolePattern;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
@@ -20,17 +17,16 @@ import teamit.hust.ktxcdshustbe.request.userInstance.FindAllUserInstanceRequest;
 import teamit.hust.ktxcdshustbe.request.userInstance.UserDetailsInstanceRequest;
 import teamit.hust.ktxcdshustbe.request.userInstance.UserInstanceRequest;
 import teamit.hust.ktxcdshustbe.response.userInstance.FindAllUserInstanceResponse;
+import teamit.hust.ktxcdshustbe.service.priorityGroup.PriorityGroupService;
 import teamit.hust.ktxcdshustbe.service.role.RoleService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 import teamit.hust.ktxcdshustbe.service.userInstance.KtxUserInstanceService;
 import teamit.hust.ktxcdshustbe.service.userRole.UserRoleService;
+import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -45,6 +41,10 @@ public class KtxUserInstanceServiceImpl implements KtxUserInstanceService {
     RoleService roleService;
     @Autowired
     UserRoleService userRoleService;
+    @Autowired
+    YearGroupService yearGroupService;
+    @Autowired
+    PriorityGroupService priorityGroupService;
 
     @Override
     public void saveAllData(List<KtxUserInstance> ktxUsersInstance) {
@@ -108,6 +108,12 @@ public class KtxUserInstanceServiceImpl implements KtxUserInstanceService {
     @Override
     public void createUserInstance(List<UserDetailsInstanceRequest> requests) {
         KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Map<String, Integer> mapYearGroup =
+                convertToMapIdYearGroup(yearGroupService.
+                        getAllTYearGroup());
+        Map<String, Integer> mapPriorityGroup =
+                convertToMapIdPriorityGroup(priorityGroupService.
+                        getAllTPriorityGroup());
         Long timeCurrent = new Date().getTime();
         List<KtxUser> ktxUserList= new ArrayList<>();
         for (UserDetailsInstanceRequest request : requests){
@@ -122,13 +128,30 @@ public class KtxUserInstanceServiceImpl implements KtxUserInstanceService {
             ktxUser.setUserName(request.getUsername());
             ktxUser.setSex(request.getSex());
             ktxUser.setIsActived(Constants.ACCOUNT_IS_ACTIVED);
-            ktxUser.setIdPriorityGroup(request.getIdPriorityGroup());
-            ktxUser.setIdYearGroup(request.getIdYearGroup());
+            ktxUser.setIdPriorityGroup(mapPriorityGroup.get(request.getCodePriorityGroup()));
+            ktxUser.setIdYearGroup(mapYearGroup.get(request.getCodeYearGroup()));
             ktxUserList.add(ktxUser);
         }
         ktxUserService.saveAllValue(ktxUserList);
         createUserRole(ktxUserList);
     }
+
+    private Map<String, Integer> convertToMapIdPriorityGroup(List<PriorityGroup> allTPriorityGroup) {
+        Map<String, Integer> PriorityGroupMap = new HashMap<>();
+        for (PriorityGroup priorityGroup : allTPriorityGroup){
+            PriorityGroupMap.put(priorityGroup.getPriorityGroupCode(), priorityGroup.getIdPriorityGroup());
+        }
+        return PriorityGroupMap;
+    }
+
+    private Map<String, Integer> convertToMapIdYearGroup(List<YearGroup> allTYearGroup) {
+        Map<String, Integer> YearGroupMap = new HashMap<>();
+        for (YearGroup yearGroup : allTYearGroup){
+            YearGroupMap.put(yearGroup.getCodeYearGroup(), yearGroup.getIdYearGroup());
+        }
+        return YearGroupMap;
+    }
+
     private void createUserRole(List<KtxUser> ktxUsers) {
         KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Role role = roleService.findRoleByTitleRole(RolePattern.STUDENT.name());

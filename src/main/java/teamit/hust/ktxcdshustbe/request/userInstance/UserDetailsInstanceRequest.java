@@ -14,6 +14,6 @@ public class UserDetailsInstanceRequest {
     private Integer sex;
     private String typeLogin;
     private String value;
-    private Integer idYearGroup;
-    private Integer idPriorityGroup;
+    private String codeYearGroup;
+    private String codePriorityGroup;
 }

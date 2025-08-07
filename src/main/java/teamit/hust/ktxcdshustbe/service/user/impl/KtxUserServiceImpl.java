@@ -288,10 +288,10 @@ public class KtxUserServiceImpl implements KtxUserService {
 
 
     private List<KtxUserInstance> handleUploadFileAccountStudent(MultipartFile file) {
-        Map<String, Integer> mapYearGroup =
+        Map<String, String> mapYearGroup =
                 convertToMapYearGroup(yearGroupService.
                         getAllTYearGroup());
-        Map<String, Integer> mapPriorityGroup =
+        Map<String, String> mapPriorityGroup =
                 convertToMapPriorityGroup(priorityGroupService.
                         getAllTPriorityGroup());
         int indexSheet = 0;
@@ -427,14 +427,14 @@ public class KtxUserServiceImpl implements KtxUserService {
 
                 String titleYearGroup = ExcelUtil.convertValue(row.getCell(48), CellType.STRING) == null ? "" :
                         String.valueOf(ExcelUtil.convertValue(row.getCell(48), CellType.STRING));
-                Integer idYearGroup = mapYearGroup.get(titleYearGroup);
+                String codeYearGroup = mapYearGroup.get(titleYearGroup);
                 commonData.put("title_year_group",titleYearGroup);
-                commonData.put("id_year_group",idYearGroup);
+                commonData.put("code_year_group",codeYearGroup);
                 String titlePriorityGroup = ExcelUtil.convertValue(row.getCell(49), CellType.STRING) == null ? "" :
                         String.valueOf(ExcelUtil.convertValue(row.getCell(49), CellType.STRING));
-                Integer idPriorityGroup = mapPriorityGroup.get(titlePriorityGroup);
+                String codePriorityGroup = mapPriorityGroup.get(titlePriorityGroup);
                 commonData.put("title_priority_group",titlePriorityGroup);
-                commonData.put("id_priority_group",idPriorityGroup);
+                commonData.put("code_priority_group",codeYearGroup);
                 if (userName == null || numberStudent == null) {
                     error = 1;
                 }
@@ -467,18 +467,18 @@ public class KtxUserServiceImpl implements KtxUserService {
         return false;
     }
 
-    private Map<String, Integer> convertToMapPriorityGroup(List<PriorityGroup> allTPriorityGroup) {
-        Map<String, Integer> PriorityGroupMap = new HashMap<>();
+    private Map<String, String> convertToMapPriorityGroup(List<PriorityGroup> allTPriorityGroup) {
+        Map<String, String> PriorityGroupMap = new HashMap<>();
         for (PriorityGroup priorityGroup : allTPriorityGroup){
-            PriorityGroupMap.put(priorityGroup.getTitle(), priorityGroup.getIdPriorityGroup());
+            PriorityGroupMap.put(priorityGroup.getTitle(), priorityGroup.getPriorityGroupCode());
         }
         return PriorityGroupMap;
     }
 
-    private Map<String, Integer> convertToMapYearGroup(List<YearGroup> allTYearGroup) {
-        Map<String, Integer> YearGroupMap = new HashMap<>();
+    private Map<String, String> convertToMapYearGroup(List<YearGroup> allTYearGroup) {
+        Map<String, String> YearGroupMap = new HashMap<>();
         for (YearGroup yearGroup : allTYearGroup){
-            YearGroupMap.put(yearGroup.getTitle(), yearGroup.getIdYearGroup());
+            YearGroupMap.put(yearGroup.getTitle(), yearGroup.getCodeYearGroup());
         }
         return YearGroupMap;
     }
