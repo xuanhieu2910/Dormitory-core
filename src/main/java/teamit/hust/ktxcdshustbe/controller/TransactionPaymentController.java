@@ -27,9 +27,9 @@ public class TransactionPaymentController {
     public RedirectView callbackPayment(@RequestParam Map<String,Object> request){
         try {
             paymentService.callBackPayment(request);
-            return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/create-registration/payment-endpoint");
+            return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/payment-success");
         } catch (Exception e){
-            return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/create-registration/payment-endpoint");
+            return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/payment-fail");
         }
     }
 
