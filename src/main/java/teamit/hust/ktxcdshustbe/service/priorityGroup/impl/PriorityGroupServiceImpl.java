@@ -140,7 +140,7 @@ public class PriorityGroupServiceImpl implements PriorityGroupService {
     }
     private PriorityGroup initializePriorityGroup(CreatePriorityGroupRequest request, KtxUser ktxUser){
         PriorityGroup priorityGroup = new PriorityGroup();
-        priorityGroup.setPriorityGroupCode(UUID.nameUUIDFromBytes(request.getTitlePriorityGroup().getBytes()).toString());
+        priorityGroup.setPriorityGroupCode(UUID.nameUUIDFromBytes((request.getTitlePriorityGroup() + new Date().getTime()).getBytes()).toString());
         priorityGroup.setTitle(request.getTitlePriorityGroup());
         priorityGroup.setDescription(request.getDescription());
         priorityGroup.setIdUserCreated(ktxUser.getIdKtxUser());

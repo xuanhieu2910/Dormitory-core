@@ -76,7 +76,7 @@ public class SemesterServiceImpl implements SemesterService {
         semester.setTimeCreated(new Date().getTime());
         semester.setIdUserCreated(ktxUser.getIdKtxUser());
         semester.setIdUserModified(ktxUser.getIdUserModified());
-        semester.setCodeSemester(UUID.nameUUIDFromBytes(request.getTitleSemester().getBytes()).toString());
+        semester.setCodeSemester(UUID.nameUUIDFromBytes((request.getTitleSemester() + new Date().getTime()).getBytes()).toString());
         semester.setNote(request.getNote());
         return semester;
     }

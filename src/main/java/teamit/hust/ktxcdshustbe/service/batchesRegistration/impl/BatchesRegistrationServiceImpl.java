@@ -589,7 +589,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         Long timeCurrent = new Date().getTime();
         BatchesRegistration batchesRegistration = new BatchesRegistration();
         batchesRegistration.setTitle(request.getTitleBatchesRegistration());
-        batchesRegistration.setCodeBatchesRegistration(UUID.nameUUIDFromBytes(request.getTitleBatchesRegistration().getBytes()).toString());
+        batchesRegistration.setCodeBatchesRegistration(UUID.nameUUIDFromBytes((request.getTitleBatchesRegistration() + new Date().getTime()).getBytes()).toString());
         batchesRegistration.setIdTimeHired(request.getIdTimeHired());
         batchesRegistration.setIdSemester(semester.getIdSemester());
         batchesRegistration.setDescription(request.getNotes());

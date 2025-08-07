@@ -531,7 +531,7 @@ public class RoomServiceImpl implements RoomService {
         room.setLimitAmountPeopleRegister(request.getLimitAmountPeopleRegister());
         room.setQuantityRegistered(Constants.DEFAULT_QUANTITY_REGISTER);
         room.setRemainAmountRegister(request.getLimitAmountPeopleRegister());
-        room.setCodeRoom(UUID.nameUUIDFromBytes(request.getTitle().getBytes()).toString());
+        room.setCodeRoom(UUID.nameUUIDFromBytes((request.getTitle() + new Date().getTime()).getBytes()).toString());
         return room;
     }
 

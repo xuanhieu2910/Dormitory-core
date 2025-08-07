@@ -344,7 +344,7 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department department = new Department();
         department.setTitle(request.getTitle());
         department.setStatus(request.getStatus());
-        department.setCodeDepartment(UUID.nameUUIDFromBytes(request.getTitle().getBytes()).toString());
+        department.setCodeDepartment(UUID.nameUUIDFromBytes((request.getTitle() + new Date().getTime()).getBytes()).toString());
         department.setTimeCreated(currentTime);
         department.setTimeModified(currentTime);
         department.setIdUserCreated(ktxUser.getIdKtxUser());
