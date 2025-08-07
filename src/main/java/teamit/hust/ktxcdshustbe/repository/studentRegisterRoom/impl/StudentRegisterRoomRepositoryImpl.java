@@ -295,7 +295,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "       srr.status,srr.id_user_modified,srr.id_user_created, " +
                 "       srr.id_order,srr.id_batches_registration_schedule,srr.expires_at  " +
                 "from student_register_room srr  " +
-                "where ktx_user.id_student_register_room = :studentRegisterRoomId ");
+                "where srr.id_student_register_room = :studentRegisterRoomId ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("studentRegisterRoomId", studentRegisterRoomId);
         List<Object[]> result = query.getResultList();
