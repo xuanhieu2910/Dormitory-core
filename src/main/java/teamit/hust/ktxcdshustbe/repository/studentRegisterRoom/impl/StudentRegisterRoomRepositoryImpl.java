@@ -24,10 +24,7 @@ import teamit.hust.ktxcdshustbe.utility.DateUtil;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRepositoryCustom {
     
@@ -361,7 +358,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "  and pg.id_priority_group = :idPriorityGroup " +
                 "  and yg.id_year_group = :idYearGroup " +
                 "  and srr.id_order is not null " +
-                "  and srr.status = :statusRegisterRoom " +
+                "  and srr.status in (:statusRegisterRoom) " +
                 "  and ktu.id_ktx_user = :idKtxUser " +
                 ") then 1 else 0 end result ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -369,7 +366,8 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
         query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
         query.setParameter("currentTime", new Date().getTime());
-        query.setParameter("statusRegisterRoom", Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusRegisterRoom", Arrays.asList(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT));
         query.setParameter("idKtxUser", ktxUser.getIdKtxUser());
         return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
     }
