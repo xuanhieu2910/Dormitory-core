@@ -338,8 +338,8 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         if (null == request.getCodeUserRegister() || null == request.getStatus()) {
             throw new ValidParametersException();
         }
-        if (!(request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT) &&
-                !request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT))){
+        if (!request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT) &&
+                !request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT)){
             throw new ValidParametersException();
         }
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
