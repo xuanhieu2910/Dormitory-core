@@ -80,5 +80,15 @@ public class UserInstanceController {
         }
     }
 
+    @GetMapping("/statistics")
+    public ResponseEntity<?> getStatisticsTrainingProgramInstance(){
+        try {
+            return ApiResponseDto.createdWithState(
+                    ktxUserInstanceService.getStatisticUserInstance(),
+                    "Get student register instance success!", HttpStatus.OK);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

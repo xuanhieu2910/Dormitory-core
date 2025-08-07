@@ -6,6 +6,7 @@ import teamit.hust.ktxcdshustbe.request.userInstance.FindAllUserInstanceRequest;
 import teamit.hust.ktxcdshustbe.request.userInstance.UserDetailsInstanceRequest;
 import teamit.hust.ktxcdshustbe.request.userInstance.UserInstanceRequest;
 import teamit.hust.ktxcdshustbe.response.userInstance.FindAllUserInstanceResponse;
+import teamit.hust.ktxcdshustbe.response.userInstance.StatisticsUserInstanceResponse;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface KtxUserInstanceService {
     void deleteUserInstance(List<UserInstanceRequest> requests);
 
     void createUserInstance(List<UserDetailsInstanceRequest> requests);
+
+    StatisticsUserInstanceResponse getStatisticUserInstance();
 }

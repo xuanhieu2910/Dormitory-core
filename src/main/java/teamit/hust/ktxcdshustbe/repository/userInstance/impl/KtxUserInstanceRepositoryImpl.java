@@ -11,6 +11,8 @@ import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.entity.KtxUserInstance;
 import teamit.hust.ktxcdshustbe.repository.userInstance.KtxUserInstanceRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.userInstance.FindAllUserInstanceRequest;
+import teamit.hust.ktxcdshustbe.response.userInstance.StatisticsUserInstanceResponse;
+import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.PageUtils;
 import teamit.hust.ktxcdshustbe.utility.ValueUtil;
 
@@ -58,6 +60,34 @@ public class KtxUserInstanceRepositoryImpl implements KtxUserInstanceRepositoryC
             }
         }
         return instances;
+    }
+
+    @Override
+    public StatisticsUserInstanceResponse getStatisticUserInstance() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select sum(result.totalError) totalError,  " +
+                "  sum(result.totalNotError) totalNotError  " +
+                "  from (select count(kui.id_ktx_user_instance) totalError, " +
+                "  0 totalNotError  " +
+                "  from ktx_user_instance kui" +
+                "  where kui.error = :error" +
+                "  union all  " +
+                "  select 0 totalError,  " +
+                "  count(kui.id_ktx_user_instance) totalNotError " +
+                "  from ktx_user_instance kui " +
+                "  where kui.error != :error) result ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("error", Constants.ERROR_INSTANCE);
+        List<Object[]> result = query.getResultList();
+        StatisticsUserInstanceResponse response =
+                new StatisticsUserInstanceResponse();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                response.setTotalError(ValueUtil.getIntegerByObject(obj[0]));
+                response.setTotalNotError(ValueUtil.getIntegerByObject(obj[1]));
+            }
+        }
+        return response;
     }
 
     private long countFindAllUserInstance(FindAllUserInstanceRequest request) {

@@ -17,6 +17,7 @@ import teamit.hust.ktxcdshustbe.request.userInstance.FindAllUserInstanceRequest;
 import teamit.hust.ktxcdshustbe.request.userInstance.UserDetailsInstanceRequest;
 import teamit.hust.ktxcdshustbe.request.userInstance.UserInstanceRequest;
 import teamit.hust.ktxcdshustbe.response.userInstance.FindAllUserInstanceResponse;
+import teamit.hust.ktxcdshustbe.response.userInstance.StatisticsUserInstanceResponse;
 import teamit.hust.ktxcdshustbe.service.priorityGroup.PriorityGroupService;
 import teamit.hust.ktxcdshustbe.service.role.RoleService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
@@ -134,6 +135,11 @@ public class KtxUserInstanceServiceImpl implements KtxUserInstanceService {
         }
         ktxUserService.saveAllValue(ktxUserList);
         createUserRole(ktxUserList);
+    }
+
+    @Override
+    public StatisticsUserInstanceResponse getStatisticUserInstance() {
+        return userInstanceRepository.getStatisticUserInstance();
     }
 
     private Map<String, Integer> convertToMapIdPriorityGroup(List<PriorityGroup> allTPriorityGroup) {

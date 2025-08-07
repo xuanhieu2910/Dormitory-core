@@ -229,8 +229,11 @@ public class Constants {
     public static final String TYPE_PAYMENT_VIET_QR = "VIETQR";
     public static final String TYPE_PAYMENT_INTERNATIONAL = "INTERNATIONAL";
     public static final String TYPE_PAYMENT_DOMESTIC = "DOMESTIC";
+
     /*----------------------------------------------------*/
-
-
-
+    /**
+     * Constant TYPE_PAYMENT
+     * */
+    public static Integer ERROR_INSTANCE = 1;
+    /*----------------------------------------------------*/
 }
