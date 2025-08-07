@@ -434,7 +434,7 @@ public class KtxUserServiceImpl implements KtxUserService {
                         String.valueOf(ExcelUtil.convertValue(row.getCell(49), CellType.STRING));
                 String codePriorityGroup = mapPriorityGroup.get(titlePriorityGroup);
                 commonData.put("title_priority_group",titlePriorityGroup);
-                commonData.put("code_priority_group",codeYearGroup);
+                commonData.put("code_priority_group",codePriorityGroup);
                 if (userName == null || numberStudent == null) {
                     error = 1;
                 }
