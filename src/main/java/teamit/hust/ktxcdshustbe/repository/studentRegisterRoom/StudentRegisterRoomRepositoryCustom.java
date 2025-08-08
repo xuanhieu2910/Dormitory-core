@@ -39,4 +39,6 @@ public interface StudentRegisterRoomRepositoryCustom {
     List<UserRegisterRoomDto> findListUserRegisterInRoom(Integer status);
 
     boolean checkExistStudentInRegister(String codeUser, Integer idRoom);
+
+    Integer updateStatusRoomWhenExpiresTime();
 }

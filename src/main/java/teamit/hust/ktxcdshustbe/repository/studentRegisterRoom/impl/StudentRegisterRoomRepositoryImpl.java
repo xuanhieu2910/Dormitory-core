@@ -8,7 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
@@ -681,6 +683,25 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         query.setParameter("codeUser", codeUser);
         List<Object[]> result = query.getResultList();
         return !CollectionUtils.isEmpty(result);
+    }
+
+    @Modifying
+    @Transactional
+    @Override
+    public Integer updateStatusRoomWhenExpiresTime() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update student_register_room srr " +
+                " set srr.status = :statusExpires,  " +
+                "    srr.time_modified = :timeModified " +
+                " where srr.status = :status " +
+                " and srr.expires_at <= :timeCurrent ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        Long timeCurrent = new Date().getTime();
+        query.setParameter("statusExpires", Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
+        query.setParameter("timeModified", timeCurrent);
+        query.setParameter("status", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        query.setParameter("timeCurrent", timeCurrent);
+        return query.executeUpdate();
     }
 
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {

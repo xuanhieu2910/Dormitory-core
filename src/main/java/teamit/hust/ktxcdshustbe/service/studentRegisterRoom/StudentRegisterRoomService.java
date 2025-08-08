@@ -52,4 +52,6 @@ public interface StudentRegisterRoomService {
     String downloadListStudentRegisterRoom(UserRegisterRoomRequest request) throws IOException;
 
     boolean checkExistStudentInRegister(String codeUser, Integer idRoom);
+
+    Integer updateStatusRoomWhenExpiresTime();
 }
