@@ -45,4 +45,6 @@ public interface RoomService {
     Page<FindAllRoomsResponse> findAllRoomRegister(FindAllRoomsRequest request);
 
     List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment);
+
+    void updateQuantityRegisterRoomByIdRoomAndAmount(Integer idRoom, Integer amount);
 }

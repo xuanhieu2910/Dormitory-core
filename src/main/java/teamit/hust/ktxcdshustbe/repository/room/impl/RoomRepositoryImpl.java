@@ -788,6 +788,21 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         return query.executeUpdate();
     }
 
+    @Modifying
+    @Transactional
+    @Override
+    public void updateQuantityRegisterRoomByIdRoomAndAmount(Integer idRoom, Integer amount) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" UPDATE room   " +
+                "SET quantity_registered = quantity_registered - :amount,   " +
+                "    remain_amount_register = remain_amount_register + :amount   " +
+                "where id_room = :idRoom ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idRoom", idRoom);
+        query.setParameter("amount", amount);
+        query.executeUpdate();
+    }
+
     private long countFindAllRoomsRegister(FindAllRoomsRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0)  " +

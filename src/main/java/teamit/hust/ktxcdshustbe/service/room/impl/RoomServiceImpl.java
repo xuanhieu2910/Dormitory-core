@@ -352,6 +352,11 @@ public class RoomServiceImpl implements RoomService {
         return roomsDtos;
     }
 
+    @Override
+    public void updateQuantityRegisterRoomByIdRoomAndAmount(Integer idRoom, Integer amount) {
+        roomRepository.updateQuantityRegisterRoomByIdRoomAndAmount(idRoom, amount);
+    }
+
     private List<SearchInformationRegisterRoomResponse> convertToSearchInformationRegisterRoomResponse(List<SearchInformationRegisterRoomDto> dtos) {
         List<SearchInformationRegisterRoomResponse> responses = new ArrayList<>();
         for (SearchInformationRegisterRoomDto dto : dtos){

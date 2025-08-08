@@ -57,4 +57,6 @@ public interface RoomRepositoryCustom {
     List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment);
 
     int updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(Integer idRoom, Integer userIdModified);
+
+    void updateQuantityRegisterRoomByIdRoomAndAmount(Integer idRoom, Integer amount);
 }

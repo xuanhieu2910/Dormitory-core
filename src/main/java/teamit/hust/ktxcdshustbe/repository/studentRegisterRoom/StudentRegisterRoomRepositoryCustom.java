@@ -2,11 +2,11 @@ package teamit.hust.ktxcdshustbe.repository.studentRegisterRoom;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
-import teamit.hust.ktxcdshustbe.request.studentRegister.FindAllSearchRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 
@@ -40,5 +40,7 @@ public interface StudentRegisterRoomRepositoryCustom {
 
     boolean checkExistStudentInRegister(String codeUser, Integer idRoom);
 
-    Integer updateStatusRoomWhenExpiresTime();
+    Integer updateStatusRoomWhenExpiresTime(Long timeCurrent);
+
+    List<StudentRegisterHoldingRoomDto> getListStudentHoldingRoom(Long timeCurrent);
 }

@@ -12,8 +12,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
-import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
@@ -688,7 +688,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Modifying
     @Transactional
     @Override
-    public Integer updateStatusRoomWhenExpiresTime() {
+    public Integer updateStatusRoomWhenExpiresTime(Long timeCurrent) {
         StringBuilder sb = new StringBuilder();
         sb.append("update student_register_room srr " +
                 " set srr.status = :statusExpires,  " +
@@ -696,12 +696,36 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 " where srr.status = :status " +
                 " and srr.expires_at <= :timeCurrent ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        Long timeCurrent = new Date().getTime();
         query.setParameter("statusExpires", Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
         query.setParameter("timeModified", timeCurrent);
         query.setParameter("status", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
         query.setParameter("timeCurrent", timeCurrent);
         return query.executeUpdate();
+    }
+
+    @Override
+    public List<StudentRegisterHoldingRoomDto> getListStudentHoldingRoom(Long timeCurrent) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select ro.id_room, count(srr.id_student_register_room) quantity  " +
+                "from student_register_room srr  " +
+                "    inner join room ro on srr.id_room = ro.id_room  " +
+                "where srr.status = :status  " +
+                "and srr.expires_at <= :timeCurrent  " +
+                "group by ro.id_room ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("status", Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
+        query.setParameter("timeCurrent", timeCurrent);
+        List<Object[]> result = query.getResultList();
+        List<StudentRegisterHoldingRoomDto> responses = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                StudentRegisterHoldingRoomDto response = new StudentRegisterHoldingRoomDto();
+                response.setIdRoom(ValueUtil.getIntegerByObject(obj[0]));
+                response.setQuantity(ValueUtil.getIntegerByObject(obj[1]));
+                responses.add(response);
+            }
+        }
+        return responses;
     }
 
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {

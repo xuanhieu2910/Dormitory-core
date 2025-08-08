@@ -2,6 +2,7 @@ package teamit.hust.ktxcdshustbe.service.studentRegisterRoom;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.request.registerRoom.ChangeRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.studentRegister.AcceptPaymentRequest;
@@ -53,5 +54,6 @@ public interface StudentRegisterRoomService {
 
     boolean checkExistStudentInRegister(String codeUser, Integer idRoom);
 
-    Integer updateStatusRoomWhenExpiresTime();
+    Integer updateStatusRoomWhenExpiresTime(Long timeCurrent);
+    List<StudentRegisterHoldingRoomDto> getStudentRegisterHoldingRoom(Long timeCurrent);
 }

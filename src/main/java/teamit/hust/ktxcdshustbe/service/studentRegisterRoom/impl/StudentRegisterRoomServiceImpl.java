@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.FindAllStudentHiredRoomDto;
@@ -447,8 +448,13 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     @Override
-    public Integer updateStatusRoomWhenExpiresTime() {
-        return studentRegisterRoomRepository.updateStatusRoomWhenExpiresTime();
+    public Integer updateStatusRoomWhenExpiresTime(Long timeCurrent) {
+        return studentRegisterRoomRepository.updateStatusRoomWhenExpiresTime(timeCurrent);
+    }
+
+    @Override
+    public List<StudentRegisterHoldingRoomDto> getStudentRegisterHoldingRoom(Long timeCurrent) {
+        return studentRegisterRoomRepository.getListStudentHoldingRoom(timeCurrent);
     }
 
     private void writeDataInfoReport(Sheet sheet, Map<String, CellStyle> styles) {
