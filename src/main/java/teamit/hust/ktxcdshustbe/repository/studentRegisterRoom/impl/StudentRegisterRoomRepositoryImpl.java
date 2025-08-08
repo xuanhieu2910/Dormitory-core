@@ -713,7 +713,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "and srr.expires_at <= :timeCurrent  " +
                 "group by ro.id_room ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("status", Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
+        query.setParameter("status", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
         query.setParameter("timeCurrent", timeCurrent);
         List<Object[]> result = query.getResultList();
         List<StudentRegisterHoldingRoomDto> responses = new ArrayList<>();
