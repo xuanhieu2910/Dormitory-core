@@ -55,4 +55,6 @@ public interface RoomRepositoryCustom {
     Page<FindAllRoomsDto> findAllRoomsRegister(FindAllRoomsRequest request, Pageable pageable);
 
     List<FindAllRoomsDto> findAllListRoomByCodeDepartment(String codeDepartment);
+
+    int updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(Integer idRoom, Integer userIdModified);
 }

@@ -84,11 +84,13 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
                 "set ro.quantity_hired               = ro.quantity_hired + :quantity, " +
                 "    ro.remain_amount                = ro.remain_amount - :quantity, " +
                 "    ro.remain_amount_register       = ro.remain_amount_register - :quantity, " +
+                "    ro.limit_amount_people_register       = ro.limit_amount_people_register - :quantity, " +
                 "    ro.time_modified                = :timeModified, " +
                 "    ro.id_user_modified             = :userIdModified " +
                 "where ro.id_room = :roomId " +
                 "  and ro.remain_amount > 0 " +
-                "  and (ro.quantity_hired < ro.limit_amount_people)  ");
+                "  and (ro.quantity_hired < ro.limit_amount_people) " +
+                "   and (ro.remain_amount_register > 0) ");
         Query query = entityManager.createNativeQuery(sb.toString());
         Long timeCurrent = new Date().getTime();
         query.setParameter("timeModified",timeCurrent);
@@ -224,7 +226,6 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         sb.append("update room ro " +
                 "set ro.quantity_hired    = ro.quantity_hired - 1, " +
                 "    ro.remain_amount = ro.remain_amount + 1, " +
-                "    ro.limit_amount_people_register = ro.limit_amount_people_register + 1, " +
                 "    ro.remain_amount_register = ro.remain_amount_register + 1, " +
                 "    ro.time_modified          = :timeModified, " +
                 "    ro.id_user_modified       = :userIdModified " +
@@ -765,6 +766,26 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         }
 
         return findAllRoomsDtos;
+    }
+
+    @Override
+    public int updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(Integer idRoom, Integer userIdModified) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("update room ro " +
+                "set ro.quantity_hired               = ro.quantity_hired + :quantity, " +
+                "    ro.remain_amount                = ro.remain_amount - :quantity, " +
+                "    ro.time_modified                = :timeModified, " +
+                "    ro.id_user_modified             = :userIdModified " +
+                "where ro.id_room = :roomId " +
+                "  and ro.remain_amount > ro.remain_amount_register " );
+
+        Query query = entityManager.createNativeQuery(sb.toString());
+        Long timeCurrent = new Date().getTime();
+        query.setParameter("timeModified",timeCurrent);
+        query.setParameter("quantity", Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        query.setParameter("userIdModified",userIdModified);
+        query.setParameter("roomId",idRoom);
+        return query.executeUpdate();
     }
 
     private long countFindAllRoomsRegister(FindAllRoomsRequest request) {

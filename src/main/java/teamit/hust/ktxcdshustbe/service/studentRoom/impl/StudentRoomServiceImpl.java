@@ -152,7 +152,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         Optional<Room> roomOptional = roomService.findRoomByCodeRoom(request.getCodeRoom());
         KtxUser ktxUserOptional = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
         studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
-        updateQuantityRoom(roomOptional.get().getIdRoom(), ktxUser.getIdKtxUser());
+        updateQuantityRoom(roomOptional.get(), ktxUser.getIdKtxUser());
     }
 
 
@@ -185,11 +185,20 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         }
     }
 
-    private void updateQuantityRoom(Integer roomId, Integer userIdModified) throws SQLException {
-        int rowUpdate = roomRepository.updateQuantityAndRemainAmountToAddNewStudent(roomId, userIdModified);
-        if (rowUpdate == Constants.ROW_NOT_UPDATED){
-            throw new SQLException("Method add new student can't update quantity remain amount!");
+    private void updateQuantityRoom(Room room, Integer userIdModified) throws SQLException {
+        if(room.getRemainAmount() > room.getRemainAmountRegister()){
+            int rowUpdateWhenHiredLargerRegister = roomRepository.updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(room.getIdRoom(), userIdModified);
+            if (rowUpdateWhenHiredLargerRegister == Constants.ROW_NOT_UPDATED){
+                throw new SQLException("Method add new student can't update quantity remain amount!");
+            }
         }
+        else {
+            int rowUpdate = roomRepository.updateQuantityAndRemainAmountToAddNewStudent(room.getIdRoom(), userIdModified);
+            if (rowUpdate == Constants.ROW_NOT_UPDATED){
+                throw new SQLException("Method add new student can't update quantity remain amount!");
+            }
+        }
+
     }
 
     private StudentRoom createStudentRoomNew(Integer idRoom, Integer idUser, Integer userIdModified,Integer idTimeHired) {
@@ -325,8 +334,8 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     private void updateOriginalRoom(Room originalRoom, Integer userIdModified) {
         originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setLimitAmountPeopleRegister(originalRoom.getLimitAmountPeopleRegister() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setRemainAmountRegister(originalRoom.getRemainAmountRegister()  + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setQuantityRegistered(originalRoom.getQuantityRegistered() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
         originalRoom.setTimeModified(new Date().getTime());
         originalRoom.setIdUserModified(userIdModified);
         roomRepository.save(originalRoom);
