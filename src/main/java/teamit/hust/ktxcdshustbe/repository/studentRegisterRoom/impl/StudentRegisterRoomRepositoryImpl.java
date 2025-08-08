@@ -669,6 +669,20 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         return userRegisterRoomDtos;
     }
 
+    @Override
+    public boolean checkExistStudentInRegister(String codeUser, Integer idRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select * " +
+                "from student_register_room srr " +
+                " inner join ktx_user on srr.id_user = ktx_user.id_ktx_user " +
+                " where srr.id_room = :idRoom and ktx_user.code_user = :codeUser  ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idRoom", idRoom);
+        query.setParameter("codeUser", codeUser);
+        List<Object[]> result = query.getResultList();
+        return !CollectionUtils.isEmpty(result);
+    }
+
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) " +

@@ -49,15 +49,13 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "       ktxUserModified.full_name,  " +
                 "       timeHired.time_started,  " +
                 "       timeHired.time_ended,  " +
-                "       studentRoom.status,  " +
-                "       se.title  " +
+                "       studentRoom.status  " +
                 "from student_room studentRoom  " +
                 "         inner join room ro on studentRoom.id_room = ro.id_room " +
                 "         inner join department de on ro.id_department = de.id_department  " +
                 "         inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user  " +
                 "         left join ktx_user ktxUserModified on studentRoom.id_user_modified = ktxUserModified.id_ktx_user  " +
                 "         inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
-                "         inner join semester se on timeHired.id_semester = se.id_semester  " +
                 "where ktxUser.code_user = :codeUser ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeUser", codeUser);
@@ -67,8 +65,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
             for (Object[] obj: result) {
                 String timeStarted = DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[7]),DateUtil.DATE_FORMAT_HH_MM);
                 String timeEnded = DateUtil.formatToPattern(ValueUtil.getDateByObject(obj[8]), DateUtil.DATE_FORMAT_HH_MM);
-                String titleSemester = ValueUtil.getStringByObject(obj[10]);
-                String timeHired = titleSemester + " " + timeStarted + "-" + timeEnded;
+                String timeHired =timeStarted + "-" + timeEnded;
                 responses.add(HiredRoomsResponse.builder()
                         .idHiredUserRoom(ValueUtil.getIntegerByObject(obj[0]))
                         .codeDepartment(ValueUtil.getStringByObject(obj[1]))
@@ -79,7 +76,6 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                         .fullNameUserModified(ValueUtil.getStringByObject(obj[6]))
                         .timeHired(timeHired)
                         .status(ValueUtil.getIntegerByObject(obj[9]))
-                        .titleSemester(titleSemester)
                         .build());
             }
         }

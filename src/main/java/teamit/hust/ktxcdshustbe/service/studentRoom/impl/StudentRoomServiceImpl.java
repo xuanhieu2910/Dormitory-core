@@ -65,8 +65,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     @Autowired
     RoomRepository roomRepository;
     @Autowired
-    TimeHiredRepository timeHiredRepository;
-    @Autowired
     StudentRegisterRoomService studentRegisterRoomService;
     @Autowired
     KtxUserService ktxUserService;
@@ -276,9 +274,70 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateTransferRoom(Room originalRoom, Room destinationRoom, String codeUser){
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if(studentRegisterRoomService.checkExistStudentInRegister(codeUser,originalRoom.getIdRoom())) {
+            updateOriginalRoomWithRegistered(originalRoom,ktxUser.getIdKtxUser());
+            updateDestinationRoomWithRegistered(destinationRoom,ktxUser.getIdKtxUser());
+        }
+        else {
+            updateOriginalRoomWithOutRegistered(originalRoom,ktxUser.getIdKtxUser());
+            updateDestinationRoomWithOutRegistered(destinationRoom,ktxUser.getIdKtxUser());
+        }
         updateDestinationRoom(destinationRoom,ktxUser.getIdKtxUser());
         updateOriginalRoom(originalRoom,ktxUser.getIdKtxUser());
         updateStudentRoom(codeUser, originalRoom.getIdRoom(),destinationRoom.getIdRoom(),ktxUser.getIdKtxUser());
+    }
+
+    private void updateDestinationRoomWithOutRegistered(Room destinationRoom, Integer idKtxUser) {
+        if(destinationRoom.getRemainAmount() > destinationRoom.getRemainAmountRegister() ){
+            destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        } else if (destinationRoom.getRemainAmount().equals(destinationRoom.getRemainAmountRegister())) {
+            destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeople() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setRemainAmountRegister(destinationRoom.getRemainAmountRegister() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        }
+
+        destinationRoom.setTimeModified(new Date().getTime());
+        destinationRoom.setIdUserModified(idKtxUser);
+    }
+
+    private void updateDestinationRoomWithRegistered(Room destinationRoom, Integer idKtxUser) {
+
+        if((destinationRoom.getRemainAmount() > destinationRoom.getRemainAmountRegister()) &&
+                destinationRoom.getRemainAmountRegister().equals(Constants.QUANTITY_REMAIN_AMOUNT_REGISTER) ){
+            destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        }
+        else {
+            destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeople() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setRemainAmountRegister(destinationRoom.getRemainAmountRegister() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        }
+        destinationRoom.setTimeModified(new Date().getTime());
+        destinationRoom.setIdUserModified(idKtxUser);
+
+        roomRepository.save(destinationRoom);
+    }
+
+    private void updateOriginalRoomWithOutRegistered(Room originalRoom, Integer idKtxUser) {
+        originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setTimeModified(new Date().getTime());
+        originalRoom.setIdUserModified(idKtxUser);
+        roomRepository.save(originalRoom);
+    }
+
+    private void updateOriginalRoomWithRegistered(Room originalRoom, Integer idKtxUser) {
+        originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setRemainAmountRegister(originalRoom.getRemainAmountRegister()  + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setQuantityRegistered(originalRoom.getQuantityRegistered() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        originalRoom.setTimeModified(new Date().getTime());
+        originalRoom.setIdUserModified(idKtxUser);
+        roomRepository.save(originalRoom);
     }
 
     private void updateStudentRoom(String codeUser, Integer originalRoomId, Integer destinationRoomId, Integer userIdModified) {

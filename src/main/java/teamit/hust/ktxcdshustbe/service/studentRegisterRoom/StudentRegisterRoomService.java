@@ -50,4 +50,6 @@ public interface StudentRegisterRoomService {
     Page<UserRegisterRoomResponse> findAllInfoAnUserRegisterRoomByCode(UserRegisterRoomRequest request);
 
     String downloadListStudentRegisterRoom(UserRegisterRoomRequest request) throws IOException;
+
+    boolean checkExistStudentInRegister(String codeUser, Integer idRoom);
 }

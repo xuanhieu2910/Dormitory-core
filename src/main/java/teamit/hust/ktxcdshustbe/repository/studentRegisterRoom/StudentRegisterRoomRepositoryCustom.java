@@ -37,4 +37,6 @@ public interface StudentRegisterRoomRepositoryCustom {
 
     List<UserRegisterRoomDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request);
     List<UserRegisterRoomDto> findListUserRegisterInRoom(Integer status);
+
+    boolean checkExistStudentInRegister(String codeUser, Integer idRoom);
 }
