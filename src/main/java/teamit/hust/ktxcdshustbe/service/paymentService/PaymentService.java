@@ -8,5 +8,5 @@ import java.util.Map;
 
 public interface PaymentService {
 
-    void callBackPayment(Map<String,Object> request) throws JsonProcessingException;
+    boolean callBackPayment(Map<String,Object> request) throws JsonProcessingException;
 }

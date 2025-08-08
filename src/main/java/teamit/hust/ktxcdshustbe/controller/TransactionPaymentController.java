@@ -26,8 +26,11 @@ public class TransactionPaymentController {
     @PostMapping(value = "/callback", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public RedirectView callbackPayment(@RequestParam Map<String,Object> request){
         try {
-            paymentService.callBackPayment(request);
-            return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/payment-success");
+            boolean statusPayment = paymentService.callBackPayment(request);
+            if (statusPayment){
+                return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/payment-success");
+            }
+            return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/payment-fail");
         } catch (Exception e){
             return new RedirectView(WebSecurityConfig.DOMAIN_FE + "/payment-fail");
         }

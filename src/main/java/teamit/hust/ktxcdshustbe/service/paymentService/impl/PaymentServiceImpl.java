@@ -124,7 +124,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public void callBackPayment(Map<String,Object> request) throws JsonProcessingException {
+    public boolean callBackPayment(Map<String,Object> request) throws JsonProcessingException {
         CallBackPaymentRequest callBackPaymentRequest = convertToCallBackPaymentRequest(request);
         verifyCallBackPayment(callBackPaymentRequest);
         log.info("[CALL BACK] : {} - {}", new ObjectMapper().writeValueAsString(callBackPaymentRequest.toString()), DateUtil.formatToPattern(new Date(), DateUtil.DATE_FORMAT));
@@ -133,10 +133,11 @@ public class PaymentServiceImpl implements PaymentService {
                         Constants.TYPE_REQ_TRANSACTION_PAYMENT);
         verifyTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
         Orders orders = ordersService.findOrdersByIdOrder(transactionPayment.getIdOrder());
-        updateTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
+        boolean statusPayment = updateTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
         updateOrdersCallBack(orders, callBackPaymentRequest);
         updateStudentRegisterRoomCallBack(orders, callBackPaymentRequest);
         createNewTransactionResponse(orders, transactionPayment, callBackPaymentRequest);
+        return statusPayment;
     }
 
     private CallBackPaymentRequest convertToCallBackPaymentRequest(Map<String, Object> request) {
@@ -199,16 +200,20 @@ public class PaymentServiceImpl implements PaymentService {
         transactionPaymentService.saveTransactionPayment(transactionPaymentResponse);
     }
 
-    private void updateTransactionPaymentCallBack(TransactionPayment transactionPayment, CallBackPaymentRequest request) {
+    private boolean updateTransactionPaymentCallBack(TransactionPayment transactionPayment, CallBackPaymentRequest request) {
+        boolean statusPayment = true;
         if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             transactionPayment.setStatus(Constants.STATUS_COMPLETE_TRANSACTION_PAYMENT);
         }else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())){
             transactionPayment.setStatus(Constants.STATUS_COMPLETE_TRANSACTION_CANCEL);
+            statusPayment = false;
         }else {
             transactionPayment.setStatus(Constants.STATUS_COMPLETE_TRANSACTION_FALSE);
+            statusPayment = false;
         }
         transactionPayment.setTimeModified(new Date().getTime());
         transactionPaymentService.saveTransactionPayment(transactionPayment);
+        return statusPayment;
     }
 
     private Orders updateOrdersCallBack(Orders orders, CallBackPaymentRequest request) {
