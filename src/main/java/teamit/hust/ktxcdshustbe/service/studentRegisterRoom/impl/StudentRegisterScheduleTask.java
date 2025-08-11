@@ -23,7 +23,7 @@ public class StudentRegisterScheduleTask {
     @Autowired
     RoomService roomService;
 
-    @Scheduled(fixedDelay = 20000)
+    @Scheduled(fixedDelay = 5000)
     public void updateStatusHoldingRoom(){
         log.info("[Schedule - Register Room] - Start update status holding room");
         Long timeCurrent = new Date().getTime();
