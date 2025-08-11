@@ -30,19 +30,15 @@ public class UnauthorizedEntryPoint implements AuthenticationEntryPoint, Seriali
         Set<String> allowOriginals = new HashSet<>();
         allowOriginals.add(WebSecurityConfig.DOMAIN_FPT_PAYMENT);
         allowOriginals.add(WebSecurityConfig.DOMAIN_FE);
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        String uriCurrent = request.getRequestURI();
-        log.info("Uri current un-author {}", uriCurrent);
-        if (allowOriginals.contains(uriCurrent)) {
-            log.info("Allow uri: {}", uriCurrent);
-            response.setHeader("Access-Control-Allow-Origin", uriCurrent);
+        for (String origin: allowOriginals) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Expose-Headers", "Authorization");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         }
-        response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-        response.setHeader("Access-Control-Allow-Credentials","true");
-        response.setHeader("Access-Control-Expose-Headers", "Authorization");
-
         ErrorResponse body = ErrorResponse.builder()
                 .status(HttpServletResponse.SC_UNAUTHORIZED)
                 .error("Unauthenticated error")
