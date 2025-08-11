@@ -23,6 +23,7 @@ public interface StudentRegisterRoomRepositoryCustom {
     Optional<StudentRegisterRoom> findStudentRegisterRoomById(Integer studentRegisterRoomId);
     boolean isAllowRegisterBatchesRegistration();
     boolean isExistsRegisteredRoomInBatchesRegistrationCurrent();
+    boolean isExistsRegisteredRoomAndPaymentSuccessInBatchesRegistrationCurrent();
     boolean isHoldingRegisteredRoomInBatchesRegistrationCurrent();
     Optional<StudentRegisterRoomDto> getInformationRegisterRoomCurrent();
     boolean isAllowRegisterRoomByCodeRoom(String codeRoom);

@@ -373,6 +373,37 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
     }
 
+
+    @Override
+    public boolean isExistsRegisteredRoomAndPaymentSuccessInBatchesRegistrationCurrent() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select case when exists(    " +
+                "     select 1    " +
+                " from batches_registration br    " +
+                "          inner join batches_year_group_registration bygr    " +
+                "      on br.id_batches_registration = bygr.id_batches_registration    " +
+                "          inner join year_group yg on bygr.id_year_group = yg.id_year_group    " +
+                "          inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration    " +
+                "          inner join priority_group pg on brs.id_priority_group = pg.id_priority_group    " +
+                "          inner join student_register_room srr on brs.id_batches_registration_schedule = srr.id_batches_registration_schedule    " +
+                "          inner join ktx_user ktu on srr.id_user = ktu.id_ktx_user    " +
+                " where :currentTime between brs.registration_start_time and brs.registration_end_time    " +
+                "   and pg.id_priority_group = :idPriorityGroup    " +
+                "   and yg.id_year_group = :idYearGroup    " +
+                "   and (srr.id_order is not null and srr.status in (:statusRegisterRoom))    " +
+                "   and ktu.id_ktx_user = :idKtxUser    " +
+                " ) then 1 else 0 end result ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
+        query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
+        query.setParameter("currentTime", new Date().getTime());
+        query.setParameter("statusRegisterRoom", Arrays.asList(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT));
+        query.setParameter("idKtxUser", ktxUser.getIdKtxUser());
+        return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
+    }
+
     @Override
     public boolean isHoldingRegisteredRoomInBatchesRegistrationCurrent() {
         StringBuilder sb = new StringBuilder();

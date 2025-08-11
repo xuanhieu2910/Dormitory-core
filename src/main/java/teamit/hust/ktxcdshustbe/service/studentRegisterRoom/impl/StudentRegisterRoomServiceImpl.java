@@ -202,7 +202,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         if (!studentRegisterRoomRepository.isAllowRegisterBatchesRegistration()){
             throw new ValidParametersException();
         }
-        if (studentRegisterRoomRepository.isExistsRegisteredRoomInBatchesRegistrationCurrent()){
+        if (studentRegisterRoomRepository.isExistsRegisteredRoomAndPaymentSuccessInBatchesRegistrationCurrent()){
             throw new ValidParametersException();
         }
     }
