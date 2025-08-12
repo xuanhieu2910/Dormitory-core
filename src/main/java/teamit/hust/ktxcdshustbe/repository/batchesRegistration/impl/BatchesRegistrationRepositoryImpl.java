@@ -124,6 +124,8 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeBatchesRegistration", codeBatchesRegistration);
         List<Object[]> result = query.getResultList();
+        Map<Integer,BatchesRegistrationScheduleDto> batchesRegistrationScheduleDtoMap = new HashMap<>();
+        Map<Integer,BatchesYearGroupRegistrationDto> batchesYearGroupRegistrationDtoMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(result)){
             BatchesRegistrationDetailDto detailDto = new BatchesRegistrationDetailDto();
             detailDto.setIdBatchesRegistration(ValueUtil.getIntegerByObject(result.get(0)[0]));
@@ -147,7 +149,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
             List<BatchesRegistrationScheduleDto> batchesRegistrationScheduleDtos = new ArrayList<>();
             for (Object[] obj : result){
                 BatchesYearGroupRegistrationDto yearGroupRegistrationDto = new BatchesYearGroupRegistrationDto();
-                if (ValueUtil.getIntegerByObject(obj[10]) != null) {
+                if (ValueUtil.getIntegerByObject(obj[10]) != null && !batchesYearGroupRegistrationDtoMap.containsKey(ValueUtil.getIntegerByObject(obj[10]))) {
                     yearGroupRegistrationDto.setIdBatchesYearGroupRegistration(ValueUtil.getIntegerByObject(obj[10]));
                     yearGroupRegistrationDto.setIdYearGroup(ValueUtil.getIntegerByObject(obj[11]));
                     yearGroupRegistrationDto.setTitleYearGroup(ValueUtil.getStringByObject(obj[12]));
@@ -156,8 +158,9 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
                     yearGroupRegistrationDto.setTimeCreated(ValueUtil.getLongByObject(obj[15]));
                     yearGroupRegistrationDto.setTimeModified(ValueUtil.getLongByObject(obj[16]));
                     batchesYearGroupRegistrationDtos.add(yearGroupRegistrationDto);
+                    batchesYearGroupRegistrationDtoMap.put(ValueUtil.getIntegerByObject(obj[10]), yearGroupRegistrationDto);
                 }
-                if (ValueUtil.getIntegerByObject(obj[22]) != null){
+                if (ValueUtil.getIntegerByObject(obj[22]) != null && !batchesRegistrationScheduleDtoMap.containsKey(ValueUtil.getIntegerByObject(obj[22]))){
                     BatchesRegistrationScheduleDto batchesRegistrationScheduleDto = new BatchesRegistrationScheduleDto();
                     batchesRegistrationScheduleDto.setIdBatchesRegistrationSchedule(ValueUtil.getIntegerByObject(obj[22]));
                     batchesRegistrationScheduleDto.setStatus(ValueUtil.getIntegerByObject(obj[23]));
@@ -171,6 +174,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
                     priorityGroupDto.setTitle(ValueUtil.getStringByObject(obj[30]));
                     batchesRegistrationScheduleDto.setPriorityGroupDto(priorityGroupDto);
                     batchesRegistrationScheduleDtos.add(batchesRegistrationScheduleDto);
+                    batchesRegistrationScheduleDtoMap.put(ValueUtil.getIntegerByObject(obj[22]), batchesRegistrationScheduleDto);
                 }
             }
             detailDto.setBatchesYearGroupRegistrationDtos(batchesYearGroupRegistrationDtos);
