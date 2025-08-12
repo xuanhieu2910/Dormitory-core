@@ -179,6 +179,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         batchesRegistration.setEndTime(request.getEndTime());
         batchesRegistration.setIdTimeHired(request.getIdTimeHired());
         batchesRegistration.setNotes(request.getNotes());
+        batchesRegistration.setTimeModified(new Date().getTime());
         batchesRegistrationRepository.save(batchesRegistration);
     }
 
