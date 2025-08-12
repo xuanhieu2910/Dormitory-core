@@ -133,9 +133,10 @@ public class PaymentServiceImpl implements PaymentService {
                         Constants.TYPE_REQ_TRANSACTION_PAYMENT);
         verifyTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
         Orders orders = ordersService.findOrdersByIdOrder(transactionPayment.getIdOrder());
+        StudentRegisterRoom studentRegisterRoom = studentRegisterRoomService.getStudentRegisterRoomByIdOrder(orders.getIdOrder());
         boolean statusPayment = updateTransactionPaymentCallBack(transactionPayment, callBackPaymentRequest);
-        updateOrdersCallBack(orders, callBackPaymentRequest);
-        updateStudentRegisterRoomCallBack(orders, callBackPaymentRequest);
+        updateOrdersCallBack(orders, callBackPaymentRequest, studentRegisterRoom);
+        updateStudentRegisterRoomCallBack(callBackPaymentRequest, studentRegisterRoom);
         createNewTransactionResponse(orders, transactionPayment, callBackPaymentRequest);
         return statusPayment;
     }
@@ -165,8 +166,7 @@ public class PaymentServiceImpl implements PaymentService {
         return callBackPaymentRequest;
     }
 
-    private void updateStudentRegisterRoomCallBack(Orders orders, CallBackPaymentRequest request) {
-        StudentRegisterRoom studentRegisterRoom = studentRegisterRoomService.getStudentRegisterRoomByIdOrder(orders.getIdOrder());
+    private void updateStudentRegisterRoomCallBack(CallBackPaymentRequest request, StudentRegisterRoom studentRegisterRoom) {
         if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             studentRegisterRoom.setStatus(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
         } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
@@ -216,11 +216,12 @@ public class PaymentServiceImpl implements PaymentService {
         return statusPayment;
     }
 
-    private Orders updateOrdersCallBack(Orders orders, CallBackPaymentRequest request) {
+    private Orders updateOrdersCallBack(Orders orders, CallBackPaymentRequest request, StudentRegisterRoom studentRegisterRoom ) {
         if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             orders.setStatusOrder(Constants.STATUS_ORDER_COMPLETE_PAYMENT);
         } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
-            orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_FALSE);
+            orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_CANCEL);
+            orders.setValue("[Type: Cancel] - [Id student register room - " + studentRegisterRoom.getIdStudentRegisterRoom() + "]");
         }else {
             orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_FALSE);
         }

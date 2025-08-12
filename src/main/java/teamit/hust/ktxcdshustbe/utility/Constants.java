@@ -196,6 +196,7 @@ public class Constants {
     public static final Integer STATUS_ORDER_CONFIRM_PAYMENT = 2;
     public static final Integer STATUS_ORDER_COMPLETE_PAYMENT = 3;
     public static final Integer STATUS_ORDER_PAYMENT_FALSE = 4;
+    public static final Integer STATUS_ORDER_PAYMENT_CANCEL = 5;
     public static final Integer TYPE_ORDER_HIRED_ROOM = 1;
     /*----------------------------------------------------*/
     /**
