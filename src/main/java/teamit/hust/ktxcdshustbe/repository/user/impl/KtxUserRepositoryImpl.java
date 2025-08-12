@@ -282,9 +282,6 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     public void updateAllInfoUser(UpdateProfileUserRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE ktx_user SET value = :value ");
-        if (StringUtils.isNotBlank(request.getUsername())) {
-            sb.append(", user_name = :userName ");
-        }
         if (StringUtils.isNotBlank(request.getTypeLogin())) {
             sb.append(", type_login = :typeLogin ");
         }
@@ -300,13 +297,10 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         if (ObjectUtils.isNotEmpty(request.getSex())) {
             sb.append(", sex = :sex ");
         }
-
-        sb.append(" WHERE code_user = :codeUser");
+        sb.append(", is_initialize = :isInitialize ");
+        sb.append(" WHERE code_user = :codeUser ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("value", request.getValue());
-        if (StringUtils.isNotBlank(request.getUsername())) {
-            query.setParameter("userName", request.getUsername());
-        }
         if (StringUtils.isNotBlank(request.getTypeLogin())) {
             query.setParameter("typeLogin", request.getTypeLogin());
         }
@@ -322,6 +316,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         if (ObjectUtils.isNotEmpty(request.getSex())) {
             query.setParameter("sex", request.getSex());
         }
+        query.setParameter("isInitialize", Constants.IS_INITIALIZE);
         query.setParameter("codeUser", request.getCodeUser());
         query.executeUpdate();
     }
