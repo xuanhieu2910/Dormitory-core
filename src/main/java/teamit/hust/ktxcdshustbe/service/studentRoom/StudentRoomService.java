@@ -31,4 +31,5 @@ public interface StudentRoomService {
 
     String downloadStudentHiredRoomList(ListStudentHiredRoomRequest request) throws IOException;
 
+
 }

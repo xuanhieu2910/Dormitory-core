@@ -38,7 +38,7 @@ public class BatchesRegistrationRoomRepositoryImpl implements BatchesRegistratio
                 "    inner join room ro on brr.id_room  = ro.id_room  " +
                 "where br.code_batches_registration = :codeBatchesRegistration   ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("codeBatchesRegistration", query.getResultList());
+        query.setParameter("codeBatchesRegistration", codeBatchesRegistration);
         List<Object[]> result = query.getResultList();
         if (!CollectionUtils.isEmpty(result)){
             List<BatchesRegistrationRoom> batchesRegistrationRooms = new ArrayList<>();

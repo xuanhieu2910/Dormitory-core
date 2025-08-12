@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.request.user.FindAllStudentsRequest;
+import teamit.hust.ktxcdshustbe.request.user.UpdateProfileUserRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.user.FindAllStudentsResponse;
 import teamit.hust.ktxcdshustbe.response.user.InformationStudentHiredResponse;
@@ -28,4 +29,6 @@ public interface KtxUserRepositoryCustom {
 
     Optional<KtxUser> findByKtxUserCode(String codeUser);
     Optional<KtxUser> findByKtxUserByUserName(String userName);
+
+    void updateAllInfoUser(UpdateProfileUserRequest request);
 }

@@ -16,6 +16,6 @@ public class UpdateProfileUserRequest {
     private Integer isActive;
     private String typeLogin;
     private String value;
-    private String titleYearGroup;
-    private String titlePriorityGroup;
+    private Integer idYearGroup;
+    private Integer idPriorityGroup;
 }

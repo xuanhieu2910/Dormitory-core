@@ -8,6 +8,7 @@ import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.response.studentRegister.StatisticStudentRegisterResponse;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 
 import java.util.List;
@@ -45,4 +46,6 @@ public interface StudentRegisterRoomRepositoryCustom {
     Integer updateStatusRoomWhenExpiresTime(Long timeCurrent);
 
     List<StudentRegisterHoldingRoomDto> getListStudentHoldingRoom(Long timeCurrent);
+
+    StatisticStudentRegisterResponse getStatisticStudentRegister();
 }

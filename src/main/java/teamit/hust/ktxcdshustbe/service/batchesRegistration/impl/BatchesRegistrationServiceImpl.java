@@ -186,7 +186,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
                                                List<CreateBatchesRegistrationRoomRequest> roomsRequest,
                                                List<BatchesRegistrationRoom> batchesRegistrationRoomsOrigin) {
         List<Integer> idsRoomOriginal = new ArrayList<>();
-        batchesRegistrationRoomsOrigin.forEach(x->idsRoomOriginal.add(x.getIdBatchesRegistrationRoom()));
+        batchesRegistrationRoomsOrigin.forEach(x->idsRoomOriginal.add(x.getIdRoom()));
         List<Room> roomsOriginal = roomService.findAllRoomByListIdsRoom(idsRoomOriginal);
         handleBatchesRegistrationRoomDelete(roomsRequest, roomsOriginal , batchesRegistrationRoomsOrigin);
         handleBatchesRegistrationRoomCurrent(roomsRequest, roomsOriginal , batchesRegistrationRoomsOrigin);

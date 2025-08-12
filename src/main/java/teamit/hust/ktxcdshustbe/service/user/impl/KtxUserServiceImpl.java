@@ -135,7 +135,9 @@ public class KtxUserServiceImpl implements KtxUserService {
         if (ktxUserOptional.isEmpty()) {
             throw new NotFoundException();
         }
-        updateInfoUser(ktxUserOptional.get(),request);
+        else {
+            ktxUserRepository.updateAllInfoUser(request);
+        }
     }
 
     @Override
@@ -154,8 +156,8 @@ public class KtxUserServiceImpl implements KtxUserService {
 
     private void updateInfoUser(KtxUser ktxUser, UpdateProfileUserRequest request) {
 
-        YearGroup yearGroup = yearGroupService.findYearGroupByTitle(request.getTitleYearGroup());
-        PriorityGroup priorityGroup =  priorityGroupService.findPriorGroupByTitle(request.getTitlePriorityGroup());
+//        YearGroup yearGroup = yearGroupService.findYearGroupByTitle(request.getTitleYearGroup());
+//        PriorityGroup priorityGroup =  priorityGroupService.findPriorGroupByTitle(request.getTitlePriorityGroup());
         Long currentTime = new Date().getTime();
         KtxUser ktxUserCurrent =  (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (StringUtils.isNotBlank(request.getUsername())){
@@ -178,8 +180,8 @@ public class KtxUserServiceImpl implements KtxUserService {
         }
         ktxUser.setTimeModified(currentTime);
         ktxUser.setIdUserModified(ktxUserCurrent.getIdUserModified());
-        ktxUser.setIdYearGroup(yearGroup.getIdYearGroup());
-        ktxUser.setIdPriorityGroup(priorityGroup.getIdPriorityGroup());
+//        ktxUser.setIdYearGroup(yearGroup.getIdYearGroup());
+//        ktxUser.setIdPriorityGroup(priorityGroup.getIdPriorityGroup());
         ktxUser.setIsInitialize(Constants.IS_INITIALIZE);
         ktxUserRepository.save(ktxUser);
     }
