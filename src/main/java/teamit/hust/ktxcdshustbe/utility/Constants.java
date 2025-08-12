@@ -243,4 +243,10 @@ public class Constants {
     public static Integer IS_INITIALIZE = 1;
     public static Integer NOT_YET_IS_INITIALIZE = -1;
     /*----------------------------------------------------*/
+    /**
+     * Constant SEMESTER
+     * */
+    public static Integer SEMESTER_STATUS_ACTIVE = 1;
+    public static Integer SEMESTER_STATUS_NOT_ACTIVE = -1;
+    /*----------------------------------------------------*/
 }

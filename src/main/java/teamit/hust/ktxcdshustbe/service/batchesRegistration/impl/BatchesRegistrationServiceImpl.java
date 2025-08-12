@@ -157,6 +157,7 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         List<BatchesRegistrationRoom>  batchesRegistrationRoomsOrigin =
                 batchesRegistrationRoomService.findAllBatchesRegistrationRoomByCodeBatchesRegistration(batchesRegistration.get().getCodeBatchesRegistration());
         isAllowUpdateChangeParameter(batchesRegistration.get(), request,yearGroupRegistrationsOrigin);
+        updateInformationBatchesRegistration(batchesRegistration.get(), request);
         updateBatchesYearGroupRegistration(batchesRegistration.get().getIdBatchesRegistration(),
                                             request.getYearGroups(), yearGroupRegistrationsOrigin);
         updateBatchesRegistrationSchedule(batchesRegistration.get().getIdBatchesRegistration()
@@ -164,6 +165,21 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         updateBatchesRegistrationRoom(batchesRegistration.get().getIdBatchesRegistration(),
                                         request.getRooms(),
                                         batchesRegistrationRoomsOrigin);
+    }
+
+    private void updateInformationBatchesRegistration(BatchesRegistration batchesRegistration,
+                                                      UpdateBatchesRegistrationRequest request) {
+        Semester semester = semesterService.findSemesterByCode(request.getCodeSemester());
+        if (semester.getStatus().equals(Constants.SEMESTER_STATUS_NOT_ACTIVE)){
+            throw new ValidParametersException();
+        }
+        batchesRegistration.setTitle(request.getTitleBatchesRegistration());
+        batchesRegistration.setIdSemester(semester.getIdSemester());
+        batchesRegistration.setStartTime(request.getStartTime());
+        batchesRegistration.setEndTime(request.getEndTime());
+        batchesRegistration.setIdTimeHired(request.getIdTimeHired());
+        batchesRegistration.setNotes(request.getNotes());
+        batchesRegistrationRepository.save(batchesRegistration);
     }
 
     private void updateBatchesRegistrationRoom(Integer idBatchesRegistration,
