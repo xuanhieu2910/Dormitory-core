@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.util.StringUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Role;
 import teamit.hust.ktxcdshustbe.repository.user.KtxUserRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.user.FindAllStudentsRequest;
+import teamit.hust.ktxcdshustbe.request.user.UpdateProfileUserRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.response.user.FindAllStudentsResponse;
 import teamit.hust.ktxcdshustbe.response.user.InformationStudentHiredResponse;
@@ -272,6 +274,56 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
             return Optional.of(userDetails);
         }
         return Optional.empty();
+    }
+
+    @Transactional
+    @Modifying
+    @Override
+    public void updateAllInfoUser(UpdateProfileUserRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("UPDATE ktx_user SET value = :value ");
+        if (StringUtils.isNotBlank(request.getUsername())) {
+            sb.append(", user_name = :userName ");
+        }
+        if (StringUtils.isNotBlank(request.getTypeLogin())) {
+            sb.append(", type_login = :typeLogin ");
+        }
+        if (ObjectUtils.isNotEmpty(request.getIsActive())) {
+            sb.append(", is_actived = :isActived ");
+        }
+        if (ObjectUtils.isNotEmpty(request.getIdYearGroup())) {
+            sb.append(", id_year_group = :idYearGroup ");
+        }
+        if (ObjectUtils.isNotEmpty(request.getIdPriorityGroup())) {
+            sb.append(", id_priority_group = :idPriorityGroup ");
+        }
+        if (ObjectUtils.isNotEmpty(request.getSex())) {
+            sb.append(", sex = :sex ");
+        }
+
+        sb.append(" WHERE code_user = :codeUser");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("value", request.getValue());
+        if (StringUtils.isNotBlank(request.getUsername())) {
+            query.setParameter("userName", request.getUsername());
+        }
+        if (StringUtils.isNotBlank(request.getTypeLogin())) {
+            query.setParameter("typeLogin", request.getTypeLogin());
+        }
+        if (ObjectUtils.isNotEmpty(request.getIsActive())) {
+            query.setParameter("isActived", request.getIsActive());
+        }
+        if (ObjectUtils.isNotEmpty(request.getIdYearGroup())) {
+            query.setParameter("idYearGroup", request.getIdYearGroup());
+        }
+        if (ObjectUtils.isNotEmpty(request.getIdPriorityGroup())) {
+            query.setParameter("idPriorityGroup", request.getIdPriorityGroup());
+        }
+        if (ObjectUtils.isNotEmpty(request.getSex())) {
+            query.setParameter("sex", request.getSex());
+        }
+        query.setParameter("codeUser", request.getCodeUser());
+        query.executeUpdate();
     }
 
     @Override

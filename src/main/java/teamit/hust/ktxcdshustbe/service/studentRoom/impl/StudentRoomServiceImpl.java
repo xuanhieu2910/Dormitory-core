@@ -284,8 +284,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             updateOriginalRoomWithOutRegistered(originalRoom,ktxUser.getIdKtxUser());
             updateDestinationRoomWithOutRegistered(destinationRoom,ktxUser.getIdKtxUser());
         }
-        updateDestinationRoom(destinationRoom,ktxUser.getIdKtxUser());
-        updateOriginalRoom(originalRoom,ktxUser.getIdKtxUser());
         updateStudentRoom(codeUser, originalRoom.getIdRoom(),destinationRoom.getIdRoom(),ktxUser.getIdKtxUser());
     }
 
@@ -306,7 +304,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateDestinationRoomWithRegistered(Room destinationRoom, Integer idKtxUser) {
 
-        if((destinationRoom.getRemainAmount() > destinationRoom.getRemainAmountRegister()) &&
+        if((destinationRoom.getLimitAmountPeople() > destinationRoom.getLimitAmountPeopleRegister()) &&
                 destinationRoom.getRemainAmountRegister().equals(Constants.QUANTITY_REMAIN_AMOUNT_REGISTER) ){
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
@@ -314,7 +312,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         else {
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
-            destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeople() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeopleRegister() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setRemainAmountRegister(destinationRoom.getRemainAmountRegister() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
         }
         destinationRoom.setTimeModified(new Date().getTime());
