@@ -17,11 +17,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import teamit.hust.ktxcdshustbe.dto.userRole.DepartmentUserRoleDto;
 import teamit.hust.ktxcdshustbe.entity.*;
 import teamit.hust.ktxcdshustbe.enums.OAuth2Factory;
 import teamit.hust.ktxcdshustbe.enums.RolePattern;
@@ -32,20 +30,19 @@ import teamit.hust.ktxcdshustbe.request.user.UpdateProfileUserRequest;
 import teamit.hust.ktxcdshustbe.response.user.DetailInformationUserResponse;
 import teamit.hust.ktxcdshustbe.response.user.FindAllStudentsResponse;
 import teamit.hust.ktxcdshustbe.response.user.InformationStudentHiredResponse;
-import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
 import teamit.hust.ktxcdshustbe.service.priorityGroup.PriorityGroupService;
 import teamit.hust.ktxcdshustbe.service.role.RoleService;
-import teamit.hust.ktxcdshustbe.service.room.RoomService;
-import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
 import teamit.hust.ktxcdshustbe.service.studentRoom.StudentRoomService;
 import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
 import teamit.hust.ktxcdshustbe.service.userInstance.KtxUserInstanceService;
 import teamit.hust.ktxcdshustbe.service.userRole.UserRoleService;
 import teamit.hust.ktxcdshustbe.service.yearGroup.YearGroupService;
-import teamit.hust.ktxcdshustbe.utility.*;
+import teamit.hust.ktxcdshustbe.utility.Constants;
+import teamit.hust.ktxcdshustbe.utility.ExcelUtil;
+import teamit.hust.ktxcdshustbe.utility.PageUtils;
+import teamit.hust.ktxcdshustbe.utility.ValidateExcelUtils;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.*;
 
 
@@ -183,6 +180,7 @@ public class KtxUserServiceImpl implements KtxUserService {
         ktxUser.setIdUserModified(ktxUserCurrent.getIdUserModified());
         ktxUser.setIdYearGroup(yearGroup.getIdYearGroup());
         ktxUser.setIdPriorityGroup(priorityGroup.getIdPriorityGroup());
+        ktxUser.setIsInitialize(Constants.IS_INITIALIZE);
         ktxUserRepository.save(ktxUser);
     }
 
@@ -216,6 +214,7 @@ public class KtxUserServiceImpl implements KtxUserService {
         response.setTypeLogin(userDetails.getTypeLogin());
         response.setTitleYearGroup(yearGroup.getTitle());
         response.setTitlePriorityGroup(priorityGroup.getTitle());
+        response.setIsInitialize(userDetails.getIsInitialize());
 //        response.setSex(userDetails.getSex().equals(Constants.FEMALE) ? Constants.TITLE_SEX[0] : Constants.TITLE_SEX[1]);
         return response;
     }
@@ -264,6 +263,7 @@ public class KtxUserServiceImpl implements KtxUserService {
         response.setTypeLogin(ktxUser.getTypeLogin());
         response.setTitleYearGroup(yearGroup.getTitle());
         response.setTitlePriorityGroup(priorityGroup.getTitle());
+        response.setIsInitialize(ktxUser.getIsInitialize());
         return response;
     }
 

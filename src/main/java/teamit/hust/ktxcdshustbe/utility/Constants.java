@@ -236,4 +236,10 @@ public class Constants {
      * */
     public static Integer ERROR_INSTANCE = 1;
     /*----------------------------------------------------*/
+    /**
+     * Constant KTX_USER
+     * */
+    public static Integer IS_INITIALIZE = 1;
+    public static Integer NOT_YET_IS_INITIALIZE = -1;
+    /*----------------------------------------------------*/
 }

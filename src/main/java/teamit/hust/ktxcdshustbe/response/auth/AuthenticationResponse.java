@@ -24,5 +24,7 @@ public class AuthenticationResponse {
     private Integer statusRegisterRoom;
     @JsonProperty("full_name")
     private String fullName;
+    @JsonProperty("is_initialize")
+    private Integer isInitialize;
 
 }

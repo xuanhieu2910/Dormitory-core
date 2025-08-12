@@ -131,6 +131,7 @@ public class KtxUserInstanceServiceImpl implements KtxUserInstanceService {
             ktxUser.setIsActived(Constants.ACCOUNT_IS_ACTIVED);
             ktxUser.setIdPriorityGroup(mapPriorityGroup.get(request.getCodePriorityGroup()));
             ktxUser.setIdYearGroup(mapYearGroup.get(request.getCodeYearGroup()));
+            ktxUser.setIsInitialize(Constants.NOT_YET_IS_INITIALIZE);
             ktxUserList.add(ktxUser);
         }
         ktxUserService.saveAllValue(ktxUserList);

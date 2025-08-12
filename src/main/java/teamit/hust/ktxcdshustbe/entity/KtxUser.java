@@ -49,6 +49,8 @@ public class KtxUser implements UserDetails {
     private Integer idPriorityGroup;
     @Column(name = "value")
     private String value;
+    @Column(name = "is_initialize")
+    private Integer isInitialize;
 
 
     @ManyToMany

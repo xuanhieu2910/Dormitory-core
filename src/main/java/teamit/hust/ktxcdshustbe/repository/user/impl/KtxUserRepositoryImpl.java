@@ -36,32 +36,32 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     @Override
     public Optional<KtxUser> loadUserByUsername(String username) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select ktxUser.id_ktx_user, ktxUser.user_name, ktxUser.id_user_created, " +
-                "       ktxUser.id_user_modified, ktxUser.id_year_group, ktxUser.id_priority_group, " +
-                "       ktxUser.password, ktxUser.sex, ktxUser.time_created, ktxUser.time_modified, " +
-                "       ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value,   " +
-                "       role.id_role, role.title, role.status, role.content,     " +
-                "       role.short_name, role.description, role.time_created,role.time_modified,    " +
-                "       capabilities.id_capability, capabilities.name, capabilities.cap_type,    " +
-                "       capabilities.status, capabilities.time_created, capabilities.time_modified,    " +
-                "       capabilities.component    " +
-                "from ktx_user ktxUser    " +
-                "    inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user    " +
-                "    inner join role role on userRole.id_role = role.id_role    " +
-                "    inner join role_capabilities roleCapabilities on role.id_role = roleCapabilities.id_role    " +
-                "    inner join capabilities capabilities on roleCapabilities.id_capabilities = capabilities.id_capability    " +
-                "where ktxUser.user_name = :userName    " +
-                "and role.status = :statusRole and roleCapabilities.permission = :permission and capabilities.status = :statusCapabilities    " +
-                "and userRole.picked = :isPicked    " +
-                "group by ktxUser.id_ktx_user, ktxUser.user_name, ktxUser.id_user_created, " +
-                "  ktxUser.id_user_modified, ktxUser.id_year_group, ktxUser.id_priority_group, " +
-                "  ktxUser.password, ktxUser.sex, ktxUser.time_created, ktxUser.time_modified, " +
-                "  ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value, " +
-                "  role.id_role, role.title, role.status, role.content, " +
-                "  role.short_name, role.description, role.time_created,role.time_modified, " +
-                "  capabilities.id_capability, capabilities.name, capabilities.cap_type, " +
-                "  capabilities.status, capabilities.time_created, capabilities.time_modified, " +
-                "  capabilities.component    ");
+        sb.append("select ktxUser.id_ktx_user, ktxUser.user_name, ktxUser.id_user_created,   " +
+                "        ktxUser.id_user_modified, ktxUser.id_year_group, ktxUser.id_priority_group,  " +
+                "        ktxUser.password, ktxUser.sex, ktxUser.time_created, ktxUser.time_modified,  " +
+                "        ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value, ktxUser.is_initialize,  " +
+                "        role.id_role, role.title, role.status, role.content,  " +
+                "        role.short_name, role.description, role.time_created,role.time_modified,  " +
+                "        capabilities.id_capability, capabilities.name, capabilities.cap_type,  " +
+                "        capabilities.status, capabilities.time_created, capabilities.time_modified,  " +
+                "        capabilities.component  " +
+                " from ktx_user ktxUser  " +
+                "     inner join user_role userRole on ktxUser.id_ktx_user = userRole.id_user  " +
+                "     inner join role role on userRole.id_role = role.id_role  " +
+                "     inner join role_capabilities roleCapabilities on role.id_role = roleCapabilities.id_role       " +
+                "     inner join capabilities capabilities on roleCapabilities.id_capabilities = capabilities.id_capability  " +
+                " where ktxUser.user_name = :userName       " +
+                " and role.status = :statusRole and roleCapabilities.permission = :permission and capabilities.status = :statusCapabilities  " +
+                " and userRole.picked = :isPicked       " +
+                " group by ktxUser.id_ktx_user, ktxUser.user_name, ktxUser.id_user_created,   " +
+                "   ktxUser.id_user_modified, ktxUser.id_year_group, ktxUser.id_priority_group,   " +
+                "   ktxUser.password, ktxUser.sex, ktxUser.time_created, ktxUser.time_modified,   " +
+                "   ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value,   " +
+                "   role.id_role, role.title, role.status, role.content,   " +
+                "   role.short_name, role.description, role.time_created,role.time_modified,   " +
+                "   capabilities.id_capability, capabilities.name, capabilities.cap_type,   " +
+                "   capabilities.status, capabilities.time_created, capabilities.time_modified,   " +
+                "   capabilities.component, ktxUser.is_initialize  ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("userName", username);
         query.setParameter("isPicked", Constants.ROLE_USER_PICKED);
@@ -93,7 +93,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         sb.append(" select ktxUser.id_ktx_user, ktxUser.user_name, ktxUser.id_user_created, " +
                 "       ktxUser.id_user_modified, ktxUser.id_year_group, ktxUser.id_priority_group, " +
                 "       ktxUser.password, ktxUser.sex, ktxUser.time_created, ktxUser.time_modified, " +
-                "       ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value,   " +
+                "       ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value, ktxUser.is_initialize,   " +
                 "       role.id_role, role.title, role.status, role.content,     " +
                 "       role.short_name, role.description, role.time_created,role.time_modified,    " +
                 "       capabilities.id_capability, capabilities.name, capabilities.cap_type,    " +
@@ -115,7 +115,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "  role.short_name, role.description, role.time_created,role.time_modified, " +
                 "  capabilities.id_capability, capabilities.name, capabilities.cap_type, " +
                 "  capabilities.status, capabilities.time_created, capabilities.time_modified, " +
-                "  capabilities.component    ");
+                "  capabilities.component,  ktxUser.is_initialize    ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("idUser", userId);
         query.setParameter("isPicked", Constants.ROLE_USER_PICKED);
@@ -236,7 +236,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         sb.append(" select ktxUser.id_ktx_user, ktxUser.user_name, ktxUser.id_user_created, " +
                 "       ktxUser.id_user_modified, ktxUser.id_year_group, ktxUser.id_priority_group, " +
                 "       ktxUser.password, ktxUser.sex, ktxUser.time_created, ktxUser.time_modified, " +
-                "       ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value,   " +
+                "       ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value, ktxUser.is_initialize,  " +
                 "       role.id_role, role.title, role.status, role.content,     " +
                 "       role.short_name, role.description, role.time_created,role.time_modified,    " +
                 "       capabilities.id_capability, capabilities.name, capabilities.cap_type,    " +
@@ -258,7 +258,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "  role.short_name, role.description, role.time_created,role.time_modified, " +
                 "  capabilities.id_capability, capabilities.name, capabilities.cap_type, " +
                 "  capabilities.status, capabilities.time_created, capabilities.time_modified, " +
-                "  capabilities.component    ");
+                "  capabilities.component,  ktxUser.is_initialize     ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("userName", userName);
         query.setParameter("isPicked", Constants.ROLE_USER_PICKED);
@@ -280,7 +280,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         sb.append(" select ktxUser.id_ktx_user, ktxUser.user_name, ktxUser.id_user_created, " +
                 "       ktxUser.id_user_modified, ktxUser.id_year_group, ktxUser.id_priority_group, " +
                 "       ktxUser.password, ktxUser.sex, ktxUser.time_created, ktxUser.time_modified, " +
-                "       ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value,   " +
+                "       ktxUser.is_actived, ktxUser.type_login, ktxUser.code_user, ktxUser.value, ktxUser.is_initialize,   " +
                 "       role.id_role, role.title, role.status, role.content,     " +
                 "       role.short_name, role.description, role.time_created,role.time_modified,    " +
                 "       capabilities.id_capability, capabilities.name, capabilities.cap_type,    " +
@@ -302,7 +302,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "  role.short_name, role.description, role.time_created,role.time_modified, " +
                 "  capabilities.id_capability, capabilities.name, capabilities.cap_type, " +
                 "  capabilities.status, capabilities.time_created, capabilities.time_modified, " +
-                "  capabilities.component    ");
+                "  capabilities.component, ktxUser.is_initialize    ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeUser", codeUser);
         query.setParameter("isPicked", Constants.ROLE_USER_PICKED);
@@ -386,6 +386,7 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         ktxUser.setTypeLogin(ValueUtil.getStringByObject(obj[11]));
         ktxUser.setCodeUser(ValueUtil.getStringByObject(obj[12]));
         ktxUser.setValue(ValueUtil.getStringByObject(obj[13]));
+        ktxUser.setIsInitialize(ValueUtil.getIntegerByObject(obj[14]));
         return ktxUser;
     }
 
@@ -399,14 +400,14 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
 
     private Role createRole(Object[] obj) {
         Role role = new Role();
-        role.setIdRole(ValueUtil.getIntegerByObject(obj[14]));
-        role.setTitle(ValueUtil.getStringByObject(obj[15]));
-        role.setStatus(ValueUtil.getIntegerByObject(obj[16]));
-        role.setContent(ValueUtil.getStringByObject(obj[17]));
-        role.setShortName(ValueUtil.getStringByObject(obj[18]));
-        role.setDescription(ValueUtil.getStringByObject(obj[19]));
-        role.setTimeCreated(ValueUtil.getLongByObject(obj[20]));
-        role.setTimeModified(ValueUtil.getLongByObject(obj[21]));
+        role.setIdRole(ValueUtil.getIntegerByObject(obj[15]));
+        role.setTitle(ValueUtil.getStringByObject(obj[16]));
+        role.setStatus(ValueUtil.getIntegerByObject(obj[17]));
+        role.setContent(ValueUtil.getStringByObject(obj[18]));
+        role.setShortName(ValueUtil.getStringByObject(obj[19]));
+        role.setDescription(ValueUtil.getStringByObject(obj[20]));
+        role.setTimeCreated(ValueUtil.getLongByObject(obj[21]));
+        role.setTimeModified(ValueUtil.getLongByObject(obj[22]));
         return role;
     }
 
@@ -414,13 +415,13 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         Set<Capabilities> capabilities = new HashSet<>();
         for (Object[] obj : result){
             Capabilities capa = new Capabilities();
-            capa.setIdCapability(ValueUtil.getIntegerByObject(obj[22]));
-            capa.setName(ValueUtil.getStringByObject(obj[23]));
-            capa.setCapType(ValueUtil.getStringByObject(obj[24]));
-            capa.setStatus(ValueUtil.getIntegerByObject(obj[25]));
-            capa.setTimeCreated(ValueUtil.getLongByObject(obj[26]));
-            capa.setTimeModified(ValueUtil.getLongByObject(obj[27]));
-            capa.setComponent(ValueUtil.getStringByObject(obj[28]));
+            capa.setIdCapability(ValueUtil.getIntegerByObject(obj[23]));
+            capa.setName(ValueUtil.getStringByObject(obj[24]));
+            capa.setCapType(ValueUtil.getStringByObject(obj[25]));
+            capa.setStatus(ValueUtil.getIntegerByObject(obj[26]));
+            capa.setTimeCreated(ValueUtil.getLongByObject(obj[27]));
+            capa.setTimeModified(ValueUtil.getLongByObject(obj[28]));
+            capa.setComponent(ValueUtil.getStringByObject(obj[29]));
             capabilities.add(capa);
         }
         return capabilities;

@@ -26,4 +26,6 @@ public class DetailInformationUserResponse {
     private String titleYearGroup;
     @JsonProperty("title_priority_group")
     private String titlePriorityGroup;
+    @JsonProperty("is_initialize")
+    private Integer isInitialize;
 }

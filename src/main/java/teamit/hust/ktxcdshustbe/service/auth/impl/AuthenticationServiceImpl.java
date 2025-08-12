@@ -77,6 +77,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationDto.setTokenType(JwtAuthenticationFilter.TOKEN_PREFIX);
         authenticationDto.setCodeUser(ktxUser.getCodeUser());
         authenticationDto.setIsActive(ktxUser.getIsActived());
+        authenticationDto.setIsInitialize(ktxUser.getIsInitialize());
         return authenticationDto;
     }
 
@@ -97,6 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationDto.setRefreshToken(refreshToken);
         authenticationDto.setTokenType(JwtAuthenticationFilter.TOKEN_PREFIX);
         authenticationDto.setIsActive(user.getIsActived());
+        authenticationDto.setIsInitialize(user.getIsInitialize());
         return authenticationDto;
     }
 
@@ -105,6 +107,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .codeUser(authenticationDto.getCodeUser())
                 .userName(authenticationDto.getUserName())
                 .roles(authenticationDto.getRoles())
+                .isInitialize(authenticationDto.getIsInitialize())
                 .build();
     }
 
@@ -118,6 +121,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationDto.setUserName(ktxUser.getUsername());
         authenticationDto.setCodeUser(ktxUser.getCodeUser());
         authenticationDto.setIsActive(ktxUser.getIsActived());
+        authenticationDto.setIsInitialize(ktxUser.getIsInitialize());
         return authenticationDto;
     }
 
@@ -129,6 +133,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ktxUser.setTimeCreated(timeCurrently);
         ktxUser.setTimeModified(timeCurrently);
         ktxUser.setIsActived(Constants.ACCOUNT_IS_UN_ACTIVED);
+        ktxUser.setIsInitialize(Constants.NOT_YET_IS_INITIALIZE);
         return ktxUser;
     }
 
