@@ -34,6 +34,7 @@ import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomReques
 import teamit.hust.ktxcdshustbe.request.studentRoom.ListStudentHiredRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.response.studentRegister.StatisticStudentRegisterResponse;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.response.user.UserRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.service.batchesRegistration.BatchesRegistrationService;
@@ -455,6 +456,11 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Override
     public List<StudentRegisterHoldingRoomDto> getStudentRegisterHoldingRoom(Long timeCurrent) {
         return studentRegisterRoomRepository.getListStudentHoldingRoom(timeCurrent);
+    }
+
+    @Override
+    public StatisticStudentRegisterResponse getStatisticStudentRegister() {
+        return studentRegisterRoomRepository.getStatisticStudentRegister();
     }
 
     private void writeDataInfoReport(Sheet sheet, Map<String, CellStyle> styles) {

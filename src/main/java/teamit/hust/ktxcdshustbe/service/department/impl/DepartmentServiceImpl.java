@@ -15,6 +15,7 @@ import teamit.hust.ktxcdshustbe.dto.department.StudentSearchDepartmentDto;
 import teamit.hust.ktxcdshustbe.dto.room.FindAllRoomsDto;
 import teamit.hust.ktxcdshustbe.entity.Department;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
+import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;

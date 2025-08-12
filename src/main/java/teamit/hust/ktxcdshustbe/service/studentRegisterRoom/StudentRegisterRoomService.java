@@ -10,6 +10,7 @@ import teamit.hust.ktxcdshustbe.request.studentRegister.CreateRegisterRoomReques
 import teamit.hust.ktxcdshustbe.request.studentRoom.ListStudentHiredRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.ApprovedUserRegisterRoomRequest;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.response.studentRegister.StatisticStudentRegisterResponse;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.response.user.UserRegisterRoomResponse;
 
@@ -56,4 +57,6 @@ public interface StudentRegisterRoomService {
 
     Integer updateStatusRoomWhenExpiresTime(Long timeCurrent);
     List<StudentRegisterHoldingRoomDto> getStudentRegisterHoldingRoom(Long timeCurrent);
+
+    StatisticStudentRegisterResponse getStatisticStudentRegister();
 }

@@ -143,6 +143,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         return response.get();
     }
 
+    @Transactional
     @Override
     public void addStudentToRoom(StudentToRoomRequest request) throws Exception {
         validateStudentToRoom(request);
@@ -184,7 +185,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     }
 
     private void updateQuantityRoom(Room room, Integer userIdModified) throws SQLException {
-        if(room.getRemainAmount() > room.getRemainAmountRegister()){
+        if((room.getLimitAmountPeople() > room.getLimitAmountPeopleRegister()) && (room.getRemainAmount() > room.getRemainAmountRegister())){
             int rowUpdateWhenHiredLargerRegister = roomRepository.updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(room.getIdRoom(), userIdModified);
             if (rowUpdateWhenHiredLargerRegister == Constants.ROW_NOT_UPDATED){
                 throw new SQLException("Method add new student can't update quantity remain amount!");
@@ -444,6 +445,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             throw new IOException("Error during Excel file generation: " + e.getMessage(), e);
         }
     }
+
 
     private void writeDataInfoReport(Sheet sheet, Map<String, CellStyle> styles) {
         String reportTitle = "DANH SÁCH SINH VIÊN THUÊ PHÒNG";

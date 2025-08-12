@@ -20,6 +20,7 @@ import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.repository.studentRegisterRoom.StudentRegisterRoomRepositoryCustom;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
+import teamit.hust.ktxcdshustbe.response.studentRegister.StatisticStudentRegisterResponse;
 import teamit.hust.ktxcdshustbe.response.studentRegister.StudentRegisterRoomResponse;
 import teamit.hust.ktxcdshustbe.utility.Constants;
 import teamit.hust.ktxcdshustbe.utility.DateUtil;
@@ -785,6 +786,42 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
             }
         }
         return responses;
+    }
+
+    @Override
+    public StatisticStudentRegisterResponse getStatisticStudentRegister() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select sum(result.totalStudentRegister) totalStudentRegister,    " +
+                "    sum(result.totalStudentRegisterNotYetPaid) totalStudentRegisterNotYetPaid,  " +
+                "    sum(result.totalStudentRegisterNotYetPaid) totalStudentRegisterNotYetPaid  " +
+                "from (  " +
+                "    select count(srr.id_student_register_room) totalStudentRegister,  " +
+                "    0 totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid  " +
+                "    from student_register_room srr  " +
+                "union all  " +
+                "      select 0 totalStudentRegister,  " +
+                "      count(srr.id_student_register_room) totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid  " +
+                "      from student_register_room srr  " +
+                "      where srr.status = :statusStudentRegisterNotYetPaid  " +
+                "union all  " +
+                "      select 0 totalStudentRegister,  " +
+                "      0 totalStudentRegisterNotYetPaid, count(srr.id_student_register_room) totalStudentRegisterPaid  " +
+                "      from student_register_room srr  " +
+                "      where srr.status = :statusStudentRegisterPaid  " +
+                ") result");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("statusStudentRegisterNotYetPaid",Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusStudentRegisterPaid", Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+        List<Object[]> result = query.getResultList();
+        StatisticStudentRegisterResponse response = new StatisticStudentRegisterResponse();
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                response.setTotalStudentRegister(ValueUtil.getIntegerByObject(obj[0]));
+                response.setTotalStudentRegisterNotYetPaid(ValueUtil.getIntegerByObject(obj[1]));
+                response.setTotalStudentRegisterPaid(ValueUtil.getIntegerByObject(obj[2]));
+            }
+        }
+        return response;
     }
 
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {

@@ -179,4 +179,15 @@ public class StudentRegisterRoomController {
         }
 
     }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<?> getStatisticUserInstance(){
+        try {
+            return ApiResponseDto.createdWithState(
+                    studentRegisterRoomService.getStatisticStudentRegister(),
+                    "Get student register success!", HttpStatus.OK);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
