@@ -204,13 +204,17 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 "    ktxUser.user_name,   " +
                 "    ktxUser.code_user,   " +
                 "    ktxUser.value,   " +
-                "    ktxUser.sex    " +
+                "    ktxUser.sex," +
+                "    year_group.title," +
+                "    priority_group.title  " +
 
-                "FROM   " +
+                " FROM   " +
                 "    ktx_user ktxUser    " +
                 "    INNER JOIN user_role userRole ON ktxUser.id_ktx_user = userRole.id_user    " +
-                "    INNER JOIN role roles ON userRole.id_role = roles.id_role    " +
-                "WHERE   " +
+                "    INNER JOIN role roles ON userRole.id_role = roles.id_role  " +
+                "    LEFT JOIN year_group ON year_group.id_year_group = ktxUser.id_year_group " +
+                "    LEFT JOIN priority_group ON priority_group.id_priority_group = ktxUser.id_priority_group " +
+                " WHERE   " +
                 "    roles.title = 'STUDENT'  " );
 
         setConditionFindAllStudents(request, sb);
@@ -226,6 +230,8 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                 response.setCodeUser(ValueUtil.getStringByObject(obj[2]));
                 response.setValue(ValueUtil.getStringByObject(obj[3]));
                 response.setSex(ValueUtil.getIntegerByObject(obj[4]));
+                response.setTitleYearGroup(ValueUtil.getStringByObject(obj[5]));
+                response.setTitlePriorityGroup(ValueUtil.getStringByObject(obj[6]));
                 responses.add(response);
             }
         }
@@ -402,11 +408,13 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     private long countFindAllStudents(FindAllStudentsRequest request){
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) as count " +
-                "FROM   " +
+                " FROM   " +
                 "    ktx_user ktxUser    " +
                 "    INNER JOIN user_role userRole ON ktxUser.id_ktx_user = userRole.id_user    " +
-                "    INNER JOIN role roles ON userRole.id_role = roles.id_role    " +
-                "WHERE   " +
+                "    INNER JOIN role roles ON userRole.id_role = roles.id_role  " +
+                "    LEFT JOIN year_group ON year_group.id_year_group = ktxUser.id_year_group " +
+                "    LEFT JOIN priority_group ON priority_group.id_priority_group = ktxUser.id_priority_group " +
+                " WHERE   " +
                 "    roles.title = 'STUDENT'  " );
         setConditionFindAllStudents(request,sb);
         Query query = entityManager.createNativeQuery(sb.toString());

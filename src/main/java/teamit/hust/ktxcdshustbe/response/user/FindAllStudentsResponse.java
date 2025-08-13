@@ -23,5 +23,9 @@ public class FindAllStudentsResponse {
     private String codeRoom;
     @JsonProperty("title_room")
     private String titleRoom;
+    @JsonProperty("title_year_group")
+    private String titleYearGroup;
+    @JsonProperty("title_priority_group")
+    private String titlePriorityGroup;
 
 }

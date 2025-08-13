@@ -348,6 +348,7 @@ public class KtxUserServiceImpl implements KtxUserService {
                         (String) ExcelUtil.convertValue(row.getCell(5), CellType.STRING);
                 commonData.put("date_of_birth", dateOfBirth);
                 String sex = (String) ExcelUtil.convertValue(row.getCell(6), CellType.STRING);
+                commonData.put("title_sex",sex);
                 if (Objects.nonNull(sex)) {
                     commonData.put("sex",sex.equals(Constants.TITLE_SEX[0]) ? Constants.FEMALE : Constants.MALE);
                 } else {
