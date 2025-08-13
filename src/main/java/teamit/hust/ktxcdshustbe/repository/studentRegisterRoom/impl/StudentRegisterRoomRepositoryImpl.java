@@ -173,9 +173,9 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
 
     private void setConditionFindAllUserRegisterRoom(StringBuilder sb, UserRegisterRoomRequest request) {
         if (StringUtils.isNotBlank(request.getKeyword())){
-            sb.append(" and ( (ktxUser.value REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (de.title REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (ro.title REGEXP '[' + :keyword + ']' ) ) ");
+            sb.append(" and ( (ktxUser.value REGEXP  :keyword  ) OR " +
+                    "      (de.title REGEXP   :keyword  ) OR " +
+                    "      (ro.title REGEXP  :keyword  ) ) ");
         }
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");
@@ -791,34 +791,80 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public StatisticStudentRegisterResponse getStatisticStudentRegister() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select sum(result.totalStudentRegister) totalStudentRegister,    " +
-                "    sum(result.totalStudentRegisterNotYetPaid) totalStudentRegisterNotYetPaid,  " +
-                "    sum(result.totalStudentRegisterNotYetPaid) totalStudentRegisterNotYetPaid  " +
-                "from (  " +
-                "    select count(srr.id_student_register_room) totalStudentRegister,  " +
-                "    0 totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid  " +
-                "    from student_register_room srr  " +
-                "union all  " +
-                "      select 0 totalStudentRegister,  " +
-                "      count(srr.id_student_register_room) totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid  " +
-                "      from student_register_room srr  " +
-                "      where srr.status = :statusStudentRegisterNotYetPaid  " +
-                "union all  " +
-                "      select 0 totalStudentRegister,  " +
-                "      0 totalStudentRegisterNotYetPaid, count(srr.id_student_register_room) totalStudentRegisterPaid  " +
-                "      from student_register_room srr  " +
-                "      where srr.status = :statusStudentRegisterPaid  " +
-                ") result");
+        sb.append(" select sum(result.totalStudentRegister) totalStudentRegister,  " +
+                "       sum(result.totalStudentRegisterNotAccept) totalStudentRegisterNotAccept,  " +
+                "       sum(result.totalStudentRegisterAccept) totalStudentRegisterAccept,  " +
+                "       sum(result.totalStudentRegisterNotYetPaid) totalStudentRegisterNotYetPaid,    " +
+                "       sum(result.totalStudentRegisterPaid) totalStudentRegisterPaid,  " +
+                "       sum(result.totalStudentRegisterFailPaid) totalStudentRegisterFailPaid  " +
+                "   from (    " +
+                "       select count(srr.id_student_register_room) totalStudentRegister,  " +
+                "       0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,  " +
+                "       0 totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid,  " +
+                "       0 totalStudentRegisterFailPaid  " +
+                "       from student_register_room srr    " +
+                "   union all  " +
+                "       select 0 totalStudentRegister,  " +
+                "        count(srr.id_student_register_room) totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,  " +
+                "        0 totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid,  " +
+                "        0 totalStudentRegisterFailPaid  " +
+                "         from student_register_room srr    " +
+                "         where srr.status = :statusStudentRegisterNotAccept   " +
+                "   union all  " +
+                "       select 0 totalStudentRegister,  " +
+                " 0 totalStudentRegisterNotAccept,count(srr.id_student_register_room) totalStudentRegisterAccept,  " +
+                " 0 totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid,  " +
+                " 0 totalStudentRegisterFailPaid  " +
+                "         from student_register_room srr    " +
+                "         where srr.status = :statusStudentAccept  " +
+                "   union all  " +
+                "       select 0 totalStudentRegister,  " +
+                " 0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,  " +
+                " count(srr.id_student_register_room) totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid,  " +
+                " 0 totalStudentRegisterFailPaid  " +
+                "       from student_register_room srr  " +
+                "       where srr.status in (:statusStudentRegisterNotYetPaid)  " +
+                "   union all  " +
+                "       select 0 totalStudentRegister,  " +
+                " 0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,  " +
+                " 0 totalStudentRegisterNotYetPaid, count(srr.id_student_register_room) totalStudentRegisterPaid,  " +
+                " 0 totalStudentRegisterFailPaid  " +
+                "       from student_register_room srr  " +
+                "       where srr.status = :statusStudentRegisterPaid  " +
+                "   union all  " +
+                "       select 0 totalStudentRegister,  " +
+                " 0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,  " +
+                " 0 totalStudentRegisterNotYetPaid, 0 totalStudentRegisterPaid,  " +
+                " count(srr.id_student_register_room) totalStudentRegisterFailPaid  " +
+                "       from student_register_room srr  " +
+                "       where srr.status in (:statusStudentRegisterFailPaid)  " +
+                "        ) result");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("statusStudentRegisterNotYetPaid",Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        List<Integer> statusStudentRegisterNotYetPaidList = List.of(
+                Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER
+        );
+        List<Integer>  statusStudentRegisterFailPaidList = List.of(
+                Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER
+        );
+
+        query.setParameter("statusStudentRegisterNotAccept",Constants.STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT);
+        query.setParameter("statusStudentAccept",Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
+        query.setParameter("statusStudentRegisterNotYetPaid",statusStudentRegisterNotYetPaidList);
         query.setParameter("statusStudentRegisterPaid", Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusStudentRegisterFailPaid",statusStudentRegisterFailPaidList);
         List<Object[]> result = query.getResultList();
         StatisticStudentRegisterResponse response = new StatisticStudentRegisterResponse();
         if (!CollectionUtils.isEmpty(result)){
             for (Object[] obj : result){
                 response.setTotalStudentRegister(ValueUtil.getIntegerByObject(obj[0]));
-                response.setTotalStudentRegisterNotYetPaid(ValueUtil.getIntegerByObject(obj[1]));
-                response.setTotalStudentRegisterPaid(ValueUtil.getIntegerByObject(obj[2]));
+                response.setTotalStudentRegisterNotAccept(ValueUtil.getIntegerByObject(obj[1]));
+                response.setTotalStudentRegisterAccept(ValueUtil.getIntegerByObject(obj[2]));
+                response.setTotalStudentRegisterNotYetPaid(ValueUtil.getIntegerByObject(obj[3]));
+                response.setTotalStudentRegisterPaid(ValueUtil.getIntegerByObject(obj[4]));
+                response.setTotalStudentRegisterFailPaid(ValueUtil.getIntegerByObject(obj[5]));
             }
         }
         return response;
@@ -867,9 +913,9 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
 
     private void setConditionFindAllInfoAnUserRegisterRoom(StringBuilder sb, UserRegisterRoomRequest request) {
         if (StringUtils.isNotBlank(request.getKeyword())){
-            sb.append(" and ( (ktxUser.value REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (de.title REGEXP '[' + :keyword + ']' ) OR " +
-                    "      (ro.title REGEXP '[' + :keyword + ']' ) ) ");
+            sb.append(" and ( (ktxUser.value REGEXP    :keyword    ) OR " +
+                    "      (de.title REGEXP    :keyword    ) OR " +
+                    "      (ro.title REGEXP    :keyword    ) ) ");
         }
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
             sb.append(" and de.code_department = :codeDepartment ");

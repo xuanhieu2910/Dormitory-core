@@ -138,7 +138,7 @@ public class PriorityGroupRepositoryImpl implements PriorityGroupRepositoryCusto
 
     private void setConditionFindAllPriorityGroupDto(FindAllPriorityGroupRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append("   and (pg.title REGEXP '[' + :keyword + ']')  " );
+            sb.append("   and (pg.title REGEXP  :keyword )  " );
         }
         if(StringUtils.isNotBlank(request.getTitlePriorityGroup())){
             sb.append(" and pg.title REGEXP :titlePriorityGroup ");

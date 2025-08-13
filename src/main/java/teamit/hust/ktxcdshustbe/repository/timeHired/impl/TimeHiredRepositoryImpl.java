@@ -85,9 +85,9 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
                 "from time_hired where 1=1 ");
 
         if (StringUtils.isNotBlank(request.getKeyword())){
-            sb.append("   and (time_hired.time_started REGEXP '[' + :keyword + ']') OR " +
-                    "       (time_hired.time_ended REGEXP '[' + :keyword + ']')  OR " +
-                    "  (time_hired.title_time_hired REGEXP '[' + :keyword + ']')   ");
+            sb.append("   and (time_hired.time_started REGEXP  :keyword ) OR " +
+                    "       (time_hired.time_ended REGEXP :keyword )  OR " +
+                    "  (time_hired.title_time_hired REGEXP  :keyword )   ");
         }
         sb.append(" order by id_time_hired desc ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -185,9 +185,9 @@ public class TimeHiredRepositoryImpl implements TimeHiredRepositoryCustom {
         StringBuilder sb = new StringBuilder();
         sb.append("select count(0) from time_hired where 1=1 ");
         if (StringUtils.isNotBlank(request.getKeyword())){
-            sb.append("   and (time_hired.time_started REGEXP '[' + :keyword + ']') OR " +
-                    "       (time_hired.time_ended REGEXP '[' + :keyword + ']')  OR " +
-                    "  (time_hired.title_time_hired REGEXP '[' + :keyword + ']')   ");
+            sb.append("   and (time_hired.time_started REGEXP    :keyword   ) OR " +
+                    "       (time_hired.time_ended REGEXP    :keyword   )  OR " +
+                    "  (time_hired.title_time_hired REGEXP    :keyword   )   ");
         }
         Query query = entityManager.createNativeQuery(sb.toString());
         if (StringUtils.isNotBlank(request.getKeyword())) {
