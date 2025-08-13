@@ -11,6 +11,6 @@ public interface AuthenticationService {
     AuthenticationDto register(UserRegisterAccountStudentRequest request);
     AuthenticationDto authenticate(AuthenticationRequest request) throws Exception;
     AuthenticationResponse convertToAuthenticationResponse(AuthenticationDto authenticationDto);
-    AuthenticationDto getOAuthentication2ByUserName(OidcUser principal);
+    AuthenticationDto getOAuthentication2ByUserName();
 
 }
