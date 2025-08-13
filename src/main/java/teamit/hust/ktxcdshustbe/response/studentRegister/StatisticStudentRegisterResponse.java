@@ -17,10 +17,16 @@ public class StatisticStudentRegisterResponse {
     private Integer totalStudentRegisterNotAccept;
     @JsonProperty("total_student_register_accept")
     private Integer totalStudentRegisterAccept;
-    @JsonProperty("total_student_register_not_yet_paid")
-    private Integer totalStudentRegisterNotYetPaid;
+    @JsonProperty("total_student_register_hold_room")
+    private Integer totalStudentRegisterHoldRoom;
+    @JsonProperty("total_student_register_confirm_order")
+    private Integer totalStudentRegisterConfirmOrder;
     @JsonProperty("total_student_register_paid")
     private Integer totalStudentRegisterPaid;
-    @JsonProperty("total_student_register_fail_paid")
-    private Integer totalStudentRegisterFailPaid;
+    @JsonProperty("total_student_register_cancel_paid")
+    private Integer totalStudentRegisterCancelPaid;
+    @JsonProperty("total_student_register_false_paid")
+    private Integer totalStudentRegisterFalsePaid;
+    @JsonProperty("total_student_register_expires")
+    private Integer totalStudentRegisterExpires;
 }
