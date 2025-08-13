@@ -345,7 +345,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         if(!studentRegisterRoom.getStatus().equals(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER)) {
             throw new ValidParametersException();
         }
-        if (null == request.getCodeUserRegister() || null == request.getStatus()) {
+        if (null == request.getIdStudentRegisterRoom() || null == request.getStatus()) {
             throw new ValidParametersException();
         }
         if (!request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT) &&
