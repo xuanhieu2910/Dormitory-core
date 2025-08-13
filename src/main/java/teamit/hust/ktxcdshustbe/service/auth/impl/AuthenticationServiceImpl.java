@@ -112,9 +112,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public AuthenticationDto getOAuthentication2ByUserName(OidcUser principal) {
+    public AuthenticationDto getOAuthentication2ByUserName() {
         log.debug("Redirect front end success!");
-        KtxUser ktxUser = principal.getUserInfo().getClaim(Constants.CLAIMS_INFORMATION_USER);
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Role> role = ktxUser.getRole().stream().toList();
         AuthenticationDto authenticationDto = new AuthenticationDto();
         authenticationDto.setRoles(RoleUtils.convertToRoleResponse(role));

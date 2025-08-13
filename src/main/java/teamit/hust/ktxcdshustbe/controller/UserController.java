@@ -110,9 +110,9 @@ public class UserController {
     }
 
     @GetMapping("/information")
-    public ResponseEntity<?> getInformationAccount(@AuthenticationPrincipal OidcUser principal){
+    public ResponseEntity<?> getInformationAccount(){
         try {
-            AuthenticationDto authenticationDto = authenticationService.getOAuthentication2ByUserName(principal);
+            AuthenticationDto authenticationDto = authenticationService.getOAuthentication2ByUserName();
             return ApiResponseDto.createdWithState(authenticationService.convertToAuthenticationResponse(authenticationDto),
                     "Get information account success!", HttpStatus.OK);
         }catch (Exception e){

@@ -203,7 +203,7 @@ public class OrdersServiceImpl implements OrdersService {
     private ConfirmOrdersResponse fetchToConfirmOrder(Map<String, Object> payload) {
         try {
             ResponseEntity<Object> responseEntity = restTemplate.exchange(
-                    "https://portal-v2-staging.foxpay.vn/payment/card/initiate/",
+                    PropertiesUtil.getProperty("fpt.pay-gate.root.url.production"),
                     HttpMethod.POST,
                     setEntityFetchToConfirmPayment(payload),
                     Object.class
