@@ -838,7 +838,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
 
     private void setConditionFindAllRoom(FindAllRoomsRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append("   and (ro.title REGEXP '[' + :keyword + ']')  " );
+            sb.append("   and (ro.title REGEXP :keyword )  " );
 
         }
         if (StringUtils.isNotBlank(request.getTitleRoom())) {

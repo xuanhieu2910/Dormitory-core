@@ -142,8 +142,8 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
 
     private void setConditionFindAllDepartment(FindAllDepartmentRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append("   and (dep.title REGEXP '[' + :keyword + ']') OR " +
-                    "       (dep.short_name REGEXP '[' + :keyword + ']') ");
+            sb.append("   and (dep.title REGEXP  :keyword ) OR " +
+                    "       (dep.short_name REGEXP  :keyword ) ");
         }
         if (StringUtils.isNotBlank(request.getTitleDepartment())){
             sb.append(" and dep.title REGEXP :titleDepartment ");

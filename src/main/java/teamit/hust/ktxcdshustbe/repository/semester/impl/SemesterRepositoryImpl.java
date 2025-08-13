@@ -93,7 +93,7 @@ public class SemesterRepositoryImpl implements SemesterRepositoryCustom {
             sb.append(" and se.status = :status ");
         }
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append("   and (se.title REGEXP '[' + :keyword + ']')  " );
+            sb.append("   and (se.title REGEXP  :keyword )  " );
         }
         sb.append(" order by se.id_semester desc  ");
     }

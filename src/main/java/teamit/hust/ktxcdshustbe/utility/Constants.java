@@ -54,6 +54,8 @@ public class Constants {
 
 
     // Student Register room
+
+    public final static Integer STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT = -1;
     public final static Integer STUDENT_REGISTER_ROOM_STATUS_ACCEPT = 1;
     public final static Integer STATUS_HOLD_STUDENT_ROOM_REGISTER = 2;
     public final static Integer STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER = 3;
@@ -64,7 +66,6 @@ public class Constants {
 
     /****************************************************************/
 
-    public final static Integer STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT = -1;
     public final static Integer QUANTITY_UPDATE_ROOM_AND_REGISTER = 1;
     public final static Integer QUANTITY_UPDATE_HIRED_ROOM = 1;
     public final static Integer QUANTITY_REMAIN_AMOUNT_REGISTER = 0;
