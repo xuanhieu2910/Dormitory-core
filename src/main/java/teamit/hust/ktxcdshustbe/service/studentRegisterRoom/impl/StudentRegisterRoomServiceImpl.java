@@ -357,7 +357,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     private StudentRegisterRoom findDetailsStudentRegisterRoomById(Integer idStudentRegisterRoom) {
-        Optional<StudentRegisterRoom> studentRegisterRoom = studentRegisterRoomRepository.findById(idStudentRegisterRoom);
+        Optional<StudentRegisterRoom> studentRegisterRoom = studentRegisterRoomRepository.findStudentRegisterRoomById(idStudentRegisterRoom);
         if (studentRegisterRoom.isEmpty()) {
             throw new NotFoundException();
         }
