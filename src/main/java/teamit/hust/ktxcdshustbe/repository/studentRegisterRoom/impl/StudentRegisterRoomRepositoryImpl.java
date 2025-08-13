@@ -131,7 +131,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "        studentRegisterRoom.time_created,    " +
                 "        de.code_department, de.title, ro.code_room, ro.title,    " +
                 "        se.code_semester, se.title, timeHired.id_time_hired,    " +
-                "        timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status    " +
+                "        timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status,studentRegisterRoom.id_student_register_room   " +
                 "from student_register_room studentRegisterRoom " +
                 "        inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user    " +
                 "        inner join room ro on studentRegisterRoom.id_room = ro.id_room     " +
@@ -165,6 +165,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 dto.setTimeHiredStarted(ValueUtil.getLongByObject(obj[10]));
                 dto.setTimeHiredEnded(ValueUtil.getLongByObject(obj[11]));
                 dto.setStatusInformationRegister(ValueUtil.getIntegerByObject(obj[12]));
+                dto.setIdRegisterRoom(ValueUtil.getIntegerByObject(obj[13]));
                 userRegisterRoomDtos.add(dto);
             }
         }

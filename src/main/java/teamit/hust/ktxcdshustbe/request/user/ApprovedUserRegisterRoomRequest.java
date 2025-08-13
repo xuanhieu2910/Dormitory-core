@@ -8,8 +8,8 @@ import lombok.Data;
 @Builder
 public class ApprovedUserRegisterRoomRequest {
 
-    @JsonProperty("codeUserRegister")
-    private String codeUserRegister;
+    @JsonProperty("idStudentRegisterRoom")
+    private Integer idStudentRegisterRoom;
     @JsonProperty("status")
     private Integer status;
 }
