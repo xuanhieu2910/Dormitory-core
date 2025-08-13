@@ -386,7 +386,9 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
     private void setConditionFindAllStudents(FindAllStudentsRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
             sb.append("   and (ktxUser.value REGEXP  :keyword ) OR " +
-                    "       (ktxUser.user_name REGEXP  :keyword ) ");
+                    "       (ktxUser.user_name REGEXP  :keyword ) or " +
+                    "    (year_group.title REGEXP  :keyword )  or " +
+                    "   (priority_group.title REGEXP  :keyword )  ");
         }
         if(ObjectUtils.isNotEmpty(request.getStatusHired())) {
             if (request.getStatusHired().equals(Constants.STATUS_STUDENT_HIRING_ROOM)) {
