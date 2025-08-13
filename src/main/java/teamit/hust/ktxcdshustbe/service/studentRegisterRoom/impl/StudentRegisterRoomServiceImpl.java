@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -337,7 +338,11 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     @Transactional
     @Override
     public void approvedStudentRegisterHiredRoom(ApprovedUserRegisterRoomRequest request){
-        if (null == request.getCodeUserRegister() || null == request.getStatus()) {
+        if (null == request.getIdStudentRegisterRoom() || null == request.getStatus()) {
+            throw new ValidParametersException();
+        }
+        StudentRegisterRoom studentRegisterRoom = findDetailsStudentRegisterRoomById(request.getIdStudentRegisterRoom());
+        if(!studentRegisterRoom.getStatus().equals(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER)) {
             throw new ValidParametersException();
         }
         if (!request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT) &&
@@ -345,12 +350,20 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             throw new ValidParametersException();
         }
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        approvedStudentRegister(request,ktxUser);
+        approvedStudentRegister(studentRegisterRoom,request,ktxUser);
+    }
+
+    private StudentRegisterRoom findDetailsStudentRegisterRoomById(Integer idStudentRegisterRoom) {
+        Optional<StudentRegisterRoom> studentRegisterRoom = studentRegisterRoomRepository.findById(idStudentRegisterRoom);
+        if (studentRegisterRoom.isEmpty()) {
+            throw new NotFoundException();
+        }
+        return studentRegisterRoom.get();
     }
 
 
-    public void approvedStudentRegister(ApprovedUserRegisterRoomRequest request,KtxUser ktxUser){
-        StudentRegisterRoom studentRegisterRoom =  changeApprovedStudent(request,ktxUser.getIdKtxUser());
+    public void approvedStudentRegister(StudentRegisterRoom studentRegisterRoom,ApprovedUserRegisterRoomRequest request,KtxUser ktxUser){
+       changeApprovedStudent(studentRegisterRoom,request,ktxUser.getIdKtxUser());
 //        AcceptStudentRegisterRoomDto acceptStudentRegisterRoomDto = studentRegisterRoomService.getAcceptStudentRegisterRoomDtoById(studentRegisterRoom.ge());
 //        acceptStudentRegisterRoomDto.setStatusAccept(request.getStatus());
         if (request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT)) {
@@ -365,15 +378,14 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
                         Constants.QUANTITY_UPDATE_ROOM_AND_REGISTER,
                         ktxUser.getIdKtxUser());
             }
-
             transformStudentToStudentHiredRoom(studentRegisterRoom,ktxUser.getCodeUser());
 //            EmailUtil.getInstance().sendApprovedRoom(acceptStudentRegisterRoomDto);
         }
     }
 
 
-    private StudentRegisterRoom changeApprovedStudent(ApprovedUserRegisterRoomRequest request, Integer userId){
-        StudentRegisterRoom studentRegisterRoom = findStudentRegisterRoomByCode(request.getCodeUserRegister()).get();
+    private StudentRegisterRoom changeApprovedStudent(StudentRegisterRoom studentRegisterRoom,ApprovedUserRegisterRoomRequest request, Integer userId){
+
         Date timeNow = new Date();
         studentRegisterRoom.setStatus(request.getStatus());
         studentRegisterRoom.setTimeModified(timeNow.getTime());
