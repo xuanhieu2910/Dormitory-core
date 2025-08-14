@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.AcceptStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
@@ -367,8 +368,8 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
 
     public void approvedStudentRegister(StudentRegisterRoom studentRegisterRoom,ApprovedUserRegisterRoomRequest request,KtxUser ktxUser){
        changeApprovedStudent(studentRegisterRoom,request,ktxUser.getIdKtxUser());
-//        AcceptStudentRegisterRoomDto acceptStudentRegisterRoomDto = studentRegisterRoomService.getAcceptStudentRegisterRoomDtoById(studentRegisterRoom.ge());
-//        acceptStudentRegisterRoomDto.setStatusAccept(request.getStatus());
+        AcceptStudentRegisterRoomDto acceptStudentRegisterRoomDto = studentRegisterRoomRepository.getAcceptStudentRegisterRoomDtoById(studentRegisterRoom.getIdStudentRegisterRoom());
+        acceptStudentRegisterRoomDto.setStatusAccept(request.getStatus());
         if (request.getStatus().equals(Constants.STUDENT_REGISTER_ROOM_STATUS_NOT_ACCEPT)) {
             roomService.updateQuantityAndRemainAmountCancelRegisterRoom(studentRegisterRoom.getIdRoom(),
                     Constants.QUANTITY_UPDATE_ROOM_AND_REGISTER,
@@ -382,7 +383,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
                         ktxUser.getIdKtxUser());
             }
             transformStudentToStudentHiredRoom(studentRegisterRoom,ktxUser.getCodeUser());
-//            EmailUtil.getInstance().sendApprovedRoom(acceptStudentRegisterRoomDto);
+            EmailUtil.getInstance().sendApprovedRoom(acceptStudentRegisterRoomDto);
         }
     }
 

@@ -2,6 +2,7 @@ package teamit.hust.ktxcdshustbe.repository.studentRegisterRoom;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.AcceptStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
@@ -50,4 +51,6 @@ public interface StudentRegisterRoomRepositoryCustom {
     StatisticStudentRegisterResponse getStatisticStudentRegister();
 
     Optional<StudentRegisterRoom> findStudentRegisterRoomByCodeUserAndRoomAndStatus(String codeUser, Integer idRoom, Integer statusSuccessPaymentStudentRoomRegister);
+
+    AcceptStudentRegisterRoomDto getAcceptStudentRegisterRoomDtoById(Integer idStudentRegisterRoom);
 }

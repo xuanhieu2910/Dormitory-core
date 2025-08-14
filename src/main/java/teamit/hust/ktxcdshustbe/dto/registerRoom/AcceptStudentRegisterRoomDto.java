@@ -12,7 +12,7 @@ public class AcceptStudentRegisterRoomDto {
     private String userName;
     private String titleDepartment;
     private String titleRoom;
-    private String timeCreated;
+    private Long timeCreated;
     private String timeHired;
     private Integer statusAccept;
     private String reason;

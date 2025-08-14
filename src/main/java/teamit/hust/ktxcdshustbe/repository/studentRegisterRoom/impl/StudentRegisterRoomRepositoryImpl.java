@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.AcceptStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
@@ -969,6 +970,36 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public AcceptStudentRegisterRoomDto getAcceptStudentRegisterRoomDtoById(Integer idStudentRegisterRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select ktx_user.user_name,department.title,room.title,     " +
+                "       srr.time_created,time_hired.time_started,time_hired.time_ended,     " +
+                "       room.price     " +
+                "       from student_register_room srr     " +
+                "    inner join ktx_user on srr.id_user = ktx_user.id_ktx_user     " +
+                "    inner join room on room.id_room = srr.id_room     " +
+                "    inner join department on department.id_department = room.id_department     " +
+                "    inner join time_hired on  time_hired.id_time_hired = srr.id_time_hired  where srr.id_student_register_room = :idStudentRegisterRoom ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idStudentRegisterRoom", idStudentRegisterRoom);
+        List<Object[]> result = query.getResultList();
+
+        if (!CollectionUtils.isEmpty(result)){
+            for (Object[] obj : result){
+                AcceptStudentRegisterRoomDto dto = new AcceptStudentRegisterRoomDto();
+                dto.setUserName(ValueUtil.getStringByObject(obj[0]));
+                dto.setTitleDepartment(ValueUtil.getStringByObject(obj[1]));
+                dto.setTitleRoom(ValueUtil.getStringByObject(obj[2]));
+                dto.setTimeCreated(ValueUtil.getLongByObject(obj[3]));
+                dto.setTimeHired(DateUtil.convertLongTimeToDateTime(ValueUtil.getLongByObject(obj[4]))  + " - " + DateUtil.convertLongTimeToDateTime(ValueUtil.getLongByObject(obj[5])) );
+                dto.setPrice(ValueUtil.getStringByObject(obj[6]));
+                return dto;
+            }
+        }
+        return null;
     }
 
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {
