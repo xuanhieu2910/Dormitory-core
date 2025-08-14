@@ -764,7 +764,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "set srr.status = :statusExpires,  " +
                 "     srr.time_modified = :timeModified  " +
                 "where ((srr.id_order is null and srr.status = :statusHolding and srr.expires_at <= :timeCurrent ) or  " +
-                "     (srr.id_order is not null and srr.status = :statusNotSuccess and srr.expires_at <= :timeCurrent)) ");
+                "     (srr.id_order is not null and srr.status in (:statusNotSuccess) and srr.expires_at <= :timeCurrent)) ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("statusExpires", Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
         query.setParameter("timeModified", timeCurrent);
@@ -786,7 +786,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "where ( " +
                 "    (srr.id_order is null and srr.status = :statusHolding and srr.expires_at <= :timeCurrent ) " +
                 "        or " +
-                "    (srr.id_order is not null and srr.status = :statusNotSuccess and srr.expires_at <= :timeCurrent) " +
+                "    (srr.id_order is not null and srr.status in (:statusNotSuccess) and srr.expires_at <= :timeCurrent) " +
                 "    ) " +
                 "group by ro.id_room ");
         Query query = entityManager.createNativeQuery(sb.toString());
