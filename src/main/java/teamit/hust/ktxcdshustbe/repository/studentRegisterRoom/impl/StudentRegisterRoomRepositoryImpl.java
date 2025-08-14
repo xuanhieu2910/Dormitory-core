@@ -759,15 +759,19 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public Integer updateStatusRoomWhenExpiresTime(Long timeCurrent) {
         StringBuilder sb = new StringBuilder();
-        sb.append("update student_register_room srr " +
-                " set srr.status = :statusExpires,  " +
-                "    srr.time_modified = :timeModified " +
-                " where srr.status = :status " +
-                " and srr.expires_at <= :timeCurrent ");
+        sb.append(" update student_register_room srr   " +
+                "set srr.status = :statusExpires,  " +
+                "     srr.time_modified = :timeModified  " +
+                "where ((srr.id_order is null and srr.status = :statusHolding and srr.expires_at <= :timeCurrent ) or  " +
+                "     (srr.id_order is not null and srr.status = :statusNotSuccess and srr.expires_at <= :timeCurrent)) ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("statusExpires", Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
         query.setParameter("timeModified", timeCurrent);
-        query.setParameter("status", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusHolding", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusNotSuccess", Arrays.asList(
+                Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER));
         query.setParameter("timeCurrent", timeCurrent);
         return query.executeUpdate();
     }
@@ -775,15 +779,18 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public List<StudentRegisterHoldingRoomDto> getListStudentHoldingRoom(Long timeCurrent) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ro.id_room, count(srr.id_student_register_room) quantity    " +
-                "  from student_register_room srr    " +
-                "      inner join room ro on srr.id_room = ro.id_room    " +
-                "  where srr.status in (:status)    " +
-                "  and srr.expires_at <= :timeCurrent    " +
-                "  group by ro.id_room  ");
+        sb.append(" select ro.id_room, count(srr.id_student_register_room) quantity " +
+                "from student_register_room srr " +
+                "      inner join room ro on srr.id_room = ro.id_room " +
+                "where ( " +
+                "    (srr.id_order is null and srr.status = :statusHolding and srr.expires_at <= :timeCurrent ) " +
+                "        or " +
+                "    (srr.id_order is not null and srr.status = :statusNotSuccess and srr.expires_at <= :timeCurrent) " +
+                "    ) " +
+                "group by ro.id_room ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("status", Arrays.asList(
-                Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+        query.setParameter("statusHolding", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusNotSuccess", Arrays.asList(
                 Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER));
