@@ -19,6 +19,8 @@ public interface BatchesRegistrationService {
 
     void updateBatchesRegistration(UpdateBatchesRegistrationRequest request);
 
+
+    void deleteBatchesRegistration(String codeBatchesRegistration);
     BatchesRegistration getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(Long timeCurrent, Integer idYearGroup,
                                                                                      Integer idPriorityGroup);
     Page<FindAllDepartmentBatchesRegistrationResponse> findAllDepartmentBatchesRegistration(FindAllDepartmentInBatchesRegistrationRequest
