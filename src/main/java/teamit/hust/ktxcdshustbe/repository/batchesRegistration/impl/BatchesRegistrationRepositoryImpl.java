@@ -299,7 +299,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
         setConditionalFindAllDepartmentBatchesRegistration(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartmentBatchesRegistration(query, request);
-        return ValueUtil.getLongByObject(query.getFirstResult());
+        return ValueUtil.getLongByObject(query.getSingleResult());
     }
 
     private FindAllDepartmentBatchesRegistrationDto writeDataFindAllDepartmentBatchesRegistration(Object[] obj) {
@@ -349,7 +349,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
         setConditionalFindAllBatchesRegistration(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllBatchesRegistration(query, request);
-        return ValueUtil.getIntegerByObject(query.getFirstResult());
+        return ValueUtil.getIntegerByObject(query.getSingleResult());
     }
 
     private void setParameterFindAllBatchesRegistration(Query query, FindAllBatchesRegistrationRequest request) {

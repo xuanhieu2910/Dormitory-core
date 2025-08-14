@@ -164,7 +164,6 @@ public class StudentRegisterRoomController {
             return ApiResponseDto.createdWithState(studentRegisterRoomService.getRegisterRoomCurrent(),
                     "Get register room current", HttpStatus.OK);
         }catch (Exception e) {
-            e.printStackTrace();
             return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -64,6 +64,8 @@ public class Constants {
     public final static Integer STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER = 6;
     public final static Integer STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER = 7;
 
+    public final static Integer STATUS_TRANSFER_STUDENT_ROOM_REGISTER = 8;
+
     /****************************************************************/
 
     public final static Integer QUANTITY_UPDATE_ROOM_AND_REGISTER = 1;

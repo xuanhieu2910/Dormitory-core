@@ -92,7 +92,7 @@ public class BatchesRegistrationRoomRepositoryImpl implements BatchesRegistratio
         setConditionFindAllBatchesRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllBatchesRegisterRoom(query, request);
-        return ValueUtil.getLongByObject(query.getFirstResult());
+        return ValueUtil.getLongByObject(query.getSingleResult());
     }
 
     private FindAllBatchesRegistrationRoomDto writeDataFindAllBatchesRegisterRoom(Object[] obj) {

@@ -59,4 +59,6 @@ public interface StudentRegisterRoomService {
     List<StudentRegisterHoldingRoomDto> getStudentRegisterHoldingRoom(Long timeCurrent);
 
     StatisticStudentRegisterResponse getStatisticStudentRegister();
+
+    StudentRegisterRoom findStudentRegisterRoomByCodeUserAndRoomAndStatus(String codeUser, Integer idRoom, Integer statusSuccessPaymentStudentRoomRegister);
 }

@@ -440,7 +440,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         setConditionFindAllStudentSearchDepartment(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudentSearchDepartment(query, request);
-        return ValueUtil.getIntegerByObject(query.getFirstResult());
+        return ValueUtil.getIntegerByObject(query.getSingleResult());
     }
 
     private void setParameterFindAllStudentSearchDepartment(Query query, StudentSearchDepartmentRequest request) {
