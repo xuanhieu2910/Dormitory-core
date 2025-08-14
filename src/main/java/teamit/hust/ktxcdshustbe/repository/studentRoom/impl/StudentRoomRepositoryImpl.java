@@ -330,9 +330,10 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "       studentRoom.status       " +
                 "       from student_room studentRoom    " +
                 "       inner join ktx_user on studentRoom.id_user = ktx_user.id_ktx_user    " +
-                "       where ktx_user.code_user = :codeUser and studentRoom.status = 1 ");
+                "       where ktx_user.code_user = :codeUser and studentRoom.status = :status ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeUser", codeUser);
+        query.setParameter("status", Constants.STATUS_STUDENT_HIRING_ROOM);
         List<Object[]> result = query.getResultList();
         if (!CollectionUtils.isEmpty(result)) {
             for (Object[] obj: result){

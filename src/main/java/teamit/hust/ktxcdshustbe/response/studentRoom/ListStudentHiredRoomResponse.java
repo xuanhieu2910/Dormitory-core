@@ -33,4 +33,6 @@ public class ListStudentHiredRoomResponse {
     private String valueUserModified;
     @JsonProperty("status")
     private Integer status;
+    @JsonProperty("sex")
+    private Integer sex;
 }
