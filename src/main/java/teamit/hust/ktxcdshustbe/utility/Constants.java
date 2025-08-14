@@ -63,8 +63,9 @@ public class Constants {
     public final static Integer STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER = 5;
     public final static Integer STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER = 6;
     public final static Integer STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER = 7;
+    public final static Integer STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER = 8;
 
-    public final static Integer STATUS_TRANSFER_STUDENT_ROOM_REGISTER = 8;
+    public final static Integer STATUS_TRANSFER_STUDENT_ROOM_REGISTER = 20;
 
     /****************************************************************/
 
@@ -200,6 +201,7 @@ public class Constants {
     public static final Integer STATUS_ORDER_COMPLETE_PAYMENT = 3;
     public static final Integer STATUS_ORDER_PAYMENT_FALSE = 4;
     public static final Integer STATUS_ORDER_PAYMENT_CANCEL = 5;
+    public static final Integer STATUS_ORDER_PAYMENT_PENDING = 6;
     public static final Integer TYPE_ORDER_HIRED_ROOM = 1;
     /*----------------------------------------------------*/
     /**

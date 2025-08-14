@@ -409,28 +409,34 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public boolean isHoldingRegisteredRoomInBatchesRegistrationCurrent() {
         StringBuilder sb = new StringBuilder();
-        sb.append("select case when exists(    " +
-                "     select 1    " +
-                " from batches_registration br    " +
-                "          inner join batches_year_group_registration bygr    " +
-                "      on br.id_batches_registration = bygr.id_batches_registration    " +
-                "          inner join year_group yg on bygr.id_year_group = yg.id_year_group    " +
-                "          inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration    " +
-                "          inner join priority_group pg on brs.id_priority_group = pg.id_priority_group    " +
-                "          inner join student_register_room srr on brs.id_batches_registration_schedule = srr.id_batches_registration_schedule    " +
-                "          inner join ktx_user ktu on srr.id_user = ktu.id_ktx_user    " +
-                " where :currentTime between brs.registration_start_time and brs.registration_end_time    " +
-                "   and pg.id_priority_group = :idPriorityGroup    " +
-                "   and yg.id_year_group = :idYearGroup    " +
-                "   and (srr.id_order is null and srr.status = :statusRegisterRoom )    " +
-                "   and ktu.id_ktx_user = :idKtxUser    " +
-                " ) then 1 else 0 end result ");
+        sb.append("select case when exists(       " +
+                " select 1       " +
+                "                  from batches_registration br       " +
+                "      inner join batches_year_group_registration bygr       " +
+                "  on br.id_batches_registration = bygr.id_batches_registration       " +
+                "      inner join year_group yg on bygr.id_year_group = yg.id_year_group       " +
+                "      inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration       " +
+                "      inner join priority_group pg on brs.id_priority_group = pg.id_priority_group       " +
+                "      inner join student_register_room srr on brs.id_batches_registration_schedule = srr.id_batches_registration_schedule       " +
+                "      inner join ktx_user ktu on srr.id_user = ktu.id_ktx_user       " +
+                "where :currentTime between brs.registration_start_time and brs.registration_end_time  " +
+                "and pg.id_priority_group = :idPriorityGroup  " +
+                "and yg.id_year_group = :idYearGroup  " +
+                "and (  " +
+                "    (srr.id_order is null and srr.status = :statusRegisterRoom)  " +
+                "    or  " +
+                "    (srr.id_order is not null and srr.status in (:statusPayment))  " +
+                "    )  " +
+                "and ktu.id_ktx_user = :idKtxUser  " +
+                ") then 1 else 0 end result ");
         Query query = entityManager.createNativeQuery(sb.toString());
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
         query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
         query.setParameter("currentTime", new Date().getTime());
         query.setParameter("statusRegisterRoom", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusPayment", Arrays.asList(Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER, Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER));
         query.setParameter("idKtxUser", ktxUser.getIdKtxUser());
         return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
     }
@@ -769,14 +775,18 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public List<StudentRegisterHoldingRoomDto> getListStudentHoldingRoom(Long timeCurrent) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select ro.id_room, count(srr.id_student_register_room) quantity  " +
-                "from student_register_room srr  " +
-                "    inner join room ro on srr.id_room = ro.id_room  " +
-                "where srr.status = :status  " +
-                "and srr.expires_at <= :timeCurrent  " +
-                "group by ro.id_room ");
+        sb.append("select ro.id_room, count(srr.id_student_register_room) quantity    " +
+                "  from student_register_room srr    " +
+                "      inner join room ro on srr.id_room = ro.id_room    " +
+                "  where srr.status in (:status)    " +
+                "  and srr.expires_at <= :timeCurrent    " +
+                "  group by ro.id_room  ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("status", Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+        query.setParameter("status", Arrays.asList(
+                Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER));
         query.setParameter("timeCurrent", timeCurrent);
         List<Object[]> result = query.getResultList();
         List<StudentRegisterHoldingRoomDto> responses = new ArrayList<>();

@@ -171,6 +171,8 @@ public class PaymentServiceImpl implements PaymentService {
             studentRegisterRoom.setStatus(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
         } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
             studentRegisterRoom.setStatus(Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER);
+        } else if (StringUtils.isNotBlank(request.getResult_code()) && PENDING_PAYMENT.containsKey(request.getResult_code())) {
+            studentRegisterRoom.setStatus(Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER);
         } else {
             studentRegisterRoom.setStatus(Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER);
         }
@@ -222,8 +224,12 @@ public class PaymentServiceImpl implements PaymentService {
         } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
             orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_CANCEL);
             orders.setValue("[Type: Cancel] - [Id student register room - " + studentRegisterRoom.getIdStudentRegisterRoom() + "]");
-        }else {
+        } else if (StringUtils.isNotBlank(request.getResult_code()) && PENDING_PAYMENT.containsKey(request.getResult_code())) {
+            orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_PENDING);
+            orders.setValue("[Type: Pending] - [Id student register room - " + studentRegisterRoom.getIdStudentRegisterRoom() + "]");
+        } else {
             orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_FALSE);
+            orders.setValue("[Type: False] - [Id student register room - " + studentRegisterRoom.getIdStudentRegisterRoom() + "]");
         }
         orders.setTimeModified(new Date().getTime());
         return ordersService.saveOrder(orders);
