@@ -12,6 +12,7 @@ import teamit.hust.ktxcdshustbe.dto.ApiResponseDto;
 import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
+import teamit.hust.ktxcdshustbe.exception.ValidateFiledException;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.CreateBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllBatchesRegistrationRequest;
 import teamit.hust.ktxcdshustbe.request.batchesRegistration.FindAllDepartmentInBatchesRegistrationRequest;
@@ -87,7 +88,17 @@ public class BatchesRegistrationController {
         }
     }
 
-
+    @DeleteMapping
+    public ResponseEntity<?> deleteBatchesRegistration(@RequestParam("code-batch-registration") String codeBatchRegistration){
+        try {
+            batchesRegistrationService.deleteBatchesRegistration(codeBatchRegistration);
+            return ApiResponseDto.createdWithMessage("Delete code batch registration success!", HttpStatus.OK);
+        } catch (org.webjars.NotFoundException | ValidateFiledException e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return ApiResponseDto.createdWithMessage(e.getMessage(), HttpStatus.BAD_GATEWAY);
+        }
+    }
     @GetMapping("/find-all-department")
     public ResponseEntity<?> findAllDepartmentBatchesRegistration(@And({
             @Spec(path = "page", params = "page", spec = Like.class),

@@ -105,6 +105,26 @@ public class BatchesRegistrationServiceImpl implements BatchesRegistrationServic
         updateFieldBatchesRegistration(request);
     }
 
+    @Transactional
+    @Override
+    public void deleteBatchesRegistration(String codeBatchesRegistration) {
+        Optional<BatchesRegistration> batchesRegistration =
+                batchesRegistrationRepository.findBatchesRegistrationByCodeBatchesRegistration(codeBatchesRegistration);
+        verifyTimeUpdateBatchesRegistration(batchesRegistration);
+        List<BatchesYearGroupRegistration> yearGroupRegistrationsOrigin =
+                batchesYearGroupRegistrationService.findAllBatchesYearGroupByCodeBatchesRegistration(batchesRegistration.get().getCodeBatchesRegistration());
+        List<BatchesRegistrationSchedule> batchesRegistrationSchedulesOrigin =
+                batchesRegistrationScheduleService.findAllBatchesRegistrationScheduleByCodeBatchesRegistration(batchesRegistration.get().getCodeBatchesRegistration());
+        List<BatchesRegistrationRoom>  batchesRegistrationRoomsOrigin =
+                batchesRegistrationRoomService.findAllBatchesRegistrationRoomByCodeBatchesRegistration(batchesRegistration.get().getCodeBatchesRegistration());
+
+        batchesRegistrationRepository.delete(batchesRegistration.get());
+        batchesYearGroupRegistrationService.deleteAll(yearGroupRegistrationsOrigin);
+        batchesRegistrationScheduleService.deleteAll(batchesRegistrationSchedulesOrigin);
+        batchesRegistrationRoomService.deleteAll(batchesRegistrationRoomsOrigin);
+
+    }
+
     @Override
     public BatchesRegistration getBatchesRegistrationCurrentByIdYearGroupAndIdPriorityGroup(Long timeCurrent,
                                                                                             Integer idYearGroup,
