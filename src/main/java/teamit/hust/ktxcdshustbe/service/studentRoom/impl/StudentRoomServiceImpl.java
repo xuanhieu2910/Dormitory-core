@@ -117,6 +117,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             response.setCodeUserModified(findAllStudentHiredRoomDto.getCodeUserModified());
             response.setValueUserModified(findAllStudentHiredRoomDto.getValueUserModified());
             response.setStatus(findAllStudentHiredRoomDto.getStatus());
+            response.setSex(findAllStudentHiredRoomDto.getSex());
             responses.add(response);
         }
         return responses;
@@ -164,8 +165,24 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         if (studentRoom.isEmpty()) {
             throw new NotFoundException();
         }
-        studentRoomRepository.delete(studentRoom.get());
-        updateRemainQuantityRoom(request.getCodeRoom());
+//        studentRoomRepository.delete(studentRoom.get());
+        studentRoom.get().setStatus(Constants.STATUS_STUDENT_REFUND_ROOM);
+        studentRoomRepository.save(studentRoom.get());
+//        if(studentRegisterRoomService.checkExistStudentInRegister(request.getCodeUser(),studentRoom.get().getIdRoom())){
+//            updateRemainQuantityRoomRemoveStudentWithRegister(request.getCodeRoom());
+//        }
+//        else {
+//
+//        }
+
+    }
+
+    private void updateRemainQuantityRoomRemoveStudentWithRegister(String codeRoom) throws SQLException {
+        KtxUser customUserDetails = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int rowUpdate = roomService.updateRemainQuantityRoomWhenToRemoveStudent(codeRoom, customUserDetails.getIdKtxUser());
+        if (rowUpdate == Constants.ROW_NOT_UPDATED){
+            throw new SQLException("Method remove new student can't update quantity remain amount!");
+        }
     }
 
 
