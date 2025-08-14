@@ -10,20 +10,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import teamit.hust.ktxcdshustbe.entity.Orders;
-import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
-import teamit.hust.ktxcdshustbe.entity.TransactionPayment;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.AcceptStudentRegisterRoomDto;
+import teamit.hust.ktxcdshustbe.dto.registerRoom.PaymentRegisterRoomSuccessDto;
+import teamit.hust.ktxcdshustbe.entity.*;
 import teamit.hust.ktxcdshustbe.exception.ChecksumException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.transactionPayment.CallBackPaymentRequest;
+import teamit.hust.ktxcdshustbe.service.department.DepartmentService;
 import teamit.hust.ktxcdshustbe.service.orderItems.OrderItemsService;
 import teamit.hust.ktxcdshustbe.service.orders.OrdersService;
 import teamit.hust.ktxcdshustbe.service.paymentService.PaymentService;
+import teamit.hust.ktxcdshustbe.service.room.RoomService;
 import teamit.hust.ktxcdshustbe.service.studentRegisterRoom.StudentRegisterRoomService;
 import teamit.hust.ktxcdshustbe.service.transactionPayment.TransactionPaymentService;
-import teamit.hust.ktxcdshustbe.utility.Constants;
-import teamit.hust.ktxcdshustbe.utility.DateUtil;
-import teamit.hust.ktxcdshustbe.utility.ValueUtil;
+import teamit.hust.ktxcdshustbe.service.user.KtxUserService;
+import teamit.hust.ktxcdshustbe.utility.*;
 
 import java.util.*;
 
@@ -120,7 +121,12 @@ public class PaymentServiceImpl implements PaymentService {
     TransactionPaymentService transactionPaymentService;
     @Autowired
     StudentRegisterRoomService studentRegisterRoomService;
-
+    @Autowired
+    KtxUserService ktxUserService;
+    @Autowired
+    RoomService roomService;
+    @Autowired
+    DepartmentService departmentService;
 
     @Transactional
     @Override
@@ -221,6 +227,7 @@ public class PaymentServiceImpl implements PaymentService {
     private Orders updateOrdersCallBack(Orders orders, CallBackPaymentRequest request, StudentRegisterRoom studentRegisterRoom ) {
         if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             orders.setStatusOrder(Constants.STATUS_ORDER_COMPLETE_PAYMENT);
+            EmailUtil.getInstance().sendMailPaymentSuccess(initializePaymentRegisterRoomSuccess(orders, studentRegisterRoom));
         } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
             orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_CANCEL);
             orders.setValue("[Type: Cancel] - [Id student register room - " + studentRegisterRoom.getIdStudentRegisterRoom() + "]");
@@ -233,6 +240,18 @@ public class PaymentServiceImpl implements PaymentService {
         }
         orders.setTimeModified(new Date().getTime());
         return ordersService.saveOrder(orders);
+    }
+
+    private PaymentRegisterRoomSuccessDto initializePaymentRegisterRoomSuccess(Orders orders, StudentRegisterRoom studentRegisterRoom) {
+        KtxUser ktxUser = ktxUserService.findKtxUserByKtxUserId(orders.getIdUser());
+        Room room = roomService.findRoomByIdRoom(studentRegisterRoom.getIdRoom()).get();
+        Department department = departmentService.findDepartmentById(room.getIdDepartment());
+        PaymentRegisterRoomSuccessDto paymentRegisterRoomSuccessDto = new PaymentRegisterRoomSuccessDto();
+        paymentRegisterRoomSuccessDto.setUserName(ktxUser.getUsername());
+        paymentRegisterRoomSuccessDto.setTitleDepartment(department.getTitle());
+        paymentRegisterRoomSuccessDto.setTitleRoom(room.getTitle());
+        paymentRegisterRoomSuccessDto.setMoney(orders.getTotalMoney());
+        return paymentRegisterRoomSuccessDto;
     }
 
     private void verifyTransactionPaymentCallBack(TransactionPayment transactionPayment, CallBackPaymentRequest request) {
