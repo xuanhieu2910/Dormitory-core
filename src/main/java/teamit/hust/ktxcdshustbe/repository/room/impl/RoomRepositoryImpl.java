@@ -767,7 +767,8 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
 
         return findAllRoomsDtos;
     }
-
+    @Modifying
+    @Transactional
     @Override
     public int updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(Integer idRoom, Integer userIdModified) {
         StringBuilder sb = new StringBuilder();

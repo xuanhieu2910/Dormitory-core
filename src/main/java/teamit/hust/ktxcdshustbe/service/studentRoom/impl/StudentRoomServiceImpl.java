@@ -152,8 +152,9 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<Room> roomOptional = roomService.findRoomByCodeRoom(request.getCodeRoom());
         KtxUser ktxUserOptional = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
-        studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
         updateQuantityRoom(roomOptional.get(), ktxUser.getIdKtxUser());
+        studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
+
     }
 
 
@@ -203,7 +204,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     }
 
     private void updateQuantityRoom(Room room, Integer userIdModified) throws SQLException {
-        if((room.getLimitAmountPeople() > room.getLimitAmountPeopleRegister()) && (room.getRemainAmount() > 0)){
+        if((room.getLimitAmountPeople() > room.getLimitAmountPeopleRegister()) && (room.getRemainAmount() > 0) && (room.getRemainAmount() > room.getRemainAmountRegister())){
             int rowUpdateWhenHiredLargerRegister = roomRepository.updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(room.getIdRoom(), userIdModified);
             if (rowUpdateWhenHiredLargerRegister == Constants.ROW_NOT_UPDATED){
                 throw new SQLException("Method add new student can't update quantity remain amount!");
@@ -352,6 +353,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
         destinationRoom.setTimeModified(new Date().getTime());
         destinationRoom.setIdUserModified(idKtxUser);
+        roomRepository.save(destinationRoom);
     }
 
     private void updateDestinationRoomWithRegistered(Room destinationRoom, Integer idKtxUser) {
@@ -363,7 +365,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
             destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeopleRegister() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityRegistered(destinationRoom.getQuantityRegistered() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
-
+            roomRepository.save(destinationRoom);
         }
 
         else  {
@@ -381,11 +383,16 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     }
 
     private void updateOriginalRoomWithOutRegistered(Room originalRoom, Integer idKtxUser) {
-        originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
-        originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+        if(originalRoom.getQuantityHired() > 0 ){
+            originalRoom.setQuantityHired(originalRoom.getQuantityHired() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            originalRoom.setRemainAmount(originalRoom.getRemainAmount() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
 
-        originalRoom.setTimeModified(new Date().getTime());
-        originalRoom.setIdUserModified(idKtxUser);
+            originalRoom.setTimeModified(new Date().getTime());
+            originalRoom.setIdUserModified(idKtxUser);
+        }
+        else {
+            throw new ValidParametersException();
+        }
         roomRepository.save(originalRoom);
     }
 

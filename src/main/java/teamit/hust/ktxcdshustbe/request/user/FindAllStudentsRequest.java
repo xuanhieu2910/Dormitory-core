@@ -13,5 +13,6 @@ import teamit.hust.ktxcdshustbe.request.RequestPageBase;
 public class FindAllStudentsRequest extends RequestPageBase {
 
     private Integer statusHired;
+    private Integer statusRegister;
 
 }
