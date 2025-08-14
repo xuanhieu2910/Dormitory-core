@@ -362,7 +362,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 " where :currentTime between brs.registration_start_time and brs.registration_end_time    " +
                 "   and pg.id_priority_group = :idPriorityGroup    " +
                 "   and yg.id_year_group = :idYearGroup    " +
-                "   and (srr.id_order is not null or srr.status in (:statusRegisterRoom))    " +
+                "   and (srr.status in (:statusRegisterRoom))    " +
                 "   and ktu.id_ktx_user = :idKtxUser    " +
                 " ) then 1 else 0 end result ");
         Query query = entityManager.createNativeQuery(sb.toString());
