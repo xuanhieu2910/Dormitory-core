@@ -378,6 +378,16 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
         if (ObjectUtils.isNotEmpty(request.getStatusHired())){
             query.setParameter("statusStudent", Constants.STATUS_STUDENT_HIRING_ROOM);
         }
+        if (ObjectUtils.isNotEmpty(request.getStatusHired())){
+            List<Integer> statusStudentRegisterSuccess = List.of(
+                    Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT,
+                    Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
+                    Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER
+            );
+            query.setParameter("statusStudentRegisterRoom", statusStudentRegisterSuccess);
+        }
 
 
 
@@ -385,10 +395,10 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
 
     private void setConditionFindAllStudents(FindAllStudentsRequest request, StringBuilder sb) {
         if (StringUtils.isNotBlank(request.getKeyword())) {
-            sb.append("   and (ktxUser.value REGEXP  :keyword ) OR " +
-                    "       (ktxUser.user_name REGEXP  :keyword ) or " +
-                    "    (year_group.title REGEXP  :keyword )  or " +
-                    "   (priority_group.title REGEXP  :keyword )  ");
+            sb.append(" AND ( ktxUser.value REGEXP :keyword OR " +
+                    "       ktxUser.user_name REGEXP :keyword OR " +
+                    "       year_group.title REGEXP :keyword OR " +
+                    "       priority_group.title REGEXP :keyword ) ");
         }
         if(ObjectUtils.isNotEmpty(request.getStatusHired())) {
             if (request.getStatusHired().equals(Constants.STATUS_STUDENT_HIRING_ROOM)) {
@@ -402,6 +412,20 @@ public class KtxUserRepositoryImpl implements KtxUserRepositoryCustom {
                         "  SELECT 1 FROM student_room sr  " +
                         "  WHERE sr.id_user = ktxUser.id_ktx_user  " +
                         "  AND sr.status = :statusStudent )  ");
+            }
+        }
+        if(ObjectUtils.isNotEmpty(request.getStatusRegister())) {
+            if (request.getStatusRegister().equals(Constants.STATUS_USER_REGISTER_ROOM)) {
+                sb.append("  AND  EXISTS  (  " +
+                        "  SELECT 1 FROM student_register_room srr  " +
+                        "  WHERE srr.id_user = ktxUser.id_ktx_user  " +
+                        "  AND srr.status in (:statusStudentRegisterRoom) )  ");
+            }
+            else {
+                sb.append("  AND  NOT EXISTS  (  " +
+                        "  SELECT 1 FROM student_register_room srr  " +
+                        "  WHERE srr.id_user = ktxUser.id_ktx_user  " +
+                        "  AND srr.status in (:statusStudentRegisterRoom) )  ");
             }
         }
     }
