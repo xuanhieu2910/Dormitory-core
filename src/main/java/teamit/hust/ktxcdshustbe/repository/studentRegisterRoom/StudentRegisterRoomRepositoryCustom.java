@@ -48,4 +48,6 @@ public interface StudentRegisterRoomRepositoryCustom {
     List<StudentRegisterHoldingRoomDto> getListStudentHoldingRoom(Long timeCurrent);
 
     StatisticStudentRegisterResponse getStatisticStudentRegister();
+
+    Optional<StudentRegisterRoom> findStudentRegisterRoomByCodeUserAndRoomAndStatus(String codeUser, Integer idRoom, Integer statusSuccessPaymentStudentRoomRegister);
 }

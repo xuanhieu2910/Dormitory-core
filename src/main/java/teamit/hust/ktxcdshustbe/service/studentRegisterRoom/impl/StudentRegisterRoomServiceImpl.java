@@ -475,6 +475,15 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         return studentRegisterRoomRepository.getStatisticStudentRegister();
     }
 
+    @Override
+    public StudentRegisterRoom findStudentRegisterRoomByCodeUserAndRoomAndStatus(String codeUser, Integer idRoom, Integer statusSuccessPaymentStudentRoomRegister) {
+        Optional<StudentRegisterRoom> studentRegisterRoomOptional = studentRegisterRoomRepository.findStudentRegisterRoomByCodeUserAndRoomAndStatus(codeUser,idRoom,statusSuccessPaymentStudentRoomRegister);
+        if (studentRegisterRoomOptional.isEmpty()){
+            throw new NotFoundException();
+        }
+        return studentRegisterRoomOptional.get();
+    }
+
     private void writeDataInfoReport(Sheet sheet, Map<String, CellStyle> styles) {
         String reportTitle = "DANH SÁCH SINH VIÊN ĐĂNG KÍ PHÒNG";
         String dateExport = "Ngày xuất báo cáo: " + new SimpleDateFormat("dd/MM/yyyy").format(new Date());

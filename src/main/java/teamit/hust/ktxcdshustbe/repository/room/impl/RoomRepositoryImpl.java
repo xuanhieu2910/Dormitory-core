@@ -538,7 +538,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         setConditionFindInformationResgisterRoom(request, sb);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindInformationResgisterRoom(request, query);
-        return ValueUtil.getLongByObject(query.getFirstResult());
+        return ValueUtil.getLongByObject(query.getSingleResult());
     }
     private void setParameterFindInformationResgisterRoom(SearchInformationRegisterRoomRequest request, Query query) {
         if (StringUtils.isNotBlank(request.getCodeDepartment())) {
@@ -816,7 +816,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("statusBatchesRegistration",Constants.STATUS_BATCHES_REGISTRATION_ROOM_ACTIVE);
         setParameterFindAllRoom(request, query);
-        return  ValueUtil.getLongByObject(query.getFirstResult());
+        return  ValueUtil.getLongByObject(query.getSingleResult());
     }
 
 
@@ -931,7 +931,7 @@ public class RoomRepositoryImpl implements RoomRepositoryCustom {
         setConditionFindAllRoomsForRent(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParamsRoomsForStudentRent(query, request);
-        return  ValueUtil.getLongByObject(query.getFirstResult());
+        return  ValueUtil.getLongByObject(query.getSingleResult());
     }
 
     private void setParamsRoomsForStudentRent(Query query, FindAllRoomsForRentRequest request) {
