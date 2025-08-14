@@ -1,6 +1,7 @@
 package teamit.hust.ktxcdshustbe.utility;
 
 import java.sql.Timestamp;
+import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -74,7 +75,11 @@ public class DateUtil {
             return null;
         }
     }
-
+    public static String convertLongTimeToDateTime(long time){
+        Date date = new Date(time);
+        Format format = new SimpleDateFormat(DATE_FORMAT);
+        return format.format(date);
+    }
     public static Date formatFromDate(Date toDate) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(FROM_DATE_FORMAT);
         String strDate = dateFormat.format(toDate);

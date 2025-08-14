@@ -31,4 +31,6 @@ public class StatisticStudentRegisterResponse {
     private Integer totalStudentRegisterExpires;
     @JsonProperty("total_student_register_transfer")
     private Integer totalStudentRegisterTransfer;
+    @JsonProperty("total_student_register_pending_payment")
+    private Integer totalStudentRegisterPendingPayment;
 }
