@@ -302,27 +302,27 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateTransferRoom(Room originalRoom, Room destinationRoom, String codeUser){
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        // kiểm tra xem sinh viên đã đăng ký online k ?
-        if(studentRegisterRoomService.checkExistStudentInRegister(codeUser,originalRoom.getIdRoom())) {
-            updateOriginalRoomWithRegistered(originalRoom,ktxUser.getIdKtxUser());
-            updateDestinationRoomWithRegistered(destinationRoom,ktxUser.getIdKtxUser());
-
-            updateInfoStudentRegisterRoom(originalRoom,destinationRoom,codeUser,ktxUser.getIdKtxUser());
+        if(studentRegisterRoomService.checkExistStudentPendingInRegister(destinationRoom.getCodeRoom())){
+            throw new ExitsObjectException();
         }
+        else{
+            // kiểm tra xem sinh viên đã đăng ký online k ?
+            if(studentRegisterRoomService.checkExistStudentInRegister(codeUser,originalRoom.getIdRoom())) {
+                updateOriginalRoomWithRegistered(originalRoom,ktxUser.getIdKtxUser());
+                updateDestinationRoomWithRegistered(destinationRoom,ktxUser.getIdKtxUser());
 
-
-        else {
-            if(studentRegisterRoomService.checkExistStudentPendingInRegister(destinationRoom.getCodeRoom())){
-                throw new ExitsObjectException();
+                updateInfoStudentRegisterRoom(originalRoom,destinationRoom,codeUser,ktxUser.getIdKtxUser());
             }
-            else{
+
+
+            else {
                 updateOriginalRoomWithOutRegistered(originalRoom,ktxUser.getIdKtxUser());
                 updateDestinationRoomWithOutRegistered(destinationRoom,ktxUser.getIdKtxUser());
-            }
 
+            }
+            updateStudentRoom(codeUser, originalRoom.getIdRoom(),destinationRoom.getIdRoom(),ktxUser.getIdKtxUser());
         }
-        updateStudentRoom(codeUser, originalRoom.getIdRoom(),destinationRoom.getIdRoom(),ktxUser.getIdKtxUser());
+
     }
 
     private void updateInfoStudentRegisterRoom(Room originalRoom, Room destinationRoom,String codeUser, Integer idKtxUser) {
