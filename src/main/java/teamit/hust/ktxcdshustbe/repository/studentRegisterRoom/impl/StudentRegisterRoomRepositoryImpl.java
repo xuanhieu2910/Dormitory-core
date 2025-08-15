@@ -1023,6 +1023,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         List<Integer> statusHolding = List.of(
                 Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
+                Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER

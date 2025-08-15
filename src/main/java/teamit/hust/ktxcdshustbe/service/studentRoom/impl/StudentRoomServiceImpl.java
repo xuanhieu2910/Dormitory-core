@@ -273,6 +273,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         }
     }
 
+    @Transactional
     @Lazy
     @Override
     public void transferRoom(TransferRoomRequest request) {
@@ -384,7 +385,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             roomRepository.save(destinationRoom);
         }
 
-        else if((destinationRoom.getLimitAmountPeople().equals(destinationRoom.getLimitAmountPeopleRegister())) && (destinationRoom.getRemainAmountRegister() > Constants.QUANTITY_REMAIN_AMOUNT_REGISTER)){
+        else if((destinationRoom.getRemainAmountRegister() > Constants.QUANTITY_REMAIN_AMOUNT_REGISTER)){
 
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
