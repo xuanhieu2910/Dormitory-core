@@ -958,7 +958,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "       srr.time_modified, srr.id_room, srr.id_time_hired, srr.status,  " +
                 "       srr.id_user_modified, srr.id_user_created, srr.id_order,  " +
                 "       srr.id_batches_registration_schedule, srr.expires_at  " +
-                " from student_register_room srr  inner join ktx_user on srr.id_user = ktx_user.id_user " +
+                " from student_register_room srr  inner join ktx_user on srr.id_user = ktx_user.id_ktx_user " +
                 "where srr.id_room = :idRoom and srr.status = :statusSuccess and ktx_user.code_user = :codeUser ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("idRoom", idRoom);
