@@ -22,6 +22,7 @@ import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.entity.StudentRoom;
+import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.exception.ValidateFiledException;
@@ -152,10 +153,17 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<Room> roomOptional = roomService.findRoomByCodeRoom(request.getCodeRoom());
         KtxUser ktxUserOptional = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
-        updateQuantityRoom(roomOptional.get(), ktxUser.getIdKtxUser());
-        studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
+        if(studentRegisterRoomService.checkExistStudentPendingInRegister(request.getCodeRoom())){
+            throw new ExitsObjectException();
+        }
+        else {
+            updateQuantityRoom(roomOptional.get(), ktxUser.getIdKtxUser());
+            studentRoomRepository.save(createStudentRoomNew(roomOptional.get().getIdRoom(),ktxUserOptional.getIdKtxUser(), ktxUser.getIdKtxUser(),request.getIdTimeHired()));
+
+        }
 
     }
+
 
 
     @Transactional
@@ -204,7 +212,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     }
 
     private void updateQuantityRoom(Room room, Integer userIdModified) throws SQLException {
-        if((room.getLimitAmountPeople() > room.getLimitAmountPeopleRegister()) && (room.getRemainAmount() > 0) && (room.getRemainAmount() > room.getRemainAmountRegister())){
+        if((room.getRemainAmount() > room.getRemainAmountRegister()) ){
             int rowUpdateWhenHiredLargerRegister = roomRepository.updateQuantityAndRemainAmountToAddNewStudentWhenHiredLargerRegister(room.getIdRoom(), userIdModified);
             if (rowUpdateWhenHiredLargerRegister == Constants.ROW_NOT_UPDATED){
                 throw new SQLException("Method add new student can't update quantity remain amount!");
@@ -305,8 +313,14 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
 
         else {
-            updateOriginalRoomWithOutRegistered(originalRoom,ktxUser.getIdKtxUser());
-            updateDestinationRoomWithOutRegistered(destinationRoom,ktxUser.getIdKtxUser());
+            if(studentRegisterRoomService.checkExistStudentPendingInRegister(destinationRoom.getCodeRoom())){
+                throw new ExitsObjectException();
+            }
+            else{
+                updateOriginalRoomWithOutRegistered(originalRoom,ktxUser.getIdKtxUser());
+                updateDestinationRoomWithOutRegistered(destinationRoom,ktxUser.getIdKtxUser());
+            }
+
         }
         updateStudentRoom(codeUser, originalRoom.getIdRoom(),destinationRoom.getIdRoom(),ktxUser.getIdKtxUser());
     }
@@ -340,11 +354,11 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
 
     private void updateDestinationRoomWithOutRegistered(Room destinationRoom, Integer idKtxUser) {
-        if(destinationRoom.getLimitAmountPeople() > destinationRoom.getLimitAmountPeopleRegister() ){
+        if((destinationRoom.getRemainAmount() > destinationRoom.getRemainAmountRegister()) ){
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
 
-        } else if ((destinationRoom.getLimitAmountPeople().equals(destinationRoom.getLimitAmountPeopleRegister()))  && (destinationRoom.getRemainAmountRegister() > 0)   ) {
+        } else  {
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeople() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
@@ -365,21 +379,28 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
             destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeopleRegister() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityRegistered(destinationRoom.getQuantityRegistered() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setTimeModified(new Date().getTime());
+            destinationRoom.setIdUserModified(idKtxUser);
             roomRepository.save(destinationRoom);
         }
 
-        else  {
+        else if((destinationRoom.getLimitAmountPeople().equals(destinationRoom.getLimitAmountPeopleRegister())) && (destinationRoom.getRemainAmountRegister() > Constants.QUANTITY_REMAIN_AMOUNT_REGISTER)){
 
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityRegistered(destinationRoom.getQuantityRegistered() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setRemainAmountRegister(destinationRoom.getRemainAmountRegister() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+
+            destinationRoom.setTimeModified(new Date().getTime());
+            destinationRoom.setIdUserModified(idKtxUser);
+            roomRepository.save(destinationRoom);
+        }
+        else {
+            throw new ValidParametersException();
         }
 
-        destinationRoom.setTimeModified(new Date().getTime());
-        destinationRoom.setIdUserModified(idKtxUser);
 
-        roomRepository.save(destinationRoom);
+
     }
 
     private void updateOriginalRoomWithOutRegistered(Room originalRoom, Integer idKtxUser) {

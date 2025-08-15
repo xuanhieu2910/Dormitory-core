@@ -1010,6 +1010,28 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         return null;
     }
 
+    @Override
+    public boolean checkExistStudentPendingInRegister(String codeRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select * " +
+                " from student_register_room srr " +
+                " inner join room on srr.id_room = room.id_room" +
+                " where room.code_room = :codeRoom " +
+                " and srr.status in (:statusHolding)   ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("codeRoom", codeRoom);
+        List<Integer> statusHolding = List.of(
+                Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
+                Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER
+        );
+        query.setParameter("statusSuccess", Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
+        List<Object[]> result = query.getResultList();
+        return !CollectionUtils.isEmpty(result);
+    }
+
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) " +
