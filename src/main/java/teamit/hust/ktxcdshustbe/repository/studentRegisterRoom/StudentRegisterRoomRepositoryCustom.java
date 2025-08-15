@@ -53,4 +53,6 @@ public interface StudentRegisterRoomRepositoryCustom {
     Optional<StudentRegisterRoom> findStudentRegisterRoomByCodeUserAndRoomAndStatus(String codeUser, Integer idRoom, Integer statusSuccessPaymentStudentRoomRegister);
 
     AcceptStudentRegisterRoomDto getAcceptStudentRegisterRoomDtoById(Integer idStudentRegisterRoom);
+
+    boolean checkExistStudentPendingInRegister(String codeRoom);
 }

@@ -61,4 +61,6 @@ public interface StudentRegisterRoomService {
     StatisticStudentRegisterResponse getStatisticStudentRegister();
 
     StudentRegisterRoom findStudentRegisterRoomByCodeUserAndRoomAndStatus(String codeUser, Integer idRoom, Integer statusSuccessPaymentStudentRoomRegister);
+
+    boolean checkExistStudentPendingInRegister(String codeRoom);
 }
