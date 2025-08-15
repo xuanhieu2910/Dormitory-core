@@ -1020,7 +1020,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER
         );
-        query.setParameter("statusSuccess", Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
+        query.setParameter("statusHolding", statusHolding);
         List<Object[]> result = query.getResultList();
         return !CollectionUtils.isEmpty(result);
     }
