@@ -138,11 +138,11 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "        inner join room ro on studentRegisterRoom.id_room = ro.id_room     " +
                 "        inner join department de on ro.id_department = de.id_department    " +
                 "        inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired " +
-                "        inner join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule " +
-                "        inner join batches_registration br on br.id_batches_registration = brs.id_batches_registration " +
+                "        left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule " +
+                "        left join batches_registration br on br.id_batches_registration = brs.id_batches_registration " +
                 "                and br.id_time_hired = timeHired.id_time_hired " +
-                "        inner join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration " +
-                "        inner join semester se on se.id_semester = br.id_semester " +
+                "        left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration " +
+                "        left join semester se on se.id_semester = br.id_semester " +
                 "where 1 = 1 ");
         setConditionFindAllUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -611,7 +611,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     }
 
     @Override
-    public List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer status) {
+    public List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, List<Integer> status) {
         StringBuilder sb = new StringBuilder();
         sb.append("select  srr.id_student_register_room,srr.id_user,  " +
                 "        srr.time_created,srr.time_modified,srr.id_room,  " +
@@ -621,7 +621,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "    from student_register_room srr  " +
                 "    inner join room on srr.id_room = room.id_room  " +
                 "    where room.code_room = :codeRoom  " +
-                "    and srr.status = :status");
+                "    and srr.status in (:status) ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeRoom",codeRoom);
         query.setParameter("status", status);
@@ -806,118 +806,141 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public StatisticStudentRegisterResponse getStatisticStudentRegister() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select sum(result.totalStudentRegister) totalStudentRegister,    " +
-                "       sum(result.totalStudentRegisterNotAccept) totalStudentRegisterNotAccept,    " +
-                "       sum(result.totalStudentRegisterAccept) totalStudentRegisterAccept,    " +
-                "       sum(result.totalStudentRegisterHold)   totalStudentRegisterHold,    " +
-                "       sum(result.totalStudentRegisterPaid) totalStudentRegisterPaid,    " +
-                "       sum(result.totalStudentRegisterFalsePaid) totalStudentRegisterFalsePaid,    " +
-                "       sum(result.totalStudentRegisterConfirmOrder)   totalStudentRegisterConfirmOrder,    " +
-                "       sum(result.totalStudentRegisterCancel)   totalStudentRegisterCancel,    " +
-                "       sum(result.totalStudentRegisterExpires)   totalStudentRegisterExpires,    " +
-                "       sum(result.totalStudentRegisterTransfer) totalStudentRegisterTransfer,    " +
-                "       sum(result.totalStudentRegisterPendingPayment) totalStudentRegisterPendingPayment    " +
-                "from (    " +
-                "       select count(srr.id_student_register_room) totalStudentRegister,    " +
-                "       0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "       0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "       0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "        0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr      " +
-                "   union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "        count(srr.id_student_register_room) totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "        0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "        0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "        0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "         from student_register_room srr      " +
-                "         where srr.status = :statusStudentRegisterNotAccept    " +
-                "   union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "         0 totalStudentRegisterNotAccept,count(srr.id_student_register_room) totalStudentRegisterAccept,    " +
-                "         0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "         0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "         0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "         from student_register_room srr      " +
-                "         where srr.status = :statusStudentAccept    " +
-                "   union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "         0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "         count(srr.id_student_register_room) totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "         0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterHold    " +
-                "   union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "         0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "         0 totalStudentRegisterHold, count(srr.id_student_register_room) totalStudentRegisterPaid,    " +
-                "         0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterPaid    " +
-                "   union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "         0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "         0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "         count(srr.id_student_register_room) totalStudentRegisterFalsePaid    " +
-                "        ,0 totalStudentRegisterConfirmOrder,0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterFalsePaid    " +
-                "    " +
-                "       union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "              0 totalStudentRegisterFalsePaid,count(srr.id_student_register_room) totalStudentRegisterConfirmOrder,    " +
-                "              0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterConfirmOrder    " +
-                "       union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "              0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "              count(srr.id_student_register_room) totalStudentRegisterCancel,0 totalStudentRegisterExpires,    " +
-                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterCancel    " +
-                "       union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "             0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "             0 totalStudentRegisterCancel, count(srr.id_student_register_room) totalStudentRegisterExpires,    " +
-                "             0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterExpires    " +
-                "    " +
-                "       union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "              0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "              0 totalStudentRegisterCancel, 0 totalStudentRegisterExpires,    " +
-                "              count(srr.id_student_register_room) totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterTransfer    " +
-                "    " +
-                "       union all    " +
-                "       select 0 totalStudentRegister,    " +
-                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,    " +
-                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,    " +
-                "              0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,    " +
-                "              0 totalStudentRegisterCancel, 0 totalStudentRegisterExpires,    " +
-                "              0 totalStudentRegisterTransfer,count(srr.id_student_register_room) totalStudentRegisterPendingPayment    " +
-                "       from student_register_room srr    " +
-                "       where srr.status = :statusStudentRegisterPendingPayment    " +
+        sb.append(" select sum(result.totalStudentRegister) totalStudentRegister,   " +
+                "       sum(result.totalStudentRegisterNotAccept) totalStudentRegisterNotAccept,   " +
+                "       sum(result.totalStudentRegisterAccept) totalStudentRegisterAccept,   " +
+                "       sum(result.totalStudentRegisterHold)   totalStudentRegisterHold,   " +
+                "       sum(result.totalStudentRegisterPaid) totalStudentRegisterPaid,   " +
+                "       sum(result.totalStudentRegisterFalsePaid) totalStudentRegisterFalsePaid,   " +
+                "       sum(result.totalStudentRegisterConfirmOrder)   totalStudentRegisterConfirmOrder,   " +
+                "       sum(result.totalStudentRegisterCancel)   totalStudentRegisterCancel,   " +
+                "       sum(result.totalStudentRegisterExpires)   totalStudentRegisterExpires,   " +
+                "       sum(result.totalStudentRegisterTransfer) totalStudentRegisterTransfer,   " +
+                "       sum(result.totalStudentRegisterPendingPayment) totalStudentRegisterPendingPayment,   " +
+                "       sum(result.totalStudentRegisterRemoveRoom) totalStudentRegisterRemoveRoom   " +
+                "from (   " +
+                "       select count(srr.id_student_register_room) totalStudentRegister,   " +
+                "       0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "       0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "       0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "        0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr     " +
+                "   union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "        count(srr.id_student_register_room) totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "        0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "        0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "        0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "         from student_register_room srr     " +
+                "         where srr.status = :statusStudentRegisterNotAccept   " +
+                "   union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "         0 totalStudentRegisterNotAccept,count(srr.id_student_register_room) totalStudentRegisterAccept,   " +
+                "         0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "         0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "         0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "         from student_register_room srr     " +
+                "         where srr.status = :statusStudentAccept   " +
+                "   union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "         0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "         count(srr.id_student_register_room) totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "         0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterHold   " +
+                "   union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "         0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "         0 totalStudentRegisterHold, count(srr.id_student_register_room) totalStudentRegisterPaid,   " +
+                "         0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "        0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterPaid   " +
+                "   union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "         0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "         0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "         count(srr.id_student_register_room) totalStudentRegisterFalsePaid   " +
+                "        ,0 totalStudentRegisterConfirmOrder,0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterFalsePaid   " +
+                "   " +
+                "       union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "              0 totalStudentRegisterFalsePaid,count(srr.id_student_register_room) totalStudentRegisterConfirmOrder,   " +
+                "              0 totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterConfirmOrder   " +
+                "       union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "              0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "              count(srr.id_student_register_room) totalStudentRegisterCancel,0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterCancel   " +
+                "       union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "             0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "             0 totalStudentRegisterCancel, count(srr.id_student_register_room) totalStudentRegisterExpires,   " +
+                "             0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterExpires   " +
+                "   " +
+                "       union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "              0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "              0 totalStudentRegisterCancel, 0 totalStudentRegisterExpires,   " +
+                "              count(srr.id_student_register_room) totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterTransfer   " +
+                "   " +
+                "       union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "              0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "              0 totalStudentRegisterCancel, 0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,count(srr.id_student_register_room) totalStudentRegisterPendingPayment,   " +
+                "              0 totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterPendingPayment   " +
+                "   " +
+                "       union all   " +
+                "       select 0 totalStudentRegister,   " +
+                "              0 totalStudentRegisterNotAccept,0 totalStudentRegisterAccept,   " +
+                "              0 totalStudentRegisterHold, 0 totalStudentRegisterPaid,   " +
+                "              0 totalStudentRegisterFalsePaid,0 totalStudentRegisterConfirmOrder,   " +
+                "              0 totalStudentRegisterCancel, 0 totalStudentRegisterExpires,   " +
+                "              0 totalStudentRegisterTransfer,0 totalStudentRegisterPendingPayment,   " +
+                "              count(srr.id_student_register_room) totalStudentRegisterRemoveRoom   " +
+                "       from student_register_room srr   " +
+                "       where srr.status = :statusStudentRegisterRemoveRoom   " +
                 "        ) result ");
         Query query = entityManager.createNativeQuery(sb.toString());
 
@@ -931,6 +954,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         query.setParameter("statusStudentRegisterExpires",Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
         query.setParameter("statusStudentRegisterTransfer",Constants.STATUS_TRANSFER_STUDENT_ROOM_REGISTER);
         query.setParameter("statusStudentRegisterPendingPayment",Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusStudentRegisterRemoveRoom",Constants.STATUS_REMOVE_STUDENT_ROOM_REGISTER);
         List<Object[]> result = query.getResultList();
         StatisticStudentRegisterResponse response = new StatisticStudentRegisterResponse();
         if (!CollectionUtils.isEmpty(result)){
@@ -946,6 +970,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 response.setTotalStudentRegisterExpires(ValueUtil.getIntegerByObject(obj[8]));
                 response.setTotalStudentRegisterTransfer(ValueUtil.getIntegerByObject(obj[9]));
                 response.setTotalStudentRegisterPendingPayment(ValueUtil.getIntegerByObject(obj[10]));
+                response.setTotalStudentRegisterRemoveRoom(ValueUtil.getIntegerByObject(obj[11]));
             }
         }
         return response;

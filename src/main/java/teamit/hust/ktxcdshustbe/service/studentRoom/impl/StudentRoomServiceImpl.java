@@ -183,6 +183,28 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 //        else {
 //
 //        }
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<Room> roomOptional = roomService.findRoomByCodeRoom(request.getCodeRoom());
+        if(studentRegisterRoomService.checkExistStudentPendingInRegister(request.getCodeRoom())){
+            throw new ExitsObjectException();
+        }
+        else{
+            if(studentRegisterRoomService.checkExistStudentInRegister(request.getCodeUser(),roomOptional.get().getIdRoom())) {
+                updateOriginalRoomWithRegistered(roomOptional.get(),ktxUser.getIdKtxUser());
+                updateInfoStudentRegisterRoomWhenRemove(roomOptional.get(),request.getCodeUser(),ktxUser.getIdKtxUser());
+            }
+            else {
+                updateOriginalRoomWithOutRegistered(roomOptional.get(),ktxUser.getIdKtxUser());
+
+            }
+        }
+
+    }
+
+    private void updateInfoStudentRegisterRoomWhenRemove(Room room, String codeUser, Integer idKtxUser) {
+
+        StudentRegisterRoom studentRegisterRoomOriginal = studentRegisterRoomService.findStudentRegisterRoomByCodeUserAndRoomAndStatus(codeUser,room.getIdRoom(),Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
+        createStudentRegisterRoom(studentRegisterRoomOriginal.getIdTimeHired() ,room.getIdRoom(),codeUser,idKtxUser,Constants.STATUS_REMOVE_STUDENT_ROOM_REGISTER);
 
     }
 
@@ -303,7 +325,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
     private void updateTransferRoom(Room originalRoom, Room destinationRoom, String codeUser){
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(studentRegisterRoomService.checkExistStudentPendingInRegister(destinationRoom.getCodeRoom())){
+        if(studentRegisterRoomService.checkExistStudentPendingInRegister(destinationRoom.getCodeRoom()) ||  studentRegisterRoomService.checkExistStudentPendingInRegister(originalRoom.getCodeRoom()) ){
             throw new ExitsObjectException();
         }
         else{
@@ -333,12 +355,12 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         studentRegisterRoomOriginal.setTimeModified(new Date().getTime());
         studentRegisterRoomService.saveStudentRoomRegisterRoom(studentRegisterRoomOriginal);
 
-        createStudentRegisterRoom(studentRegisterRoomOriginal.getIdTimeHired() ,destinationRoom.getIdRoom(),codeUser,idKtxUser);
+        createStudentRegisterRoom(studentRegisterRoomOriginal.getIdTimeHired() ,destinationRoom.getIdRoom(),codeUser,idKtxUser,Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
 
 
     }
 
-    private void createStudentRegisterRoom(Integer idTimeHired, Integer idRoom, String codeUser, Integer idKtxUser) {
+    private void createStudentRegisterRoom(Integer idTimeHired, Integer idRoom, String codeUser, Integer idKtxUser,Integer status) {
         KtxUser ktxUser = ktxUserService.findKtxUserByCodeUser(codeUser);
         StudentRegisterRoom studentRegisterRoom = new StudentRegisterRoom();
         studentRegisterRoom.setIdRoom(idRoom);
@@ -348,7 +370,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         studentRegisterRoom.setIdUserModified(idKtxUser);
         studentRegisterRoom.setTimeCreated(new Date().getTime());
         studentRegisterRoom.setTimeModified(new Date().getTime());
-        studentRegisterRoom.setStatus(Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
+        studentRegisterRoom.setStatus(status);
         studentRegisterRoomService.saveStudentRoomRegisterRoom(studentRegisterRoom);
 
     }
@@ -362,7 +384,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         } else  {
             destinationRoom.setRemainAmount(destinationRoom.getRemainAmount() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setQuantityHired(destinationRoom.getQuantityHired() + Constants.QUANTITY_UPDATE_HIRED_ROOM);
-            destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeople() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
+            destinationRoom.setLimitAmountPeopleRegister(destinationRoom.getLimitAmountPeopleRegister() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
             destinationRoom.setRemainAmountRegister(destinationRoom.getRemainAmountRegister() - Constants.QUANTITY_UPDATE_HIRED_ROOM);
         }
 

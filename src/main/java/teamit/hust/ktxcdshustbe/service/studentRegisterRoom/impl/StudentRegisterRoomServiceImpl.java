@@ -257,7 +257,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     @Override
-    public List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer status) {
+    public List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, List<Integer> status) {
         List<StudentRegisterRoom> studentRegisterRooms = studentRegisterRoomRepository.findListStudentRegisterRoomByCodeRoomAndStatus(codeRoom,status);
         return studentRegisterRooms;
     }
