@@ -48,7 +48,7 @@ public interface StudentRegisterRoomService {
 
     StudentRegisterRoom getStudentRegisterRoomByIdOrder(Integer idOrder);
 
-    List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer statusSuccessPaymentStudentRoomRegister);
+    List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, List<Integer> statusSuccessPaymentStudentRoomRegister);
     Page<UserRegisterRoomResponse> findAllInfoAnUserRegisterRoomByCode(UserRegisterRoomRequest request);
 
     String downloadListStudentRegisterRoom(UserRegisterRoomRequest request) throws IOException;

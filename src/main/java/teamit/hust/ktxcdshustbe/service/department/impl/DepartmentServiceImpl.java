@@ -253,10 +253,22 @@ public class DepartmentServiceImpl implements DepartmentService {
             totalRoom++;
             totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
             totalStudentRegister = totalStudentRegister + findAllRoomsDto.getQuantityRegistered();
+            List<Integer> statusSuccess = List.of(
+                    Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT,
+                    Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER
+            );
             List<StudentRegisterRoom> studentRegisterRoomsPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
-                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+                    (findAllRoomsDto.getCodeRoom(),statusSuccess);
+
+            List<Integer> statusHolding = List.of(
+                    Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
+                    Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER
+            );
             List<StudentRegisterRoom> studentRegisterRoomsNotYetPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
-                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+                    (findAllRoomsDto.getCodeRoom(),statusHolding);
             totalStudentRegisterNotYetPaid = totalStudentRegisterNotYetPaid + studentRegisterRoomsNotYetPaid.size();
             totalStudentRegisterPaid = totalStudentRegisterPaid + studentRegisterRoomsPaid.size();
         }
@@ -298,10 +310,22 @@ public class DepartmentServiceImpl implements DepartmentService {
             totalRoom++;
             totalStudentHiring = totalStudentHiring + findAllRoomsDto.getQuantityHired();
             totalStudentRegister = totalStudentRegister + findAllRoomsDto.getQuantityRegistered();
+            List<Integer> statusSuccess = List.of(
+                    Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT,
+                    Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER
+            );
             List<StudentRegisterRoom> studentRegisterRoomsPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
-                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER);
+                    (findAllRoomsDto.getCodeRoom(),statusSuccess);
+
+            List<Integer> statusHolding = List.of(
+                    Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
+                    Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
+                    Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER
+            );
             List<StudentRegisterRoom> studentRegisterRoomsNotYetPaid = studentRegisterRoomService.findListStudentRegisterRoomByCodeRoomAndStatus
-                    (findAllRoomsDto.getCodeRoom(),Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER);
+                    (findAllRoomsDto.getCodeRoom(),statusHolding);
             totalStudentRegisterNotYetPaid = totalStudentRegisterNotYetPaid + studentRegisterRoomsNotYetPaid.size();
             totalStudentRegisterPaid = totalStudentRegisterPaid + studentRegisterRoomsPaid.size();
         }

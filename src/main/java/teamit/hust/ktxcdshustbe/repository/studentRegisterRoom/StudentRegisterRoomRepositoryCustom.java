@@ -35,7 +35,7 @@ public interface StudentRegisterRoomRepositoryCustom {
 
     Optional<StudentRegisterRoom> findStudentRegisterRoomByIdOrder(Integer idOrder);
 
-    List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, Integer status);
+    List<StudentRegisterRoom> findListStudentRegisterRoomByCodeRoomAndStatus(String codeRoom, List<Integer> status);
 
     Page<UserRegisterRoomDto> findAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request, Pageable pageable);
 

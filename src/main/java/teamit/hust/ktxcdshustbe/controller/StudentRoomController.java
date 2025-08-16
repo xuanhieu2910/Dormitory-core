@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import teamit.hust.ktxcdshustbe.dto.ApiResponseDto;
+import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.request.studentRoom.ListStudentHiredRoomRequest;
@@ -61,7 +62,9 @@ public class StudentRoomController {
             return ApiResponseDto.createdWithMessage("Add student to room success!", HttpStatus.OK);
         } catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
+        } catch (ExitsObjectException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -73,7 +76,9 @@ public class StudentRoomController {
             return ApiResponseDto.createdWithMessage("Remove student to room success!", HttpStatus.OK);
         } catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
+        } catch (ExitsObjectException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
             return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -87,7 +92,10 @@ public class StudentRoomController {
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
         } catch (ValidParametersException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e){
+        }
+        catch (ExitsObjectException e){
+            return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
             return ApiResponseDto.createdWithMessage(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }

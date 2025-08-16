@@ -67,6 +67,7 @@ public class Constants {
 
     public final static Integer STATUS_TRANSFER_STUDENT_ROOM_REGISTER = 20;
 
+    public final static Integer STATUS_REMOVE_STUDENT_ROOM_REGISTER = 30;
     /****************************************************************/
 
     public final static Integer QUANTITY_UPDATE_ROOM_AND_REGISTER = 1;
