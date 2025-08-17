@@ -200,15 +200,11 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                     "    DATE_FORMAT(STR_TO_DATE(:timeEnded,'%d/%m/%Y'),'%d/%m/%Y')) ");
         }
 
-
-        if (StringUtils.isNotBlank(request.getSortBy())
-                && request.getSortBy().equals("timeRegister")) {
-            sb.append(" ORDER BY studentRegisterRoom.time_created ");
-            if (StringUtils.isNotBlank(request.getSortOrder()) && request.getSortOrder().equals(Constants.SORT_ASC)) {
-                sb.append(Constants.SORT_ASC);
-            } else {
-                sb.append(Constants.SORT_DESC);
-            }
+        sb.append(" ORDER BY studentRegisterRoom.time_created ");
+        if (StringUtils.isNotBlank(request.getSortOrder()) && request.getSortOrder().equalsIgnoreCase(Constants.SORT_ASC)) {
+            sb.append(Constants.SORT_ASC);
+        } else {
+            sb.append(Constants.SORT_DESC);
         }
     }
 
@@ -1150,20 +1146,21 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public List<UserRegisterRoomDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ktxUser.code_user, ktxUser.value,  " +
-                "       studentRegisterRoom.time_created,  " +
-                "       de.code_department, de.title, ro.code_room, ro.title,  " +
-                "       se.code_semester, se.title, timeHired.id_time_hired,  " +
-                "       timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status  " +
-                "from student_register_room studentRegisterRoom " +
-                "       inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user  " +
-                "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
-                "       inner join department de on ro.id_department = de.id_department  " +
-                "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "       left join batches_registration_room brr on brr.id_room = ro.id_room " +
-                "       left join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
-                "       left join semester se on se.id_semester = br.id_semester " +
-                "       where 1 = 1   ");
+        sb.append("select ktxUser.code_user, ktxUser.value,    " +
+                "    studentRegisterRoom.time_created,    " +
+                "    de.code_department, de.title, ro.code_room, ro.title,    " +
+                "    se.code_semester, se.title, timeHired.id_time_hired,    " +
+                "    timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status    " +
+                "                from student_register_room studentRegisterRoom   " +
+                "    inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user    " +
+                "    inner join room ro on studentRegisterRoom.id_room = ro.id_room    " +
+                "    inner join department de on ro.id_department = de.id_department    " +
+                "    inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
+                "     left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule   " +
+                "     left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired   " +
+                "     left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration   " +
+                "     left join semester se on se.id_semester = br.id_semester   " +
+                "    where 1 = 1  ");
         setConditionFindAllUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllUserRegisterRoom(query, request);
