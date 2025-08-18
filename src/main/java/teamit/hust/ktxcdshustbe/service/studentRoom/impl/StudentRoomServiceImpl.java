@@ -175,8 +175,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             throw new NotFoundException();
         }
 //        studentRoomRepository.delete(studentRoom.get());
-        studentRoom.get().setStatus(Constants.STATUS_STUDENT_REFUND_ROOM);
-        studentRoomRepository.save(studentRoom.get());
+
 //        if(studentRegisterRoomService.checkExistStudentInRegister(request.getCodeUser(),studentRoom.get().getIdRoom())){
 //            updateRemainQuantityRoomRemoveStudentWithRegister(request.getCodeRoom());
 //        }
@@ -189,16 +188,17 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             throw new ExitsObjectException();
         }
         else{
-            if(studentRegisterRoomService.checkExistStudentInRegister(request.getCodeUser(),roomOptional.get().getIdRoom()) && studentRegisterRoomService.checkExistStudentRemoveInRegister(request.getCodeUser(),roomOptional.get().getIdRoom()) ) {
+            if(studentRegisterRoomService.checkExistStudentInRegister(request.getCodeUser(),roomOptional.get().getIdRoom())
+                    && studentRegisterRoomService.checkExistStudentRemoveInRegister(request.getCodeUser(),roomOptional.get().getIdRoom()) ) {
                 updateOriginalRoomWithRegistered(roomOptional.get(),ktxUser.getIdKtxUser());
                 updateInfoStudentRegisterRoomWhenRemove(roomOptional.get(),request.getCodeUser(),ktxUser.getIdKtxUser());
             }
             else {
                 updateOriginalRoomWithOutRegistered(roomOptional.get(),ktxUser.getIdKtxUser());
-
             }
         }
-
+        studentRoom.get().setStatus(Constants.STATUS_STUDENT_REFUND_ROOM);
+        studentRoomRepository.save(studentRoom.get());
     }
 
     private void updateInfoStudentRegisterRoomWhenRemove(Room room, String codeUser, Integer idKtxUser) {
