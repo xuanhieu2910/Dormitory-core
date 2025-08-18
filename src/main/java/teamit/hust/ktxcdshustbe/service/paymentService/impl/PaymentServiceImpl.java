@@ -131,6 +131,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public boolean callBackPayment(Map<String,Object> request) throws JsonProcessingException {
+        log.info("[ORIGINAL CALL BACK] : {}", request.toString());
         CallBackPaymentRequest callBackPaymentRequest = convertToCallBackPaymentRequest(request);
         verifyCallBackPayment(callBackPaymentRequest);
         log.info("[CALL BACK] : {} - {}", new ObjectMapper().writeValueAsString(callBackPaymentRequest.toString()), DateUtil.formatToPattern(new Date(), DateUtil.DATE_FORMAT));
@@ -227,7 +228,7 @@ public class PaymentServiceImpl implements PaymentService {
     private Orders updateOrdersCallBack(Orders orders, CallBackPaymentRequest request, StudentRegisterRoom studentRegisterRoom ) {
         if (StringUtils.isNotBlank(request.getResult_code()) && SUCCESS_PAYMENT.containsKey(request.getResult_code())) {
             orders.setStatusOrder(Constants.STATUS_ORDER_COMPLETE_PAYMENT);
-            EmailUtil.getInstance().sendMailPaymentSuccess(initializePaymentRegisterRoomSuccess(orders, studentRegisterRoom));
+            EmailUtil.getInstance().sendMailPaymentRegisterRoomSuccess(initializePaymentRegisterRoomSuccess(orders, studentRegisterRoom));
         } else if (StringUtils.isNotBlank(request.getResult_code()) && CANCEL_PAYMENT.containsKey(request.getResult_code())) {
             orders.setStatusOrder(Constants.STATUS_ORDER_PAYMENT_CANCEL);
             orders.setValue("[Type: Cancel] - [Id student register room - " + studentRegisterRoom.getIdStudentRegisterRoom() + "]");

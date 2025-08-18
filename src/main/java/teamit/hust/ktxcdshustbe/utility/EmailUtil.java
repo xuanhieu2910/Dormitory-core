@@ -74,16 +74,14 @@ public class EmailUtil implements Runnable {
         return mailDtoQueue.add(new MailDto(registerRoomDto.getUserName(), subject, content));
     }
 
-    public boolean sendMailPaymentSuccess(PaymentRegisterRoomSuccessDto paymentRegisterRoomSuccessDto){
-//        String subject = OptUtils.SUBJECT_REGISTER_ROOM;
-//        String content = OptUtils.CONTENT_REGISTER_SUCCESS_ROOM;
-//        content = content.replace("{{USER_NAME}}", registerRoomDto.getUserName())
-//                .replace("{{TITLE_DEPARTMENT}}", registerRoomDto.getTitleDepartment())
-//                .replace("{{TITLE_ROOM}}", registerRoomDto.getTitleRoom())
-//                .replace("{{PRICE}}", registerRoomDto.getPrice())
-//                .replace("{{TIME_HIRED}}", registerRoomDto.getTimeHired());
-//        return mailDtoQueue.add(new MailDto(registerRoomDto.getUserName(), subject, content));
-        return false;
+    public boolean sendMailPaymentRegisterRoomSuccess(PaymentRegisterRoomSuccessDto paymentRegisterRoomSuccessDto){
+        String subject = OptUtils.SUBJECT_PAYMENT_SUCCESS_REGISTER_ROOM;
+        String content = OptUtils.CONTENT_PAYMENT_REGISTER_SUCCESS_ROOM;
+        content = content.replace("{{USER_NAME}}", paymentRegisterRoomSuccessDto.getUserName())
+                .replace("{{TITLE_DEPARTMENT}}", paymentRegisterRoomSuccessDto.getTitleDepartment())
+                .replace("{{TITLE_ROOM}}", paymentRegisterRoomSuccessDto.getTitleRoom())
+                .replace("{{PRICE}}", paymentRegisterRoomSuccessDto.getMoney());
+        return mailDtoQueue.add(new MailDto(paymentRegisterRoomSuccessDto.getUserName(), subject, content));
     }
 
     private static boolean send(MailDto mailDto) {
