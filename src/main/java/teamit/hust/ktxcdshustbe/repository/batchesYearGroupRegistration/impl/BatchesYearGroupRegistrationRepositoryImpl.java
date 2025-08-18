@@ -35,8 +35,8 @@ public class BatchesYearGroupRegistrationRepositoryImpl implements BatchesYearGr
             List<BatchesYearGroupRegistration> yearGroupRegistrations = new ArrayList<>();
             for (Object[] obj : result){
                 yearGroupRegistrations.add(writeDataBatchesYearGroupRegistration(obj));
-                return Optional.of(yearGroupRegistrations);
             }
+            return Optional.of(yearGroupRegistrations);
         }
         return Optional.empty();
     }
