@@ -1076,6 +1076,32 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         return CollectionUtils.isEmpty(result);
     }
 
+    @Override
+    public boolean checkExistStudentHoldInRegister(String codeRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select * " +
+                " from student_register_room srr " +
+                " inner join ktx_user on srr.id_user = ktx_user.id_ktx_user" +
+                " inner join room on srr.id_room = room.id_room" +
+                " where room.code_room = :codeRoom " +
+                " and srr.status in (:statusHolding)  and ktx_user.code_user = :codeUser   ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        query.setParameter("codeRoom", codeRoom);
+        List<Integer> statusHolding = List.of(
+                Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
+                Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
+                Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER
+        );
+        query.setParameter("statusHolding", statusHolding);
+        query.setParameter("codeUser",ktxUser.getCodeUser());
+        List<Object[]> result = query.getResultList();
+        return !CollectionUtils.isEmpty(result);
+    }
+
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) " +

@@ -317,6 +317,11 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         if (!studentRegisterRoomRepository.isAllowRegisterRoomByCodeRoom(request.getCodeRoom())){
             throw new ValidParametersException();
         }
+        if (studentRegisterRoomRepository.checkExistStudentHoldInRegister(request.getCodeRoom())){
+            throw new ValidParametersException();
+        }
+
+
     }
 
     private StudentRegisterRoomResponse convertToStudentRegisterRoomResponse(StudentRegisterRoomDto dto) {
