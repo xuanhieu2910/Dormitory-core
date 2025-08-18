@@ -522,6 +522,11 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         return studentRegisterRoomRepository.checkExistStudentPendingInRegister(codeRoom);
     }
 
+    @Override
+    public boolean checkExistStudentRemoveInRegister(String codeUser, Integer idRoom) {
+        return studentRegisterRoomRepository.checkExistStudentRemoveInRegister(codeUser,idRoom);
+    }
+
     private void writeDataInfoReport(Sheet sheet, Map<String, CellStyle> styles) {
         String reportTitle = "DANH SÁCH SINH VIÊN ĐĂNG KÍ PHÒNG";
         String dateExport = "Ngày xuất báo cáo: " + new SimpleDateFormat("dd/MM/yyyy").format(new Date());

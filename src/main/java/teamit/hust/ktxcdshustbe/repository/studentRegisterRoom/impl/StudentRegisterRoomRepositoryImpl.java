@@ -659,11 +659,11 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "        inner join room ro on studentRegisterRoom.id_room = ro.id_room " +
                 "        inner join department de on ro.id_department = de.id_department " +
                 "        inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired " +
-                "        inner join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule " +
-                "        inner join batches_registration br on br.id_batches_registration = brs.id_batches_registration " +
+                "        left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule " +
+                "        left join batches_registration br on br.id_batches_registration = brs.id_batches_registration " +
                 "                  and br.id_time_hired = timeHired.id_time_hired " +
-                "        inner join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration " +
-                "        inner join semester se on se.id_semester = br.id_semester " +
+                "        left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration " +
+                "        left join semester se on se.id_semester = br.id_semester " +
                 " where 1 = 1  and ktxUser.code_user = :codeUser ");
         setConditionFindAllInfoAnUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -1057,6 +1057,24 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         return !CollectionUtils.isEmpty(result);
     }
 
+    @Override
+    public boolean checkExistStudentRemoveInRegister(String codeUser, Integer idRoom) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("select * " +
+                "from student_register_room srr " +
+                " inner join ktx_user on srr.id_user = ktx_user.id_ktx_user" +
+                " inner join student_room sr on sr.id_user = srr.id_user and sr.id_room = srr.id_room and sr.id_time_hired = srr.id_time_hired" +
+                " where srr.id_room = :idRoom and ktx_user.code_user = :codeUser  " +
+                " and srr.status = :statusRemove and sr.status = :statusHired ");
+        Query query = entityManager.createNativeQuery(sb.toString());
+        query.setParameter("idRoom", idRoom);
+        query.setParameter("codeUser", codeUser);
+        query.setParameter("statusRemove", Constants.STATUS_REMOVE_STUDENT_ROOM_REGISTER);
+        query.setParameter("statusHired",Constants.STATUS_STUDENT_HIRING_ROOM);
+        List<Object[]> result = query.getResultList();
+        return CollectionUtils.isEmpty(result);
+    }
+
     private long countFindAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select count(0) " +
@@ -1065,10 +1083,12 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
                 "       inner join department de on ro.id_department = de.id_department  " +
                 "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
-                "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
-                "       inner join semester se on se.id_semester = br.id_semester " +
-                "       where 1 = 1   and ktxUser.code_user = :codeUser ");
+                "        left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule " +
+                "        left join batches_registration br on br.id_batches_registration = brs.id_batches_registration " +
+                "                  and br.id_time_hired = timeHired.id_time_hired " +
+                "        left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration " +
+                "        left join semester se on se.id_semester = br.id_semester " +
+                " where 1 = 1  and ktxUser.code_user = :codeUser ");
         setConditionFindAllInfoAnUserRegisterRoom(sb,request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllInfoAnUserRegisterRoom(query,request);

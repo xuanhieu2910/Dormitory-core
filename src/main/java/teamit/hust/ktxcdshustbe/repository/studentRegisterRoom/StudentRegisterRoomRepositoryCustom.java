@@ -55,4 +55,6 @@ public interface StudentRegisterRoomRepositoryCustom {
     AcceptStudentRegisterRoomDto getAcceptStudentRegisterRoomDtoById(Integer idStudentRegisterRoom);
 
     boolean checkExistStudentPendingInRegister(String codeRoom);
+
+    boolean checkExistStudentRemoveInRegister(String codeUser, Integer idRoom);
 }

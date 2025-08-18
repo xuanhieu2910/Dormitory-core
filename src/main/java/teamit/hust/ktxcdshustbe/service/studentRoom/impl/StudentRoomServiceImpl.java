@@ -189,7 +189,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
             throw new ExitsObjectException();
         }
         else{
-            if(studentRegisterRoomService.checkExistStudentInRegister(request.getCodeUser(),roomOptional.get().getIdRoom())) {
+            if(studentRegisterRoomService.checkExistStudentInRegister(request.getCodeUser(),roomOptional.get().getIdRoom()) && studentRegisterRoomService.checkExistStudentRemoveInRegister(request.getCodeUser(),roomOptional.get().getIdRoom()) ) {
                 updateOriginalRoomWithRegistered(roomOptional.get(),ktxUser.getIdKtxUser());
                 updateInfoStudentRegisterRoomWhenRemove(roomOptional.get(),request.getCodeUser(),ktxUser.getIdKtxUser());
             }
@@ -330,7 +330,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         }
         else{
             // kiểm tra xem sinh viên đã đăng ký online k ?
-            if(studentRegisterRoomService.checkExistStudentInRegister(codeUser,originalRoom.getIdRoom())) {
+            if(studentRegisterRoomService.checkExistStudentInRegister(codeUser,originalRoom.getIdRoom()) && studentRegisterRoomService.checkExistStudentRemoveInRegister(codeUser,originalRoom.getIdRoom()) ) {
                 updateOriginalRoomWithRegistered(originalRoom,ktxUser.getIdKtxUser());
                 updateDestinationRoomWithRegistered(destinationRoom,ktxUser.getIdKtxUser());
 
