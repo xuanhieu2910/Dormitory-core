@@ -97,10 +97,10 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join department de on ro.id_department = de.id_department   " +
                 "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
                 "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
-                "    inner join student_register_room srr on studentRoom.id_user = srr.id_user and srr.id_room = studentRoom.id_room" +
-                "    inner join batches_registration_schedule brs on srr.id_batches_registration_schedule = brs.id_batches_registration_schedule" +
-                "    inner join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired" +
-                "    inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration" +
+                "    left join student_register_room srr on studentRoom.id_user = srr.id_user and srr.id_room = studentRoom.id_room" +
+                "    left join batches_registration_schedule brs on srr.id_batches_registration_schedule = brs.id_batches_registration_schedule" +
+                "    left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired" +
+                "    left join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration" +
                 "                                and brr.id_room = ro.id_room " +
                 "where ktxUser.code_user = :codeUser ");
         setConditionListHiredRoomStudentResponse(sb, request);
@@ -185,9 +185,9 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join room ro on studentRoom.id_room = ro.id_room   " +
                 "    inner join department de on ro.id_department = de.id_department   " +
                 "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired " +
-                "    inner join batches_registration_room brr on brr.id_room = ro.id_room " +
-                "    inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
-                "    inner join semester on semester.id_semester = br.id_semester " +
+                "    left join batches_registration_room brr on brr.id_room = ro.id_room " +
+                "    left join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
+                "    left join semester on semester.id_semester = br.id_semester " +
                 "where 1 = 1   ");
 
         setConditionListStudentHiredRoomResponse(request, sb);
@@ -200,14 +200,14 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
         List<FindAllStudentHiredRoomDto> responses = new ArrayList<>();
         if (!CollectionUtils.isEmpty(result)) {
             for (Object[] obj : result) {
-                String dateStarted = ValueUtil.getStringByObject(obj[3]);
-                String dateEnded = ValueUtil.getStringByObject(obj[4]);
+                Long dateStarted = ValueUtil.getLongByObject(obj[3]);
+                Long dateEnded = ValueUtil.getLongByObject(obj[4]);
                 String titleSemester = ValueUtil.getStringByObject(obj[5]);
                 FindAllStudentHiredRoomDto res = new FindAllStudentHiredRoomDto();
                 res.setIdStudentRoom(ValueUtil.getIntegerByObject(obj[0]));
                 res.setCodeUser(ValueUtil.getStringByObject(obj[1]));
                 res.setValueUser(ValueUtil.getStringByObject(obj[2]));
-                res.setTimeHired(titleSemester + " - " + dateStarted + " - " + dateEnded);
+                res.setTimeHired(DateUtil.convertLongTimeToDateTime(dateStarted)  + " - " + DateUtil.convertLongTimeToDateTime(dateEnded) );
                 res.setCodeDepartment(ValueUtil.getStringByObject(obj[6]));
                 res.setTitleDepartment(ValueUtil.getStringByObject(obj[7]));
                 res.setCodeRoom(ValueUtil.getStringByObject(obj[8]));
@@ -481,10 +481,10 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join department de on ro.id_department = de.id_department   " +
                 "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
                 "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
-                "    inner join student_register_room srr on studentRoom.id_user = srr.id_user and srr.id_room = studentRoom.id_room" +
-                "    inner join batches_registration_schedule brs on srr.id_batches_registration_schedule = brs.id_batches_registration_schedule" +
-                "    inner join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired" +
-                "    inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration" +
+                "    left join student_register_room srr on studentRoom.id_user = srr.id_user and srr.id_room = studentRoom.id_room" +
+                "    left join batches_registration_schedule brs on srr.id_batches_registration_schedule = brs.id_batches_registration_schedule" +
+                "    left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired" +
+                "    left join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration" +
                 "                                and brr.id_room = ro.id_room " +
                 "where ktxUser.code_user = :codeUser ");
         setConditionListHiredRoomStudentResponse(sb,request);

@@ -200,15 +200,11 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                     "    DATE_FORMAT(STR_TO_DATE(:timeEnded,'%d/%m/%Y'),'%d/%m/%Y')) ");
         }
 
-
-        if (StringUtils.isNotBlank(request.getSortBy())
-                && request.getSortBy().equals("timeRegister")) {
-            sb.append(" ORDER BY studentRegisterRoom.time_created ");
-            if (StringUtils.isNotBlank(request.getSortOrder()) && request.getSortOrder().equals(Constants.SORT_ASC)) {
-                sb.append(Constants.SORT_ASC);
-            } else {
-                sb.append(Constants.SORT_DESC);
-            }
+        sb.append(" ORDER BY studentRegisterRoom.time_created ");
+        if (StringUtils.isNotBlank(request.getSortOrder()) && request.getSortOrder().equalsIgnoreCase(Constants.SORT_ASC)) {
+            sb.append(Constants.SORT_ASC);
+        } else {
+            sb.append(Constants.SORT_DESC);
         }
     }
 
@@ -245,9 +241,11 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
                 "       inner join department de on ro.id_department = de.id_department  " +
                 "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
-                "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
-                "       inner join semester se on se.id_semester = br.id_semester " +
+                "        left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule " +
+                "        left join batches_registration br on br.id_batches_registration = brs.id_batches_registration " +
+                "                and br.id_time_hired = timeHired.id_time_hired " +
+                "        left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration " +
+                "        left join semester se on se.id_semester = br.id_semester " +
                 "       where 1 = 1   ");
         setConditionFindAllUserRegisterRoom(sb,request);
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -745,13 +743,14 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         sb.append("select * " +
                 "from student_register_room srr " +
                 " inner join ktx_user on srr.id_user = ktx_user.id_ktx_user" +
-                " inner join student_room sr on sr.id_user = srr.id_user and sr.id_room = srr.id_room " +
+                " inner join student_room sr on sr.id_user = srr.id_user and sr.id_room = srr.id_room and sr.id_time_hired = srr.id_time_hired" +
                 " where srr.id_room = :idRoom and ktx_user.code_user = :codeUser  " +
-                " and srr.status = :statusSuccess  ");
+                " and srr.status = :statusSuccess and sr.status = :statusHired ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("idRoom", idRoom);
         query.setParameter("codeUser", codeUser);
         query.setParameter("statusSuccess", Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
+        query.setParameter("statusHired",Constants.STATUS_STUDENT_HIRING_ROOM);
         List<Object[]> result = query.getResultList();
         return !CollectionUtils.isEmpty(result);
     }
@@ -1155,20 +1154,21 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     @Override
     public List<UserRegisterRoomDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ktxUser.code_user, ktxUser.value,  " +
-                "       studentRegisterRoom.time_created,  " +
-                "       de.code_department, de.title, ro.code_room, ro.title,  " +
-                "       se.code_semester, se.title, timeHired.id_time_hired,  " +
-                "       timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status  " +
-                "from student_register_room studentRegisterRoom " +
-                "       inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user  " +
-                "       inner join room ro on studentRegisterRoom.id_room = ro.id_room  " +
-                "       inner join department de on ro.id_department = de.id_department  " +
-                "       inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "       inner join batches_registration_room brr on brr.id_room = ro.id_room " +
-                "       inner join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
-                "       inner join semester se on se.id_semester = br.id_semester " +
-                "       where 1 = 1   ");
+        sb.append("select ktxUser.code_user, ktxUser.value,    " +
+                "    studentRegisterRoom.time_created,    " +
+                "    de.code_department, de.title, ro.code_room, ro.title,    " +
+                "    se.code_semester, se.title, timeHired.id_time_hired,    " +
+                "    timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status    " +
+                "                from student_register_room studentRegisterRoom   " +
+                "    inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user    " +
+                "    inner join room ro on studentRegisterRoom.id_room = ro.id_room    " +
+                "    inner join department de on ro.id_department = de.id_department    " +
+                "    inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
+                "     left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule   " +
+                "     left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired   " +
+                "     left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration   " +
+                "     left join semester se on se.id_semester = br.id_semester   " +
+                "    where 1 = 1  ");
         setConditionFindAllUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllUserRegisterRoom(query, request);

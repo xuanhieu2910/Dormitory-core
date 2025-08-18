@@ -58,7 +58,7 @@ public class StudentRoomController {
     @PostMapping("/add-student")
     public ResponseEntity<?> addStudentToRoom(@RequestBody StudentToRoomRequest request) {
         try {
-            studentRoomService.addStudentToRoom(request);
+            studentRoomService. addStudentToRoom(request);
             return ApiResponseDto.createdWithMessage("Add student to room success!", HttpStatus.OK);
         } catch (NotFoundException e){
             return ApiResponseDto.createdWithErrors(e.toErrorsDetails(), HttpStatus.BAD_REQUEST);

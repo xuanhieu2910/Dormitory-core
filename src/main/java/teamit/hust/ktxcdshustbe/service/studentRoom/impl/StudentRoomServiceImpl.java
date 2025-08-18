@@ -522,7 +522,6 @@ public class StudentRoomServiceImpl implements StudentRoomService {
                 + FileUtil.FOLDER_HIRED_ROOM
                 + SEPARATOR
                 + "Template_List_Student_Hired_Room.xlsx";
-
         List<FindAllStudentHiredRoomDto> studentList = studentRoomRepository.findAllStudentsForExport(request);
 
         try (FileInputStream fileInputStream = new FileInputStream(new File(fileExcel));
@@ -531,7 +530,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
 
             Sheet sheet = workbook.getSheetAt(0);
 
-            writeDataInfoReport(sheet, styles);
+//            writeDataInfoReport(sheet, styles);
             writeDataToStudentHiredRoomReport(sheet, studentList, styles);
 
 
@@ -570,7 +569,7 @@ public class StudentRoomServiceImpl implements StudentRoomService {
     }
 
     private void writeDataToStudentHiredRoomReport(Sheet sheet, List<FindAllStudentHiredRoomDto> studentList, Map<String, CellStyle> styles) throws JsonProcessingException {
-        int rowStart = 4;
+        int rowStart = 6;
         if (studentList.isEmpty()) {
             return;
         }
@@ -588,9 +587,9 @@ public class StudentRoomServiceImpl implements StudentRoomService {
                     new TypeReference<>() {}
             );
 
-            writeValueCell(row, 1, ValueUtil.getStringByObject(dataStudent.get("full_name")), null);
-            writeValueCell(row, 2, ValueUtil.getStringByObject(dataStudent.get("number_student")), null);
-            writeValueCell(row, 3, ValueUtil.getStringByObject(dataStudent.get("number_phone")), null);
+            writeValueCell(row, 1, ValueUtil.getStringByObject(dataStudent.get("full_name")), styles.get("normal"));
+            writeValueCell(row, 2, ValueUtil.getStringByObject(dataStudent.get("number_student")), styles.get("normal"));
+            writeValueCell(row, 3, ValueUtil.getStringByObject(dataStudent.get("number_phone")), styles.get("normal"));
             writeValueCell(row, 4, ValueUtil.getStringByObject(student.getTimeHired()), styles.get("normal"));
             writeValueCell(row, 5, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
             writeValueCell(row, 6, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
@@ -637,8 +636,22 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         Font normalFont = workbook.createFont();
         normalFont.setBold(false);
         normalStyle.setFont(normalFont);
+        normalStyle.setBorderBottom(BorderStyle.THIN);
+        normalStyle.setBorderTop(BorderStyle.THIN);
+        normalStyle.setBorderLeft(BorderStyle.THIN);
+        normalStyle.setBorderRight(BorderStyle.THIN);
         styles.put("normal", normalStyle);
 
+        CellStyle centeredStyle = workbook.createCellStyle();
+        centeredStyle.setAlignment(HorizontalAlignment.CENTER);
+        centeredStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        styles.put("centered", centeredStyle);
+
+        CellStyle noneStyle = workbook.createCellStyle();
+        Font noneFont = workbook.createFont();
+        noneFont.setBold(false);
+        noneStyle.setFont(noneFont);
+        styles.put("none", noneStyle);
         return styles;
     }
 

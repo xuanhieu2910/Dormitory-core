@@ -412,7 +412,37 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         studentRoom.setTimeModified(timeCurrently);
         studentRoomService.saveStudentRoom(studentRoom);
     }
-
+    private String getStatusText(Integer status) {
+        if (status == null) {
+            return "Chưa xác định";
+        }
+        switch (status) {
+            case -1:
+                return "Từ chối";
+            case 1:
+                return "Đã phê duyệt";
+            case 2: // STATUS_HOLD_STUDENT_ROOM_REGISTER
+                return "Đang giữ phòng";
+            case 3:
+                return "Đã xác nhận";
+            case 4:
+                return "Đã thanh toán";
+            case 5:
+                return "Đã hủy thanh toán";
+            case 6:
+                return "Thanh toán thất bại";
+            case 7:
+                return "Hết hạn";
+            case 8:
+                return "Chờ xử lý thanh toán";
+            case 20:
+                return "Điều chuyển phòng";
+            case 30:
+                return "Xóa khỏi phòng";
+            default:
+                return "Không xác định";
+        }
+    }
     @Override
     public String downloadListStudentRegisterRoom(UserRegisterRoomRequest request) throws IOException {
         String fileExcel = PropertiesUtil.getProperty("hust.ktx.static.location.resources.static")
@@ -420,7 +450,6 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
                 + FileUtil.FOLDER_REGISTER_ROOM
                 + SEPARATOR
                 + "Template_List_Student_Register_Room.xlsx";
-
         List<UserRegisterRoomDto> studentList = studentRegisterRoomRepository.downloadListStudentRegisterRoom(request);
 
         try (FileInputStream fileInputStream = new FileInputStream(new File(fileExcel));
@@ -429,7 +458,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
 
             Sheet sheet = workbook.getSheetAt(0);
 
-            writeDataInfoReport(sheet, styles);
+//            writeDataInfoReport(sheet, styles);
             writeDataToStudentHiredRoomReport(sheet, studentList, styles);
 
 
@@ -502,7 +531,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     private void writeDataToStudentHiredRoomReport(Sheet sheet, List<UserRegisterRoomDto> studentList, Map<String, CellStyle> styles) throws JsonProcessingException {
-        int rowStart = 4;
+        int rowStart = 6;
         if (studentList.isEmpty()) {
             return;
         }
@@ -520,16 +549,15 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
                     new TypeReference<>() {}
             );
 
-            writeValueCell(row, 1, ValueUtil.getStringByObject(dataStudent.get("full_name")), null);
-            writeValueCell(row, 2, ValueUtil.getStringByObject(dataStudent.get("number_student")), null);
-            writeValueCell(row, 3, ValueUtil.getStringByObject(dataStudent.get("number_phone")), null);
-            writeValueCell(row, 4, formatTimestamp(student.getTimeRegister(), "dd/MM/yyyy HH:mm"), styles.get("normal"));
-            writeValueCell(row, 5, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
-            writeValueCell(row, 6, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
-            writeValueCell(row, 7, ValueUtil.getStringByObject(student.getTitleSemester()), styles.get("normal"));
-            writeValueCell(row, 8, formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredStarted()), "dd/MM/yyyy HH:mm"), styles.get("normal"));
-            writeValueCell(row, 9, formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredEnded()), "dd/MM/yyyy HH:mm"), styles.get("normal"));
-
+            writeValueCell(row, 1, ValueUtil.getStringByObject(dataStudent.get("full_name")), styles.get("normal"));
+            writeValueCell(row, 2, ValueUtil.getStringByObject(dataStudent.get("number_student")), styles.get("normal"));
+            writeValueCell(row, 3, ValueUtil.getStringByObject(dataStudent.get("number_phone")), styles.get("normal"));
+            writeValueCell(row,4,ValueUtil.getStringByObject(getStatusText(student.getStatusInformationRegister())), styles.get("normal"));
+            writeValueCell(row, 5, formatTimestamp(student.getTimeRegister(), "dd/MM/yyyy HH:mm"), styles.get("normal"));
+            writeValueCell(row, 6, ValueUtil.getStringByObject(student.getTitleDepartment()), styles.get("normal"));
+            writeValueCell(row, 7, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
+            writeValueCell(row, 8, ValueUtil.getStringByObject(student.getTitleSemester()), styles.get("normal"));
+            writeValueCell(row, 9, formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredStarted()), "dd/MM/yyyy HH:mm") + " - " +formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredEnded()), "dd/MM/yyyy HH:mm"), styles.get("normal"));
             rowStart++;
             stt++;
         }
@@ -580,8 +608,22 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         Font normalFont = workbook.createFont();
         normalFont.setBold(false);
         normalStyle.setFont(normalFont);
+        normalStyle.setBorderBottom(BorderStyle.THIN);
+        normalStyle.setBorderTop(BorderStyle.THIN);
+        normalStyle.setBorderLeft(BorderStyle.THIN);
+        normalStyle.setBorderRight(BorderStyle.THIN);
         styles.put("normal", normalStyle);
 
+        CellStyle centeredStyle = workbook.createCellStyle();
+        centeredStyle.setAlignment(HorizontalAlignment.CENTER);
+        centeredStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        styles.put("centered", centeredStyle);
+
+        CellStyle noneStyle = workbook.createCellStyle();
+        Font noneFont = workbook.createFont();
+        noneFont.setBold(false);
+        noneStyle.setFont(noneFont);
+        styles.put("none", noneStyle);
         return styles;
     }
 
