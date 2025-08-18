@@ -63,4 +63,6 @@ public interface StudentRegisterRoomService {
     StudentRegisterRoom findStudentRegisterRoomByCodeUserAndRoomAndStatus(String codeUser, Integer idRoom, Integer statusSuccessPaymentStudentRoomRegister);
 
     boolean checkExistStudentPendingInRegister(String codeRoom);
+
+    boolean checkExistStudentRemoveInRegister(String codeUser, Integer idRoom);
 }
