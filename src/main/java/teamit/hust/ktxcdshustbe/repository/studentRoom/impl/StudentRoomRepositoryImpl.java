@@ -97,11 +97,6 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join department de on ro.id_department = de.id_department   " +
                 "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
                 "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
-                "    left join student_register_room srr on studentRoom.id_user = srr.id_user and srr.id_room = studentRoom.id_room" +
-                "    left join batches_registration_schedule brs on srr.id_batches_registration_schedule = brs.id_batches_registration_schedule" +
-                "    left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired" +
-                "    left join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration" +
-                "                                and brr.id_room = ro.id_room " +
                 "where ktxUser.code_user = :codeUser ");
         setConditionListHiredRoomStudentResponse(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -481,11 +476,6 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join department de on ro.id_department = de.id_department   " +
                 "    inner join ktx_user ktxUser on studentRoom.id_user = ktxUser.id_ktx_user   " +
                 "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired  " +
-                "    left join student_register_room srr on studentRoom.id_user = srr.id_user and srr.id_room = studentRoom.id_room" +
-                "    left join batches_registration_schedule brs on srr.id_batches_registration_schedule = brs.id_batches_registration_schedule" +
-                "    left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired" +
-                "    left join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration" +
-                "                                and brr.id_room = ro.id_room " +
                 "where ktxUser.code_user = :codeUser ");
         setConditionListHiredRoomStudentResponse(sb,request);
         Query query = entityManager.createNativeQuery(sb.toString());
