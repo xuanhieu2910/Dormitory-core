@@ -743,13 +743,14 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         sb.append("select * " +
                 "from student_register_room srr " +
                 " inner join ktx_user on srr.id_user = ktx_user.id_ktx_user" +
-                " inner join student_room sr on sr.id_user = srr.id_user and sr.id_room = srr.id_room " +
+                " inner join student_room sr on sr.id_user = srr.id_user and sr.id_room = srr.id_room and sr.id_time_hired = srr.id_time_hired" +
                 " where srr.id_room = :idRoom and ktx_user.code_user = :codeUser  " +
-                " and srr.status = :statusSuccess  ");
+                " and srr.status = :statusSuccess and sr.status = :statusHired ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("idRoom", idRoom);
         query.setParameter("codeUser", codeUser);
         query.setParameter("statusSuccess", Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT);
+        query.setParameter("statusHired",Constants.STATUS_STUDENT_HIRING_ROOM);
         List<Object[]> result = query.getResultList();
         return !CollectionUtils.isEmpty(result);
     }
