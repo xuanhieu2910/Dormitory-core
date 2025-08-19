@@ -316,7 +316,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             throw new ExitsObjectException();
         }
         if (!studentRegisterRoomRepository.isAllowRegisterRoomByCodeRoom(request.getCodeRoom())){
-            throw new ExitsObjectException();
+            throw new ValidParametersException();
         }
 //        if (studentRegisterRoomRepository.checkExistStudentHoldInRegister(request.getCodeRoom())){
 //            throw new ValidParametersException();
