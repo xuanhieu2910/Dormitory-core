@@ -360,7 +360,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 " where :currentTime between brs.registration_start_time and brs.registration_end_time    " +
                 "   and pg.id_priority_group = :idPriorityGroup    " +
                 "   and yg.id_year_group = :idYearGroup    " +
-                "   and (srr.status in (:statusRegisterRoom))    " +
+                "   and srr.status != :statusRegisterRoom    " +
                 "   and ktu.id_ktx_user = :idKtxUser    " +
                 " ) then 1 else 0 end result ");
         Query query = entityManager.createNativeQuery(sb.toString());
@@ -368,8 +368,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
         query.setParameter("idPriorityGroup", ktxUser.getIdPriorityGroup());
         query.setParameter("idYearGroup", ktxUser.getIdYearGroup());
         query.setParameter("currentTime", new Date().getTime());
-        query.setParameter("statusRegisterRoom", Arrays.asList(Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER,
-                Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT, Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER));
+        query.setParameter("statusRegisterRoom", Constants.STATUS_EXPIRES_TIME_STUDENT_ROOM_REGISTER);
         query.setParameter("idKtxUser", ktxUser.getIdKtxUser());
         return ValueUtil.getIntegerByObject(query.getSingleResult()).equals(1);
     }
