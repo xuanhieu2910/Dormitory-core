@@ -26,6 +26,7 @@ import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.entity.StudentRoom;
+import teamit.hust.ktxcdshustbe.exception.ExitsObjectException;
 import teamit.hust.ktxcdshustbe.exception.NotFoundException;
 import teamit.hust.ktxcdshustbe.exception.ValidParametersException;
 import teamit.hust.ktxcdshustbe.repository.studentRegisterRoom.StudentRegisterRoomRepository;
@@ -309,13 +310,13 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             throw new ValidParametersException();
         }
         if (!studentRegisterRoomRepository.isAllowRegisterBatchesRegistration()){
-            throw new ValidParametersException();
+            throw new ExitsObjectException();
         }
         if (studentRegisterRoomRepository.isExistsRegisteredRoomInBatchesRegistrationCurrent()){
-            throw new ValidParametersException();
+            throw new ExitsObjectException();
         }
         if (!studentRegisterRoomRepository.isAllowRegisterRoomByCodeRoom(request.getCodeRoom())){
-            throw new ValidParametersException();
+            throw new ExitsObjectException();
         }
 //        if (studentRegisterRoomRepository.checkExistStudentHoldInRegister(request.getCodeRoom())){
 //            throw new ValidParametersException();
