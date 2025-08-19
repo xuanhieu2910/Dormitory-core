@@ -180,9 +180,6 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
                 "    inner join room ro on studentRoom.id_room = ro.id_room   " +
                 "    inner join department de on ro.id_department = de.id_department   " +
                 "    inner join time_hired timeHired on studentRoom.id_time_hired = timeHired.id_time_hired " +
-                "    left join batches_registration_room brr on brr.id_room = ro.id_room " +
-                "    left join batches_registration br on br.id_batches_registration = brr.id_batches_registration " +
-                "    left join semester on semester.id_semester = br.id_semester " +
                 "where 1 = 1   ");
 
         setConditionListStudentHiredRoomResponse(request, sb);
