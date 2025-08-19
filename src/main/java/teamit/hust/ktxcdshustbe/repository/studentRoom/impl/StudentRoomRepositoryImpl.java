@@ -171,7 +171,7 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
     public List<FindAllStudentHiredRoomDto> findAllStudentsForExport(ListStudentHiredRoomRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append("select studentRoom.id_student_room,ktxUser.code_user, ktxUser.value, " +
-                "       timeHired.time_started, timeHired.time_ended,semester.title, " +
+                "       timeHired.time_started, timeHired.time_ended, " +
                 "       de.code_department, de.title titleDepartment, ro.code_room,   " +
                 "       ro.title roomTitle, userModified.code_user,userModified.value,studentRoom.status " +
                 "from student_room studentRoom    " +
@@ -194,19 +194,18 @@ public class StudentRoomRepositoryImpl implements StudentRoomRepositoryCustom {
             for (Object[] obj : result) {
                 Long dateStarted = ValueUtil.getLongByObject(obj[3]);
                 Long dateEnded = ValueUtil.getLongByObject(obj[4]);
-                String titleSemester = ValueUtil.getStringByObject(obj[5]);
                 FindAllStudentHiredRoomDto res = new FindAllStudentHiredRoomDto();
                 res.setIdStudentRoom(ValueUtil.getIntegerByObject(obj[0]));
                 res.setCodeUser(ValueUtil.getStringByObject(obj[1]));
                 res.setValueUser(ValueUtil.getStringByObject(obj[2]));
                 res.setTimeHired(DateUtil.convertLongTimeToDateTime(dateStarted)  + " - " + DateUtil.convertLongTimeToDateTime(dateEnded) );
-                res.setCodeDepartment(ValueUtil.getStringByObject(obj[6]));
-                res.setTitleDepartment(ValueUtil.getStringByObject(obj[7]));
-                res.setCodeRoom(ValueUtil.getStringByObject(obj[8]));
-                res.setTitleRoom(ValueUtil.getStringByObject(obj[9]));
-                res.setCodeUserModified(ValueUtil.getStringByObject(obj[10]));
-                res.setValueUserModified(ValueUtil.getStringByObject(obj[11]));
-                res.setStatus(ValueUtil.getIntegerByObject(obj[12]));
+                res.setCodeDepartment(ValueUtil.getStringByObject(obj[5]));
+                res.setTitleDepartment(ValueUtil.getStringByObject(obj[6]));
+                res.setCodeRoom(ValueUtil.getStringByObject(obj[7]));
+                res.setTitleRoom(ValueUtil.getStringByObject(obj[8]));
+                res.setCodeUserModified(ValueUtil.getStringByObject(obj[9]));
+                res.setValueUserModified(ValueUtil.getStringByObject(obj[10]));
+                res.setStatus(ValueUtil.getIntegerByObject(obj[11]));
                 responses.add(res);
             }
         }
