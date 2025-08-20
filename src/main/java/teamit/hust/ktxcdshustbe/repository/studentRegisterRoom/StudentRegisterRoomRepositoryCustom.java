@@ -60,5 +60,5 @@ public interface StudentRegisterRoomRepositoryCustom {
     boolean checkExistStudentRemoveInRegister(String codeUser, Integer idRoom);
 
 
-    boolean checkExistStudentHoldInRegister(String codeRoom);
+    boolean checkExistStudentHoldInRegister(String codeRoom,String codeUser);
 }

@@ -153,6 +153,9 @@ public class StudentRoomServiceImpl implements StudentRoomService {
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Optional<Room> roomOptional = roomService.findRoomByCodeRoom(request.getCodeRoom());
         KtxUser ktxUserOptional = ktxUserService.findKtxUserByCodeUser(request.getCodeUser());
+        if(studentRegisterRoomService.checkExistStudentHoldInRegister(request.getCodeRoom(),request.getCodeUser())){
+            throw new ExitsObjectException();
+        }
         if(studentRegisterRoomService.checkExistStudentPendingInRegister(request.getCodeRoom())){
             throw new ExitsObjectException();
         }
