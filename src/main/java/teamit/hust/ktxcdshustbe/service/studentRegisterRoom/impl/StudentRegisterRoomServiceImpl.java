@@ -21,6 +21,7 @@ import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.FindAllStudentHiredRoomDto;
+import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDownloadDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.Room;
@@ -456,7 +457,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
                 + FileUtil.FOLDER_REGISTER_ROOM
                 + SEPARATOR
                 + "Template_List_Student_Register_Room.xlsx";
-        List<UserRegisterRoomDto> studentList = studentRegisterRoomRepository.downloadListStudentRegisterRoom(request);
+        List<UserRegisterRoomDownloadDto> studentList = studentRegisterRoomRepository.downloadListStudentRegisterRoom(request);
 
         try (FileInputStream fileInputStream = new FileInputStream(new File(fileExcel));
              Workbook workbook = new XSSFWorkbook(fileInputStream)) {
@@ -541,7 +542,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         writeValueCell(sheet, 1, 0, dateExport, styles.get("normal"));
     }
 
-    private void writeDataToStudentHiredRoomReport(Sheet sheet, List<UserRegisterRoomDto> studentList, Map<String, CellStyle> styles) throws JsonProcessingException {
+    private void writeDataToStudentHiredRoomReport(Sheet sheet, List<UserRegisterRoomDownloadDto> studentList, Map<String, CellStyle> styles) throws JsonProcessingException {
         int rowStart = 6;
         if (studentList.isEmpty()) {
             return;
@@ -552,7 +553,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
 //        }
         ObjectMapper objectMapper = new ObjectMapper();
         int stt = 1;
-        for (UserRegisterRoomDto student : studentList) {
+        for (UserRegisterRoomDownloadDto student : studentList) {
             Row row = sheet.createRow(rowStart);
             writeValueCell(row, 0, String.valueOf(stt), styles.get("normal"));
             HashMap<String, Object> dataStudent = objectMapper.readValue(
@@ -569,6 +570,9 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             writeValueCell(row, 7, ValueUtil.getStringByObject(student.getTitleRoom()), styles.get("normal"));
             writeValueCell(row, 8, ValueUtil.getStringByObject(student.getTitleSemester()), styles.get("normal"));
             writeValueCell(row, 9, formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredStarted()), "dd/MM/yyyy HH:mm") + " - " +formatTimestamp(ValueUtil.getLongByObject(student.getTimeHiredEnded()), "dd/MM/yyyy HH:mm"), styles.get("normal"));
+            writeValueCell(row, 10, ValueUtil.getStringByObject(student.getTitleOrders()), styles.get("normal"));
+            writeValueCell(row, 11, ValueUtil.getStringByObject(student.getCodeOrders()), styles.get("normal"));
+            writeValueCell(row, 12, ValueUtil.getStringByObject(student.getTotalMoney()), styles.get("normal"));
             rowStart++;
             stt++;
         }

@@ -16,6 +16,7 @@ import teamit.hust.ktxcdshustbe.dto.registerRoom.AcceptStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
+import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDownloadDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
@@ -1198,31 +1199,35 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     }
 
     @Override
-    public List<UserRegisterRoomDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request) {
+    public List<UserRegisterRoomDownloadDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append("select ktxUser.code_user, ktxUser.value,    " +
-                "    studentRegisterRoom.time_created,    " +
-                "    de.code_department, de.title, ro.code_room, ro.title,    " +
-                "    se.code_semester, se.title, timeHired.id_time_hired,    " +
-                "    timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status    " +
-                "                from student_register_room studentRegisterRoom   " +
-                "    inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user    " +
-                "    inner join room ro on studentRegisterRoom.id_room = ro.id_room    " +
-                "    inner join department de on ro.id_department = de.id_department    " +
-                "    inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired  " +
-                "     left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule   " +
-                "     left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired   " +
-                "     left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration   " +
-                "     left join semester se on se.id_semester = br.id_semester   " +
-                "    where 1 = 1  ");
+        sb.append("select ktxUser.code_user, ktxUser.value,     " +
+                "  studentRegisterRoom.time_created,     " +
+                "  de.code_department, de.title, ro.code_room, ro.title,     " +
+                "  se.code_semester, se.title, timeHired.id_time_hired,     " +
+                "  timeHired.time_started, timeHired.time_ended,studentRegisterRoom.status, " +
+                "  orders.title_order,orders.code_order,orders.total_money " +
+                "              from student_register_room studentRegisterRoom    " +
+                "  inner join ktx_user ktxUser on ktxUser.id_ktx_user = studentRegisterRoom.id_user     " +
+                "  inner join room ro on studentRegisterRoom.id_room = ro.id_room     " +
+                "  inner join department de on ro.id_department = de.id_department     " +
+                "  inner join time_hired timeHired on studentRegisterRoom.id_time_hired = timeHired.id_time_hired   " +
+                "   left join batches_registration_schedule brs on studentRegisterRoom.id_batches_registration_schedule = brs.id_batches_registration_schedule    " +
+                "   left join batches_registration br on br.id_batches_registration = brs.id_batches_registration and br.id_time_hired = timeHired.id_time_hired    " +
+                "   left join batches_registration_room brr on brr.id_room = ro.id_room and br.id_batches_registration = brr.id_batches_registration    " +
+                "   left join semester se on se.id_semester = br.id_semester " +
+                "  left join orders on studentRegisterRoom.id_order = orders.id_order " +
+                "  left join order_items on orders.id_order = order_items.id_order " +
+                "  left join transaction_payment on orders.id_transaction_payment = transaction_payment.id_transaction_payment " +
+                "  where 1 = 1  ");
         setConditionFindAllUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllUserRegisterRoom(query, request);
         List<Object[]> result = query.getResultList();
-        List<UserRegisterRoomDto> userRegisterRoomDtos = new ArrayList<>();
+        List<UserRegisterRoomDownloadDto> userRegisterRoomDtos = new ArrayList<>();
         if (!CollectionUtils.isEmpty(result)){
             for (Object[] obj: result){
-                UserRegisterRoomDto dto = new UserRegisterRoomDto();
+                UserRegisterRoomDownloadDto dto = new UserRegisterRoomDownloadDto();
                 dto.setCodeUser(ValueUtil.getStringByObject(obj[0]));
                 dto.setValue(ValueUtil.getStringByObject(obj[1]));
                 dto.setTimeRegister(ValueUtil.getLongByObject(obj[2]));
@@ -1236,6 +1241,9 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 dto.setTimeHiredStarted(ValueUtil.getLongByObject(obj[10]));
                 dto.setTimeHiredEnded(ValueUtil.getLongByObject(obj[11]));
                 dto.setStatusInformationRegister(ValueUtil.getIntegerByObject(obj[12]));
+                dto.setTitleOrders(ValueUtil.getStringByObject(obj[13]));
+                dto.setCodeOrders(ValueUtil.getStringByObject(obj[14]));
+                dto.setTotalMoney(ValueUtil.getStringByObject(obj[15]));
                 userRegisterRoomDtos.add(dto);
             }
         }

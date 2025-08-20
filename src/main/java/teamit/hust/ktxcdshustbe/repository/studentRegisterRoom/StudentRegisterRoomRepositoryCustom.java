@@ -6,6 +6,7 @@ import teamit.hust.ktxcdshustbe.dto.registerRoom.AcceptStudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterHoldingRoomDto;
 import teamit.hust.ktxcdshustbe.dto.registerRoom.StudentRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.dto.studentRoom.DataStudentRegisterRoomDto;
+import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDownloadDto;
 import teamit.hust.ktxcdshustbe.dto.user.UserRegisterRoomDto;
 import teamit.hust.ktxcdshustbe.entity.StudentRegisterRoom;
 import teamit.hust.ktxcdshustbe.request.user.UserRegisterRoomRequest;
@@ -39,7 +40,7 @@ public interface StudentRegisterRoomRepositoryCustom {
 
     Page<UserRegisterRoomDto> findAllInfoAnUserRegisterRoomDto(UserRegisterRoomRequest request, Pageable pageable);
 
-    List<UserRegisterRoomDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request);
+    List<UserRegisterRoomDownloadDto> downloadListStudentRegisterRoom(UserRegisterRoomRequest request);
     List<UserRegisterRoomDto> findListUserRegisterInRoom(Integer status);
 
     boolean checkExistStudentInRegister(String codeUser, Integer idRoom);
