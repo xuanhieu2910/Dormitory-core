@@ -60,9 +60,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Autowired
     InterceptLog logInterceptor;
     public final static String INFORMATION_USER = "informationUser";
-    public final static String DOMAIN_FE = "https://ktx-staging.hust.edu.vn";
-        public final static String DOMAIN_FPT_PAYMENT = "https://portal-v2-staging.foxpay.vn";
-    public final static String DOMAIN_BE = "https://ktx-staging-be.hust.edu.vn/ktx-be";
+    public final static String DOMAIN_FE = "https://ktx.hust.edu.vn";
+    public final static String DOMAIN_FPT_PAYMENT = "https://portal-v2.foxpay.vn";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

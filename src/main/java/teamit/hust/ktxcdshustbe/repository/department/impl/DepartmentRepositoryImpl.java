@@ -423,8 +423,8 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
     private long countFindAllStudentSearchDepartment(StudentSearchDepartmentRequest request) {
         StringBuilder sb = new StringBuilder();
         sb.append("""
-                select count(0)
-                 from batches_registration br 
+                select count(0) count
+                 from batches_registration br
                      inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration  
                      inner join batches_registration_schedule brs on br.id_batches_registration = brs.id_batches_registration 
                      inner join priority_group pg on brs.id_priority_group = pg.id_priority_group 
@@ -440,7 +440,7 @@ public class DepartmentRepositoryImpl implements DepartmentRepositoryCustom {
         setConditionFindAllStudentSearchDepartment(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllStudentSearchDepartment(query, request);
-        return ValueUtil.getIntegerByObject(query.getSingleResult());
+        return ValueUtil.getIntegerByObject(query.getFirstResult());
     }
 
     private void setParameterFindAllStudentSearchDepartment(Query query, StudentSearchDepartmentRequest request) {
