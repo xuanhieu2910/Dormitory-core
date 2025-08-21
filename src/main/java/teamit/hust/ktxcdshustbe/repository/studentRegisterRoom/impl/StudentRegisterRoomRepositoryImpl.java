@@ -1087,7 +1087,7 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 " and srr.status in (:statusHolding)  and ktx_user.code_user = :codeUser   ");
         Query query = entityManager.createNativeQuery(sb.toString());
         query.setParameter("codeRoom", codeRoom);
-        query.setParameter("CodeUser",codeUser);
+        query.setParameter("codeUser",codeUser);
         List<Integer> statusHolding = List.of(
                 Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
