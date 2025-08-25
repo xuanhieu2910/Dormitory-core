@@ -191,7 +191,8 @@ public class KtxUserServiceImpl implements KtxUserService {
     public DetailInformationUserResponse getDetailInformationUser() {
         // SỬA ĐỔI: Gọi đến chính hàm loadUserByUsername của class này
         KtxUser userDetails = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return convertToDetailInformationUserResponse(userDetails);
+        KtxUser ktxUser = ktxUserRepository.findByKtxUserCode(userDetails.getCodeUser()).get();
+        return convertToDetailInformationUserResponse(ktxUser);
     }
 
     @Override

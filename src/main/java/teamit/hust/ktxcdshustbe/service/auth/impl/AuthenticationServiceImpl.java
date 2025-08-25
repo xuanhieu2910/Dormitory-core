@@ -115,13 +115,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationDto getOAuthentication2ByUserName() {
         log.debug("Redirect front end success!");
         KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Role> role = ktxUser.getRole().stream().toList();
+        KtxUser ktxUser1 = ktxUserService.findKtxUserByCodeUser(ktxUser.getCodeUser());
+        List<Role> role = ktxUser1.getRole().stream().toList();
         AuthenticationDto authenticationDto = new AuthenticationDto();
         authenticationDto.setRoles(RoleUtils.convertToRoleResponse(role));
-        authenticationDto.setUserName(ktxUser.getUsername());
-        authenticationDto.setCodeUser(ktxUser.getCodeUser());
-        authenticationDto.setIsActive(ktxUser.getIsActived());
-        authenticationDto.setIsInitialize(ktxUser.getIsInitialize());
+        authenticationDto.setUserName(ktxUser1.getUsername());
+        authenticationDto.setCodeUser(ktxUser1.getCodeUser());
+        authenticationDto.setIsActive(ktxUser1.getIsActived());
+        authenticationDto.setIsInitialize(ktxUser1.getIsInitialize());
         return authenticationDto;
     }
 
