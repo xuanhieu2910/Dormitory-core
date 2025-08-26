@@ -431,7 +431,7 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
             case 2: // STATUS_HOLD_STUDENT_ROOM_REGISTER
                 return "Đang giữ phòng";
             case 3:
-                return "Đã xác nhận";
+                return "Chờ thanh toán";
             case 4:
                 return "Đã thanh toán";
             case 5:

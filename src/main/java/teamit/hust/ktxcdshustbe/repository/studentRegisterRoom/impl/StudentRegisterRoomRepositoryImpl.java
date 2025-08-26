@@ -1218,9 +1218,14 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
                 "  left join orders on studentRegisterRoom.id_order = orders.id_order " +
                 "  left join order_items on orders.id_order = order_items.id_order " +
                 "  left join transaction_payment on orders.id_transaction_payment = transaction_payment.id_transaction_payment " +
-                "  where 1 = 1  ");
+                "  where 1 = 1  and studentRegisterRoom.status in (:statusSuccess) ");
         setConditionFindAllUserRegisterRoom(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
+        List<Integer> statusSuccess = List.of(
+                Constants.STUDENT_REGISTER_ROOM_STATUS_ACCEPT,
+                Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER
+        );
+        query.setParameter("statusSuccess",statusSuccess);
         setParameterFindAllUserRegisterRoom(query, request);
         List<Object[]> result = query.getResultList();
         List<UserRegisterRoomDownloadDto> userRegisterRoomDtos = new ArrayList<>();
