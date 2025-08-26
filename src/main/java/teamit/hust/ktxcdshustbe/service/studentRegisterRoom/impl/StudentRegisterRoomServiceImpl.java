@@ -319,9 +319,10 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
         if (!studentRegisterRoomRepository.isAllowRegisterRoomByCodeRoom(request.getCodeRoom())){
             throw new ValidParametersException();
         }
-//        if (studentRegisterRoomRepository.checkExistStudentHoldInRegister(request.getCodeRoom())){
-//            throw new ValidParametersException();
-//        }
+        KtxUser ktxUser = (KtxUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (studentRegisterRoomRepository.checkExistStudentHoldInRegister(ktxUser.getCodeUser())){
+            throw new ValidParametersException();
+        }
 
 
     }
@@ -535,8 +536,8 @@ public class StudentRegisterRoomServiceImpl implements StudentRegisterRoomServic
     }
 
     @Override
-    public boolean checkExistStudentHoldInRegister(String codeRoom, String codeUser) {
-        return studentRegisterRoomRepository.checkExistStudentHoldInRegister(codeRoom,codeUser);
+    public boolean checkExistStudentHoldInRegister( String codeUser) {
+        return studentRegisterRoomRepository.checkExistStudentHoldInRegister(codeUser);
     }
 
     private void writeDataInfoReport(Sheet sheet, Map<String, CellStyle> styles) {

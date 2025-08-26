@@ -1077,24 +1077,19 @@ public class StudentRegisterRoomRepositoryImpl implements StudentRegisterRoomRep
     }
 
     @Override
-    public boolean checkExistStudentHoldInRegister(String codeRoom,String codeUser) {
+    public boolean checkExistStudentHoldInRegister(String codeUser) {
         StringBuilder sb = new StringBuilder();
         sb.append("select * " +
                 " from student_register_room srr " +
                 " inner join ktx_user on srr.id_user = ktx_user.id_ktx_user" +
-                " inner join room on srr.id_room = room.id_room" +
-                " where room.code_room = :codeRoom " +
-                " and srr.status in (:statusHolding)  and ktx_user.code_user = :codeUser   ");
+                " inner join room on srr.id_room = room.id_room " +
+                " where srr.status in (:statusHolding)  and ktx_user.code_user = :codeUser   ");
         Query query = entityManager.createNativeQuery(sb.toString());
-        query.setParameter("codeRoom", codeRoom);
         query.setParameter("codeUser",codeUser);
         List<Integer> statusHolding = List.of(
                 Constants.STATUS_HOLD_STUDENT_ROOM_REGISTER,
                 Constants.STATUS_STUDENT_REGISTER_ROOM_CONFIRM_ORDER,
-                Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER,
-                Constants.STATUS_CANCEL_PAYMENT_STUDENT_ROOM_REGISTER,
-                Constants.STATUS_FALSE_PAYMENT_STUDENT_ROOM_REGISTER,
-                Constants.STATUS_PENDING_PAYMENT_STUDENT_ROOM_REGISTER
+                Constants.STATUS_SUCCESS_PAYMENT_STUDENT_ROOM_REGISTER
         );
         query.setParameter("statusHolding", statusHolding);
         List<Object[]> result = query.getResultList();

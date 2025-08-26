@@ -66,5 +66,5 @@ public interface StudentRegisterRoomService {
 
     boolean checkExistStudentRemoveInRegister(String codeUser, Integer idRoom);
 
-    boolean checkExistStudentHoldInRegister(String codeRoom, String codeUser);
+    boolean checkExistStudentHoldInRegister(String codeUser);
 }
