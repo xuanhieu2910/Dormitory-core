@@ -47,4 +47,12 @@ public class StudentRegisterScheduleTask {
         return true;
     }
 
+//    @Scheduled(fixedDelay = 3000)
+//    public void updateStatusWaitingConfirmPayment(){
+//        log.info("[Schedule - Waiting confirm payment] - Start update status holding room");
+//        Long timeCurrent = new Date().getTime();
+//        boolean isUpdateQuantity =  updateQuantityRegisterRoom(timeCurrent);
+//
+//        log.info("[Schedule - Waiting confirm payment] - End update {} status holding room");
+//    }
 }

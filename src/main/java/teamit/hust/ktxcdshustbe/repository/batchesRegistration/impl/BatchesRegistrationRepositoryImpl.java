@@ -289,7 +289,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
 
     private long countFindAllDepartmentBatchesRegistration(FindAllDepartmentInBatchesRegistrationRequest request) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select count(de.id_department) " +
+        sb.append(" select count(de.id_department) count " +
                 "from batches_registration br " +
                 "    inner join batches_registration_room brr on br.id_batches_registration = brr.id_batches_registration " +
                 "    inner join room ro on brr.id_room = ro.id_room " +
@@ -299,7 +299,7 @@ public class BatchesRegistrationRepositoryImpl implements BatchesRegistrationRep
         setConditionalFindAllDepartmentBatchesRegistration(sb, request);
         Query query = entityManager.createNativeQuery(sb.toString());
         setParameterFindAllDepartmentBatchesRegistration(query, request);
-        return ValueUtil.getLongByObject(query.getSingleResult());
+        return ValueUtil.getLongByObject(query.getFirstResult());
     }
 
     private FindAllDepartmentBatchesRegistrationDto writeDataFindAllDepartmentBatchesRegistration(Object[] obj) {

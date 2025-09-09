@@ -1,5 +1,6 @@
 package teamit.hust.ktxcdshustbe.config;
 
+import com.google.common.hash.Hashing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,7 +33,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import teamit.hust.ktxcdshustbe.entity.KtxUser;
 import teamit.hust.ktxcdshustbe.service.user.impl.KtxUserServiceImpl;
 import teamit.hust.ktxcdshustbe.utility.Constants;
+import teamit.hust.ktxcdshustbe.utility.PropertiesUtil;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
