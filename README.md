@@ -1,93 +1,305 @@
-# KTX-HUST-BE
+# Dormitory Core
 
+Scalable backend for university dormitory management, supporting student
+room registration, room allocation, residency management, payments, and
+high-concurrency registration workflows.
 
+## Overview
 
-## Getting started
+Dormitory Core was developed to digitalize university dormitory
+operations and provide a centralized backend for managing students,
+buildings, rooms, registration batches, accommodation, and related
+financial workflows.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+A key engineering requirement is peak dormitory registration, where
+approximately **3,000--4,000 students may access the system
+concurrently**. The registration architecture therefore focuses on
+transactional consistency, temporary resource holding, expiration
+control, and scheduled capacity reconciliation.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Key Features
 
-## Add your files
+-   Student dormitory registration
+-   Building and room management
+-   Registration batch and schedule management
+-   Priority-based registration workflows
+-   Temporary room holding
+-   Room capacity management
+-   Student residency management
+-   Order and payment processing
+-   Registration status tracking
+-   Administrative workflows
+-   Role-based access control
+-   RESTful API integration
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Architecture
 
+The backend follows a layered, domain-oriented architecture that
+separates API handling, business logic, persistence, and transactional
+operations.
+
+``` text
+Client
+  │
+  ▼
+REST API / Controller
+  │
+  ▼
+Service Layer
+  │
+  ├── Registration Batch
+  ├── Student Registration
+  ├── Room Management
+  ├── Student Room
+  ├── Order / Order Session
+  └── Payment
+  │
+  ▼
+Repository / Persistence
+  │
+  ▼
+Database
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/hieuxuanvuong29102000/ktx-hust-be.git
-git branch -M main
-git push -uf origin main
+
+Important service areas include:
+
+-   `batchesRegistration`
+-   `batchesRegistrationRoom`
+-   `batchesRegistrationSchedule`
+-   `batchesYearGroupRegistration`
+-   `studentRegisterRoom`
+-   `studentRoom`
+-   `room`
+-   `priorityGroup`
+-   `orderSession`
+-   `orders`
+-   `orderItems`
+-   `paymentService`
+-   `transactionPayment`
+
+## High-Concurrency Registration Architecture
+
+Dormitory Core was designed for peak registration periods where
+approximately **3,000--4,000 concurrent users** may access the
+registration system within the same time window.
+
+The architecture applies a similar engineering principle from
+[**XSync-ticket**](https://github.com/xuanhieu2910/XSync-ticket):
+high-load operations should be decomposed into controlled processing
+responsibilities instead of concentrating the entire workload in a
+single processing path.
+
+However, the implementation is different.
+
+**XSync-ticket** uses queue/thread-oriented processing for large-scale
+independent jobs, while **Dormitory Core** adapts the same high-load
+design philosophy to a transactional room-registration problem using:
+
+-   Transactional registration processing
+-   Temporary room holding
+-   Persistent database-backed state
+-   TTL-based expiration (`expiresAt`)
+-   Scheduled expiration processing
+-   Room-capacity reconciliation
+
+### Transactional Room Holding
+
+The main registration flow is handled through
+`StudentRegisterRoomServiceImpl`.
+
+When a student selects a room, the system validates the registration and
+creates a temporary room registration in a **HOLD** state. The hold is
+assigned an expiration timestamp so that room capacity is not
+permanently occupied when a student starts but does not complete the
+registration workflow.
+
+``` text
+Concurrent Registration Requests
+              │
+              ▼
+       Validate Registration
+              │
+              ▼
+      Transactional Processing
+              │
+              ▼
+      Temporary Room HOLD
+      ┌───────────────────┐
+      │ status = HOLD     │
+      │ expiresAt = TTL   │
+      └───────────────────┘
+              │
+        ┌─────┴─────┐
+        ▼           ▼
+   Completed      Expired
+ Registration      HOLD
+                      │
+                      ▼
+           Scheduled Reconciliation
+                      │
+                      ▼
+              Release Capacity
 ```
 
-## Integrate with your tools
+The registration operation is transaction-oriented, helping keep room
+capacity and registration state consistent while multiple users are
+interacting with limited room resources.
 
-- [ ] [Set up project integrations](https://gitlab.com/hieuxuanvuong29102000/ktx-hust-be/-/settings/integrations)
+### Scheduled Expiration & Capacity Reconciliation
 
-## Collaborate with your team
+Expired room holds are processed by:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+``` text
+StudentRegisterScheduleTask
+```
 
-## Test and Deploy
+The component uses Spring scheduling:
 
-Use the built-in continuous integration in GitLab.
+``` java
+@Scheduled(fixedDelay = 3000)
+public void updateStatusHoldingRoom()
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+The scheduled task periodically processes temporary registrations by:
 
-***
+1.  Retrieving registrations currently holding room capacity.
+2.  Recalculating the corresponding room quantities.
+3.  Detecting registrations whose holding period has expired.
+4.  Updating expired registration states.
+5.  Releasing/reconciling room capacity for subsequent registrations.
 
-# Editing this README
+``` text
+StudentRegisterRoomServiceImpl
+          │
+          ├── Validate registration
+          ├── Create registration
+          ├── HOLD room capacity
+          └── Set expiresAt
+                    │
+                    ▼
+          Database-backed State
+                    │
+                    ▼
+       StudentRegisterScheduleTask
+              every ~3 seconds
+                    │
+             ┌──────┴──────┐
+             ▼             ▼
+       Active HOLD     Expired HOLD
+                           │
+                           ▼
+                  Capacity Reconciliation
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+This creates a **database-backed temporary reservation model** rather
+than relying on an in-memory queue. Registration state remains
+persistent across processing cycles and expired reservations can be
+reconciled independently from the original HTTP request.
 
-## Suggestions for a good README
+## Relation to XSync-ticket
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+[**XSync-ticket**](https://github.com/xuanhieu2910/XSync-ticket) and
+Dormitory Core solve different high-load problems with different
+implementations.
 
-## Name
-Choose a self-explaining name for your project.
+``` text
+XSync-ticket                         Dormitory Core
+────────────                         ──────────────
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+Large-scale jobs                     Concurrent room registration
+       │                                      │
+       ▼                                      ▼
+Concurrent Queue                     Transactional HOLD
+       │                                      │
+       ▼                                      ▼
+Worker Threads                       Persistent HOLD State
+       │                                      │
+       ▼                                      ▼
+Fine-grained Sync                    TTL / expiresAt
+                                              │
+                                              ▼
+                                     Scheduled Reconciliation
+```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+The similarity is primarily an **engineering principle**: separate
+high-load processing responsibilities, control access to critical shared
+resources, and prevent expensive or state-sensitive operations from
+becoming an uncontrolled synchronous workload.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+For Dormitory Core, this principle is adapted to room registration
+through **transactional processing, temporary resource holding,
+expiration control, and scheduled capacity reconciliation**.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+## Registration Domain Flow
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+``` text
+Registration Batch
+        │
+        ├── Registration Room
+        ├── Registration Schedule
+        └── Year-group / Priority Rules
+        │
+        ▼
+StudentRegisterRoomService
+        │
+        ├── Priority Group
+        ├── Room
+        └── Student Room
+        │
+        ▼
+Order Session
+        │
+        ├── Orders
+        └── Order Items
+        │
+        ▼
+Payment / Transaction
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+This separation keeps registration configuration, room state, student
+accommodation, ordering, and payment responsibilities independently
+maintainable.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+## Technology Stack
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+`Java` · `Spring Boot` · `Spring Security` · `Spring Scheduling` ·
+`JPA / Hibernate` · `REST API` · `MySQL / MariaDB` · `Maven`
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## Engineering Focus
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+-   High-Concurrency Backend Systems
+-   Transactional Room Registration
+-   Temporary Resource Holding
+-   TTL-Based Expiration
+-   Spring `@Scheduled` Processing
+-   Database-Backed State Management
+-   Capacity Reconciliation
+-   Race-Condition Reduction
+-   Persistent Registration State
+-   Domain-Oriented Service Design
+-   RESTful API Design
+-   Authentication & Authorization
+-   University Information Systems
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Scalability Note
 
-## License
-For open source projects, say how it is licensed.
+The system architecture was designed around registration periods
+involving approximately **3,000--4,000 concurrent users**.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This number represents the **design workload requirement** of the
+dormitory registration system. It should not be interpreted as a formal
+throughput benchmark unless accompanied by dedicated load-testing
+results.
+
+## Project History
+
+Dormitory Core was developed as part of the digital transformation of
+university dormitory operations.
+
+The project evolved around real operational requirements such as
+registration batches, limited room capacity, priority-based
+registration, temporary reservations, accommodation management, and
+payment workflows.
+
+The repository was later migrated from GitLab to GitHub while preserving
+its development history.
